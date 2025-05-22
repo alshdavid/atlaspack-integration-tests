@@ -6,14 +6,14 @@ export type EvalHtmlOptions = {
   basePath?: string
 }
 
-export async function evalHtml(
+export async function evalHtml<T = any>(
   filePath: string | undefined,
   {basePath}: EvalHtmlOptions = {}
-): Promise<Map<string, any>> {
+): Promise<T> {
   if (!filePath) {
     throw Error("Unable to find entry");
   }
-  return new Promise((done, error) => {
+  return new Promise<T>((done, error) => {
     const interval = setTimeout(() => error("Timeout"), 5000);
     setTimeout(async () => {
       const base = basePath || path.dirname(filePath);
@@ -43,7 +43,10 @@ export async function evalHtml(
         console.log(page.virtualConsolePrinter.readAsString().trim())
       );
 
-      (page.mainFrame.window as any).done = done;
+      (page.mainFrame.window as any).done = (v:T) => {
+        clearInterval(interval)
+        done(v)
+      };
       (page.mainFrame.window as any).error = error;
 
       page.url = `https://example.com`;
