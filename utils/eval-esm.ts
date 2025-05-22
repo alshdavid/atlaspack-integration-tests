@@ -22,7 +22,10 @@ export function evalEsm<T = any>(modulePath: string | undefined): Promise<T> {
         ...globalThis,
         require,
         // test: {
-          done,
+          done: (v: T) => {
+            globalThis.clearInterval(interval)
+            done(v)
+          },
           error
         // },
       });

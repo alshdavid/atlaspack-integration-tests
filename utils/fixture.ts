@@ -29,24 +29,24 @@ export class Fixture {
 
     const tmp = await TempDir.create(name);
 
-    let inProgress = [];
-    for (const [file, contents] of Object.entries(files)) {
-      inProgress.push(
-        (async () => {
-          if (!fs.existsSync(path.dirname(path.join(tmp.path, file)))) {
-            await fs.promises.mkdir(path.dirname(path.join(tmp.path, file)), {
-              recursive: true,
-            });
-          }
-          await fs.promises.writeFile(
-            path.join(tmp.path, file),
-            contents as string,
-            "utf8"
-          );
-        })()
-      );
-    }
-    await Promise.all(inProgress);
+    // let inProgress = [];
+    // for (const [file, contents] of Object.entries(files)) {
+    //   inProgress.push(
+    //     (async () => {
+    //       if (!fs.existsSync(path.dirname(path.join(tmp.path, file)))) {
+    //         await fs.promises.mkdir(path.dirname(path.join(tmp.path, file)), {
+    //           recursive: true,
+    //         });
+    //       }
+    //       await fs.promises.writeFile(
+    //         path.join(tmp.path, file),
+    //         contents as string,
+    //         "utf8"
+    //       );
+    //     })()
+    //   );
+    // }
+    // await Promise.all(inProgress);
 
     const fixture = new Fixture();
     fixture.#tmp = tmp;

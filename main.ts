@@ -1,36 +1,37 @@
-// import '@shigen/polyfill-symbol-dispose'
-import * as reporter from 'node:test/reporters'
-import { run, before } from 'node:test'
-import * as path from 'node:path'
-import * as process from 'node:process'
-import * as fs from 'node:fs'
-import * as url from 'node:url'
-import { finished } from 'node:stream'
-import { evalEsm } from './utils/eval-esm.ts'
+import * as child_process from "node:child_process";
+import * as path from "node:path";
+import * as process from "node:process";
+import * as url from "node:url";
+import * as glob from "glob";
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 void (async function () {
-  const [,,pattern] = process.argv
+  const found = glob.sync("tests/**/*.test.ts", { cwd: __dirname });
 
-  let exitCode = 0
-  const testStream = run({
-    globPatterns: [pattern || "tests/**/*.test.ts"],
-    concurrency: true,
-    only: !!process.env.ONLY,
-    isolation: 'process',
-  })
-    .on('test:fail', () => {
-      // @ts-ignore
-      exitCode = 1
-    })
-    .compose(new reporter.spec())
+  const NODE_OPTIONS = [
+    "--import",
+      "tsx",
+    "--experimental-vm-modules",
+    "--disable-warning=ExperimentalWarning",
+  ]
 
-  testStream.pipe(process.stdout)
-  await new Promise((res) => finished(testStream, res))
-  // console.log('Cleanup')
-  // if (fs.existsSync(path.join(__dirname, '.tmp'))) {
-  //   await fs.promises.rm(path.join(__dirname, '.tmp'), { recursive: true })
-  // }
-  process.exit(exitCode)
-})()
+  child_process.execFileSync(
+    "node",
+    [
+      ...NODE_OPTIONS,
+      "--experimental-vm-modules",
+      "--disable-warning=ExperimentalWarning",
+      path.join("node_modules", ".bin", "ava"),
+      ...found,
+    ],
+    {
+      cwd: __dirname,
+      stdio: "inherit",
+      env: {
+        "NODE_OPTIONS": NODE_OPTIONS.join(" "),
+        ...process.env,
+      }
+    }
+  );
+})();

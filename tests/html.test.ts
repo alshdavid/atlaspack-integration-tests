@@ -1,77 +1,74 @@
-import "../utils/prelude.ts";
-import * as assert from "node:assert";
-import { describe, test } from "node:test";
+// import "../utils/prelude.ts";
 import { Fixture } from "../utils/fixture.ts";
 import { evalHtml } from "../utils/eval-html.ts";
+import test from 'ava';
 
-describe("html", { concurrency: 5 }, function () {
-  test("Should support inline assets", async () => {
-    const fixture = await Fixture.create(
-      "html-inline-js",
-      /*yaml*/ `
-      index.html: |
-        <html><body>
-          <script type="module">
-            const foo = "bar"
-            done(foo)
-          </script>
-        </body></html>
-    `
-    );
+test("Should support inline assets", async t => {
+  const fixture = await Fixture.create(
+    "html-inline-js",
+    /*yaml*/ `
+    index.html: |
+      <html><body>
+        <script type="module">
+          const foo = "bar"
+          done(foo)
+        </script>
+      </body></html>
+  `
+  );
 
-    const [entries] = await fixture.bundle("index.html");
-    const result = await evalHtml(entries.get("index.html")!);
+  const [entries] = await fixture.bundle("index.html");
+  const result = await evalHtml(entries.get("index.html")!);
 
-    assert.equal(result, "bar");
-  });
+  t.assert(result === "bar");
+});
 
-  test("Should support inline assets with static imports", async () => {
-    const fixture = await Fixture.create(
-      "html-inline-static-import",
-      /*yaml*/ `
-      index.html: |
-        <html><body>
-          <script type="module">
-            import { a } from './a.js'
+test("Should support inline assets with static imports", async t => {
+  const fixture = await Fixture.create(
+    "html-inline-static-import",
+    /*yaml*/ `
+    index.html: |
+      <html><body>
+        <script type="module">
+          import { a } from './a.js'
+          done(a)
+        </script>
+      </body></html>
+
+    a.js: |
+      export const a = "a"
+  `
+  );
+
+  const [entries] = await fixture.bundle("index.html");
+  const result = await evalHtml(entries.get("index.html")!);
+
+  t.assert(result === "a");
+});
+
+test("Should support inline assets with dynamic imports", async t => {
+  const fixture = await Fixture.create(
+    "html-inline-dynamic-import",
+    /*yaml*/ `
+    index.html: |
+      <html><body>
+        <script type="module">
+          (async () => {
+            const { a } = await import('./a.js')
             done(a)
-          </script>
-        </body></html>
+          })()
+        </script>
+      </body></html>
 
-      a.js: |
-        export const a = "a"
-    `
-    );
+    a.js: |
+      export const a = "a"
+  `
+  );
 
-    const [entries] = await fixture.bundle("index.html");
-    const result = await evalHtml(entries.get("index.html")!);
-
-    assert.equal(result, "a");
+  const [entries] = await fixture.bundle("index.html");
+  const result = await evalHtml(entries.get("index.html")!, {
+    basePath: fixture.path("dist"),
   });
 
-  test("Should support inline assets with dynamic imports", async () => {
-    const fixture = await Fixture.create(
-      "html-inline-dynamic-import",
-      /*yaml*/ `
-      index.html: |
-        <html><body>
-          <script type="module">
-            (async () => {
-              const { a } = await import('./a.js')
-              done(a)
-            })()
-          </script>
-        </body></html>
-
-      a.js: |
-        export const a = "a"
-    `
-    );
-
-    const [entries] = await fixture.bundle("index.html");
-    const result = await evalHtml(entries.get("index.html")!, {
-      basePath: fixture.path("dist"),
-    });
-
-    assert.equal(result, "a");
-  });
+  t.assert(result === "a");
 });

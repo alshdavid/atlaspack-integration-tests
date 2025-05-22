@@ -1,15 +1,14 @@
 import "../utils/prelude.ts";
 import * as assert from "node:assert";
-import { describe, test } from "node:test";
 import { Fixture } from "../utils/fixture.ts";
 import { evalEsm } from "../utils/eval-esm.ts";
 import { assertBundles, getBundleData } from "../utils/bundle.ts";
+import test from "ava";
 
-describe.only("javascript", { concurrency: 5 }, function () {
-  test("does not fail when there is a transitive import of an empty file with export *", async () => {
-    const fixture = await Fixture.create(
-      "javascript-transitive-import",
-      /* yaml */ `
+test("does not fail when there is a transitive import of an empty file with export *", async (t) => {
+  const fixture = await Fixture.create(
+    "javascript-transitive-import",
+    /* yaml */ `
         empty.js: |
           // intentionally empty
 
@@ -61,18 +60,18 @@ describe.only("javascript", { concurrency: 5 }, function () {
         yarn.lock: |
           {}
       `
-    );
+  );
 
-    let [entries] = await fixture.bundle("index.js");
-    const result = await evalEsm(entries.get("index.js"));
+  let [entries] = await fixture.bundle("index.js");
+  const result = await evalEsm(entries.get("index.js"));
 
-    assert.equal(result, "should not fail");
-  });
+  t.assert(result === "should not fail");
+});
 
-  test("should produce a basic JS bundle with CommonJS requires", async () => {
-    const fixture = await Fixture.create(
-      "javascript-cjs-alias",
-      /* yaml */ `
+test("should produce a basic JS bundle with CommonJS requires", async (t) => {
+  const fixture = await Fixture.create(
+    "javascript-cjs-alias",
+    /* yaml */ `
         package.json: |
           {
             "alias": {
@@ -97,24 +96,24 @@ describe.only("javascript", { concurrency: 5 }, function () {
         url.js: |
           module.exports = 'url'
       `
-    );
+  );
 
-    let [, buildEvent] = await fixture.bundle("index.js");
-    const bundleData = getBundleData(buildEvent.bundleGraph, fixture.path());
+  let [, buildEvent] = await fixture.bundle("index.js");
+  const bundleData = getBundleData(buildEvent.bundleGraph, fixture.path());
 
-    assert.deepEqual(bundleData, [
-      {
-        name: "index.js",
-        type: "js",
-        assets: ["index.js", "local.js", "url.js"],
-      },
-    ]);
-  });
+  t.deepEqual(bundleData, [
+    {
+      name: "index.js",
+      type: "js",
+      assets: ["index.js", "local.js", "url.js"],
+    },
+  ]);
+});
 
-  test("should support url: imports with CommonJS output", async () => {
-    const fixture = await Fixture.create(
-      "javascript-cjs-url-import",
-      /* yaml */ `
+test("should support url: imports with CommonJS output", async (t) => {
+  const fixture = await Fixture.create(
+    "javascript-cjs-url-import",
+    /* yaml */ `
         index.js: |
           import x from "url:./x.txt";
           module.exports = x;
@@ -125,26 +124,27 @@ describe.only("javascript", { concurrency: 5 }, function () {
 
         yarn.lock: "{}"
       `
-    );
+  );
 
-    let [,,bundleGraph] = await fixture.bundle("index.js");
+  let [, , bundleGraph] = await fixture.bundle("index.js");
 
-    assertBundles(bundleGraph, [
-      {
-        name: 'index.js',
-        assets: ['index.js', 'esmodule-helpers.js'],
-      },
-      {
-        type: 'txt',
-        assets: ['x.txt'],
-      },
-    ]);
+  assertBundles(bundleGraph, [
+    {
+      name: "index.js",
+      assets: ["index.js", "esmodule-helpers.js"],
+    },
+    {
+      type: "txt",
+      assets: ["x.txt"],
+    },
+  ]);
 
-    // const result = await evalEsm(fixture.path("index.js"))
-    // console.log(result)
-    // assert.strictEqual(
-    //   path.basename(output),
-    //   path.basename(txtBundle.filePath),
-    // );
-  });
+  t.assert(true)
+
+  // const result = await evalEsm(fixture.path("index.js"))
+  // console.log(result)
+  // assert.strictEqual(
+  //   path.basename(output),
+  //   path.basename(txtBundle.filePath),
+  // );
 });

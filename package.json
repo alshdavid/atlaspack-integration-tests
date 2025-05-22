@@ -9,6 +9,7 @@
     "url": "https://github.com/atlassian-labs/atlaspack.git"
   },
   "scripts": {
+    "test2": "env NODE_OPTIONS=\"--import tsx\" npx ava \"tests/**/*.test.ts\"",
     "test": "node --import tsx --experimental-vm-modules --disable-warning=ExperimentalWarning ./main.ts",
     "test:only": "env ONLY=true yarn run test",
     "test:native": "env ATLASPACK_NATIVE=true yarn run test",
@@ -19,8 +20,11 @@
     "@parcel/core": "^2.15.1",
     "@parcel/workers": "^2.15.1",
     "@types/node": "^22",
+    "ava": "^6.3.0",
+    "glob": "^11.0.2",
     "happy-dom": "^17.4.7",
     "https-browserify": "^1.0.0",
+    "parcel": "^2.15.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "yaml": "^2.8.0"
