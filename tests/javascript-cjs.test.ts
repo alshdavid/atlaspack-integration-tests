@@ -3,8 +3,9 @@ import * as assert from "node:assert";
 import { describe, test } from "node:test";
 import { Fixture } from "../utils/fixture.ts";
 import { evalEsm } from "../utils/eval-esm.ts";
+import { concurrency } from "../utils/constants.ts";
 
-describe("javascript-cjs", { concurrency: 5 }, function () {
+describe("javascript-cjs", { concurrency }, function () {
   test("Should support require statements", async () => {
     const fixture = await Fixture.create(
       "javascript-cjs-basic",

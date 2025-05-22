@@ -1,10 +1,11 @@
 import "../utils/prelude.ts";
+import { concurrency } from "../utils/constants.ts";
 import * as assert from "node:assert";
 import { describe, test } from "node:test";
 import { Fixture } from "../utils/fixture.ts";
 import { evalHtml } from "../utils/eval-html.ts";
 
-describe("html", { concurrency: 5 }, function () {
+describe("html", { concurrency }, function () {
   test("Should support inline assets", async () => {
     const fixture = await Fixture.create(
       "html-inline-js",

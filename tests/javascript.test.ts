@@ -4,8 +4,9 @@ import { describe, test } from "node:test";
 import { Fixture } from "../utils/fixture.ts";
 import { evalEsm } from "../utils/eval-esm.ts";
 import { assertBundles, getBundleData } from "../utils/bundle.ts";
+import { concurrency } from "../utils/constants.ts";
 
-describe("javascript", { concurrency: 5 }, function () {
+describe("javascript", { concurrency }, function () {
   test("does not fail when there is a transitive import of an empty file with export *", async () => {
     const fixture = await Fixture.create(
       "javascript-transitive-import",

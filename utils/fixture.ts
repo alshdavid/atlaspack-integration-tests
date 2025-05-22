@@ -3,7 +3,12 @@ import * as fs from "node:fs";
 import yaml from "yaml";
 import { TempDir } from "./temp-dir.ts";
 import { slugify } from "./slugify.ts";
-import { BuildSuccessEvent, BundleGraph, InitialParcelOptions, PackagedBundle } from "@parcel/types";
+import {
+  BuildSuccessEvent,
+  BundleGraph,
+  InitialParcelOptions,
+  PackagedBundle,
+} from "@parcel/types";
 import { bundle } from "./bundle.ts";
 
 export class Fixture {
@@ -28,6 +33,10 @@ export class Fixture {
     }
 
     const tmp = await TempDir.create(name);
+
+    // if (fs.existsSync(tmp.path)) {
+    //   throw new Error(`Directory already exists: ${name}`)
+    // }
 
     let inProgress = [];
     for (const [file, contents] of Object.entries(files)) {
@@ -63,7 +72,9 @@ export class Fixture {
   async bundleWithOptions(
     entries: string[],
     options: InitialParcelOptions = {}
-  ): Promise<[Map<string, string>, BuildSuccessEvent, BundleGraph<PackagedBundle>]> {
+  ): Promise<
+    [Map<string, string>, BuildSuccessEvent, BundleGraph<PackagedBundle>]
+  > {
     const built = new Map<string, string>();
     const event = await bundle({
       entries: entries.map((seg) => this.path(seg)),
@@ -94,7 +105,9 @@ export class Fixture {
 
   async bundle(
     ...entries: string[]
-  ): Promise<[Map<string, string>, BuildSuccessEvent, BundleGraph<PackagedBundle>]> {
-    return this.bundleWithOptions(entries)
+  ): Promise<
+    [Map<string, string>, BuildSuccessEvent, BundleGraph<PackagedBundle>]
+  > {
+    return this.bundleWithOptions(entries);
   }
 }

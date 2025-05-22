@@ -2,7 +2,6 @@ import {
   createContext,
   Module,
   SourceTextModule,
-  SyntheticModule,
 } from "node:vm";
 import * as fs from "node:fs";
 import { createRequire } from "node:module";
