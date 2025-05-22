@@ -1,15 +1,14 @@
 import * as nodeTest from "node:test";
 
-const ATLASPACK_NATIVE = !!process.env.ATLASPACK_NATIVE
+export const ATLASPACK_NATIVE = !!process.env.ATLASPACK_NATIVE
 
-// Patch module to add test presets for
-// native and legacy modes
+// Extend module to add test configurations for native and legacy modes
 declare module "node:test" {
   const nativeTest: typeof nodeTest.test;
   const legacyTest: typeof nodeTest.test;
 
   namespace test {
-    export { 
+    export {
       nativeTest as native,
       legacyTest as legacy,
     };
@@ -19,7 +18,7 @@ declare module "node:test" {
   const legacyDescribe: typeof nodeTest.describe;
 
   namespace describe {
-    export { 
+    export {
       nativeDescribe as native,
       legacyDescribe as legacy,
     };
