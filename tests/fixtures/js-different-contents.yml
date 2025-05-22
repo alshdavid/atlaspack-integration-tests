@@ -1,0 +1,15 @@
+options:
+  name: js-different-contents
+package.json:
+  type: module
+hello.js: |
+  const value = 'Hello'
+  export default value
+index.js: |
+  import hello from './hello.js'
+  import world from './world.js'
+
+  export default `${hello} ${world}!`
+world.js: |
+  const value = 'World'
+  export default value

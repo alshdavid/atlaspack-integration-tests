@@ -1,0 +1,12 @@
+options:
+  name: swc-helpers-library
+package.json:
+  type: module
+  main: dist/main.js
+  module: dist/module.js
+  browserslist: IE >= 11
+  dependencies:
+    "@swc/helpers": ^0.5.15
+yarn.lock: ""
+index.js: |
+  class Test {}

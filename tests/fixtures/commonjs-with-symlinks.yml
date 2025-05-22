@@ -1,0 +1,13 @@
+options:
+  name: commonjs-with-symlinks
+package.json:
+  type: module
+local.js: |
+  exports.a = 1;
+  exports.b = 2;
+src/index.js: |
+  var local = require('./symlinked_local');
+
+  module.exports = function () {
+    return local.a + local.b;
+  };

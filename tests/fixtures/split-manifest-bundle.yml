@@ -1,0 +1,19 @@
+options:
+  name: split-manifest-bundle
+package.json:
+  type: module
+  "@atlaspack/runtime-js":
+    splitManifestThreshold: 0
+yarn.lock: ""
+a.html: |
+  <script type="module" src="a.js"></script>
+a.js: |-
+  
+  import {c} from './b';
+
+  const ignore = () => import('./c');
+b.html: |
+  <script type="module" src="b.js"></script>
+b.js: export const c = () => import('./c');
+c.js: |
+  export const c = 'c';

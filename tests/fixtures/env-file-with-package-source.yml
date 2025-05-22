@@ -1,0 +1,9 @@
+options:
+  name: env-file-with-package-source
+package.json:
+  type: module
+  name: env-file-with-package-source
+  source: index.js
+yarn.lock: ""
+index.js: |
+  module.exports = process.env.FOO + process.env.BAR;

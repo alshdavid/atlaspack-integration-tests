@@ -1,0 +1,36 @@
+options:
+  name: shared-sibling-entries-multiple
+package.json:
+  type: module
+  "@atlaspack/bundler-default":
+    minBundleSize: 0
+yarn.lock: ""
+a.css: |
+  .a {
+    color: red;
+  }
+a.html: |
+  <!doctype html>
+  <html>
+    <body>
+      <h1>a.html</h1>
+      <script type="module" src="./a.js"></script>
+    </body>
+  </html>
+a.js: |
+  import './a.css';
+  import './b.css';
+b.css: |
+  .b {
+    color: red;
+  }
+b.html: |
+  <!doctype html>
+  <html>
+    <body>
+      <h1>b.html</h1>
+      <script type="module" src="./b.js"></script>
+    </body>
+  </html>
+b.js: |
+  import './b.css';

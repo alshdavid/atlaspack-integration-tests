@@ -1,0 +1,24 @@
+options:
+  name: dynamic-hoist-no-dedupe-ancestry
+package.json:
+  type: module
+a.js: |
+  import common from './common';
+
+  export default import('./c');
+b.js: |
+  export default import('./c').then(mod => mod.default);
+c.js: |
+  export default import('./d').then(mod => mod.default);
+common.js: |
+  export default 42;
+d.js: |
+  import common from './common';
+
+  export default common;
+index.js: |
+  if (Date.now () < 0) {
+    import('./a');
+  }
+
+  export default import('./b').then(mod => mod.default);

@@ -1,0 +1,32 @@
+options:
+  name: tailwind-scss
+package.json:
+  type: module
+yarn.lock: ""
+index.html: |
+  <html>
+    <head>
+      <link rel="stylesheet" href="index.scss">
+    </head>
+    <body class="p-2">
+      test
+    </body>
+  </html>
+index.scss: |
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  body {
+    @apply p-4 m-4;
+  }
+tailwind.config.js: |
+  const path = require("path");
+
+  module.exports = {
+    content: [path.join(__dirname, "index.html")],
+    theme: {
+      extend: {},
+    },
+    plugins: [],
+  };

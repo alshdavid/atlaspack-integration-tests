@@ -1,0 +1,25 @@
+options:
+  name: scss-url
+package.json:
+  type: module
+fonts/test.woff2: test
+image.jpeg: file://<root>/assets/image.jpeg
+index.js: |
+  require('./index.scss');
+
+  module.exports = function () {
+    return 2;
+  };
+index.scss: |
+  @font-face {
+    font-family: "Test";
+    src: url("./fonts/test.woff2") format("woff2");
+  }
+
+  .index {
+    background: url("http://google.com");
+  }
+
+  .something {
+    background: url(./image.jpeg);
+  }

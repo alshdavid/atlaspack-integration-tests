@@ -1,0 +1,21 @@
+options:
+  name: hmr-circular
+package.json:
+  type: module
+index.js: |
+  var local = require('./local');
+
+  function run() {
+    output(local.a + local.b);
+  }
+
+  module.hot.accept();
+
+  run();
+
+  module.exports = 'value';
+local.js: |
+  var other = require('./index.js');
+
+  exports.a = 1;
+  exports.b = 2;

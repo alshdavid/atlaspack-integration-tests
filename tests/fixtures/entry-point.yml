@@ -1,0 +1,14 @@
+options:
+  name: entry-point
+package.json:
+  type: module
+index.js: |
+  function test() {
+    return 'Test!';
+  }
+
+  module.exports = test;
+test.html: |
+  <html>
+  <script src="dist/index.js"></script>
+  </html>

@@ -1,0 +1,30 @@
+options:
+  name: shared-exports-for-sibling-descendant
+package.json:
+  type: module
+a.js: |
+  import wraps from './wraps';
+
+  export default import('./child').then(mod => mod.default);
+b.js: |
+  export {default} from './wraps';
+child.js: |
+  export default import('./grandchild').then(mod => mod.default)
+grandchild.js: |
+  import lodash from 'lodash';
+
+  export default lodash.add(1, 2);
+index.js: |
+  export default Promise.all([
+    import('./a').then(mod => mod.default),
+    import('./b').then(mod => mod.default)
+  ]);
+scope-hoisting.js: |
+  output = Promise.all([
+    import('./a').then(mod => mod.default),
+    import('./b').then(mod => mod.default)
+  ]);
+wraps.js: |
+  import lodash from 'lodash';
+
+  export default lodash.add(2, 3);

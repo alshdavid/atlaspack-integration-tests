@@ -1,0 +1,13 @@
+options:
+  name: hmr-new-bundle
+package.json:
+  type: module
+index.css: ""
+index.html: |-
+  <!doctype html>
+  <html>
+    <body>
+      <script src="./index.js"></script>
+    </body>
+  </html>
+index.js: ""

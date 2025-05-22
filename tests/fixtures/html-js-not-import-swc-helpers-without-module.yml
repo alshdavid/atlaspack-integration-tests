@@ -1,0 +1,13 @@
+options:
+  name: html-js-not-import-swc-helpers-without-module
+package.json:
+  type: module
+index.html: |-
+  <html>
+      <script>
+          function arr() {
+              return [1, 2, 3];
+          }
+          const [a, b, c] = arr();
+      </script>
+  </html>

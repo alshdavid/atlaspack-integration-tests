@@ -1,0 +1,6 @@
+options:
+  name: babel-warn-all
+package.json:
+  type: module
+yarn.lock: ""
+index.js: ""

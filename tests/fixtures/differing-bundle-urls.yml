@@ -1,0 +1,13 @@
+options:
+  name: differing-bundle-urls
+package.json:
+  type: module
+yarn.lock: ""
+bar/entry/entry-a.js: |
+  import("../../common");
+common/index.js: |
+  sideEffect("common");
+foo/entry-b.js: |
+  import("./one/deep.js");
+foo/one/deep.js: |
+  sideEffect("deep");

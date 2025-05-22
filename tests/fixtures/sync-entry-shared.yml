@@ -1,0 +1,13 @@
+options:
+  name: sync-entry-shared
+package.json:
+  type: module
+yarn.lock: ""
+async.js: |
+  import value from './value';
+
+  export default value + 1;
+index.js: |
+  export default import('./async').then(mod => mod.default);
+value.js: |
+  export default 42;

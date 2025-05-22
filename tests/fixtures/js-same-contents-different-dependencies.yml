@@ -1,0 +1,29 @@
+options:
+  name: js-same-contents-different-dependencies
+package.json:
+  type: module
+hello/index.js: >
+  // hello/index.js and world/index.js are exactly the same content-wise, but in
+  different locations
+
+  import value from './value'
+
+  export default value
+hello/value.js: |
+  const value = 'Hello'
+  export default value
+index.js: |
+  import hello from './hello'
+  import world from './world'
+
+  export default `${hello} ${world}!`
+world/index.js: >
+  // hello/index.js and world/index.js are exactly the same content-wise, but in
+  different locations
+
+  import value from './value'
+
+  export default value
+world/value.js: |
+  const value = 'World'
+  export default value

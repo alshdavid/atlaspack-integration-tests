@@ -1,0 +1,11 @@
+options:
+  name: fs-node
+package.json:
+  type: module
+  name: fs-node
+  engines:
+    node: "6"
+yarn.lock: ""
+index.js: |
+  var fs = require('fs');
+  module.exports = fs.readFileSync(__dirname + '/test.txt', 'utf8');

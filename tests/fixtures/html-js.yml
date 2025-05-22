@@ -1,0 +1,20 @@
+options:
+  name: html-js
+package.json:
+  type: module
+error.html: |
+  <script src="index.js"></script>
+index.html: |
+  <script type="module" src="index.js"></script>
+index.js: |
+  import foo from "./other.js";
+
+  alert(foo);
+other.js: |
+  class Useless {
+    constructor(message) {
+      this.message = message;
+    }
+  }
+
+  export default new Useless('other').message;

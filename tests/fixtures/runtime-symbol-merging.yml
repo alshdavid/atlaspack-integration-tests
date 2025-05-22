@@ -1,0 +1,38 @@
+options:
+  name: runtime-symbol-merging
+package.json:
+  type: module
+yarn.lock: ""
+entry.js: |
+  import {a} from "shared";
+
+  call(a);
+node_modules/atlaspack-runtime-mock/index.js: |
+  const {Runtime} = require('@atlaspack/plugin');
+  const path = require('path');
+
+  module.exports = new Runtime({
+    apply() {
+      return [{
+        filePath: path.join(__dirname, "MockRuntime.js"),
+        code: `import {b} from "shared"; call(b);`,
+        isEntry: true
+      }]
+    }
+  });
+node_modules/atlaspack-runtime-mock/package.json: |
+  {
+    "name": "atlaspack-runtime-mock",
+    "version": "1.0.0"
+  }
+node_modules/shared/a.js: |
+  export const a = 123;
+node_modules/shared/b.js: |
+  export const b = 789;
+node_modules/shared/index.js: |
+  export * from "./a.js";
+  export * from "./b.js";
+node_modules/shared/package.json: |
+  {
+    "sideEffects": false
+  }

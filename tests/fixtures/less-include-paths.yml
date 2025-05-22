@@ -1,0 +1,23 @@
+options:
+  name: less-include-paths
+package.json:
+  type: module
+  private: true
+yarn.lock: ""
+include-path/a.less: |
+  .a {
+    color: red;
+  }
+index.js: |
+  require('./index.less');
+
+  module.exports = function() {
+    return 2;
+  };
+index.less: |-
+  @import 'a.less';
+  @import 'b.less';
+node_modules/library/b.less: |-
+  .b {
+    color: red;
+  }

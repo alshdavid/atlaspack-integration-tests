@@ -1,0 +1,37 @@
+options:
+  name: html-feed
+package.json:
+  type: module
+atom.html: >
+  <!doctype html>
+
+  <html>
+
+  <head>
+    <link href="feed.xml" rel="alternate" type="application/atom+xml" title="Blog RSS" />
+  </head>
+
+  <body>
+
+  </body>
+
+  </html>
+feed.xml: |
+  <?xml version="1.0" encoding="utf-8"?>
+  <feed xmlns="http://www.w3.org/2005/Atom">
+  	<title>Example Feed</title>
+  </feed>
+rss.html: >
+  <!doctype html>
+
+  <html>
+
+  <head>
+    <link href="feed.xml" rel="alternate" type="application/rss+xml" title="Blog RSS" />
+  </head>
+
+  <body>
+
+  </body>
+
+  </html>

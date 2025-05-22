@@ -1,0 +1,48 @@
+options:
+  name: shared-many-esm
+package.json:
+  type: module
+a.html: |
+  <!doctype html>
+  <script type="module" src="a.js"></script>
+a.js: |-
+  import 'lodash/cloneDeep';
+  import 'lodash/assign';
+b.html: |
+  <!doctype html>
+  <script type="module" src="b.js"></script>
+b.js: |
+  import 'lodash/cloneDeep';
+  import 'lodash/pick';
+  import 'lodash/omit';
+  import 'lodash/difference';
+c.html: |
+  <!doctype html>
+  <script type="module" src="c.js"></script>
+c.js: |
+  import 'lodash/pick';
+  import 'lodash/omit';
+d.html: |
+  <!doctype html>
+  <script type="module" src="d.js"></script>
+d.js: |
+  import 'lodash/omit';
+  import 'lodash/flatten';
+e.html: |
+  <!doctype html>
+  <script type="module" src="e.js"></script>
+e.js: |
+  import 'lodash/flatten';
+  import 'lodash/drop';
+f.html: |
+  <!doctype html>
+  <script type="module" src="f.js"></script>
+f.js: |
+  import 'lodash/drop';
+  import 'lodash/fill';
+g.html: |
+  <!doctype html>
+  <script type="module" src="g.js"></script>
+g.js: |
+  import 'lodash/fill';
+  import 'lodash/difference';

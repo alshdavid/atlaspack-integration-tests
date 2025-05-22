@@ -1,0 +1,8 @@
+options:
+  name: css-url-custom-property
+package.json:
+  type: module
+index.css: |
+  .foo {
+    --test: url(foo.png);
+  }

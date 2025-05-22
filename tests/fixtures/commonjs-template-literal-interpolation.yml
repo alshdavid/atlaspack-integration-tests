@@ -1,0 +1,21 @@
+options:
+  name: commonjs-template-literal-interpolation
+package.json:
+  type: module
+  name: commonjs-require
+  private: true
+  main: dist/index.js
+  targets:
+    main:
+      context: node
+  dependencies:
+    lodash: "*"
+yarn.lock: ""
+index.js: |
+  const fn = 'add';
+
+  module.exports = function (a, b) {
+    const add = require(`lodash/${fn}`);
+
+    return add(a, b);
+  };

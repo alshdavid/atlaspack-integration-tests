@@ -1,0 +1,5 @@
+options:
+  name: dont-autoinstall-resolve-fails
+package.json:
+  type: module
+index.js: const thisWontwork = require('vue/thisDoesNotExist');

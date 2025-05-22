@@ -1,0 +1,11 @@
+options:
+  name: wasm-sync
+package.json:
+  type: module
+add.wasm: "\0asm\x01\0\0\0\x01\a\x01`\x02\x01\x03\x02\x01\0\a\a\x01\x03add\0\
+  \0
+
+  \t\x01\a\0 \0 \x01j\v"
+index.js: |
+  const {add} = require('./add.wasm');
+  output(add(2, 3));

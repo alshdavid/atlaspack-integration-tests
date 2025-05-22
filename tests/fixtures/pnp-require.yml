@@ -1,0 +1,15 @@
+options:
+  name: pnp-require
+package.json:
+  type: module
+index.js: |
+  const {a} = require('testmodule');
+  const {b} = require('./local.js');
+
+  module.exports = function() {
+    return a + b;
+  };
+local.js: |
+  exports.b = 2;
+pnp/testmodule/index.js: |
+  exports.a = 1;

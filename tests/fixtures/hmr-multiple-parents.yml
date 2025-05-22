@@ -1,0 +1,34 @@
+options:
+  name: hmr-multiple-parents
+package.json:
+  type: module
+a.js: |
+  import {fn1} from './utils';
+
+  export function a() {
+    return 'a: ' + fn1();
+  }
+b.js: |
+  import {fn2} from './utils';
+
+  export function b() {
+    return 'b: ' + fn2();
+  }
+fn1.js: |
+  export function fn1() {
+    return 'fn1';
+  }
+fn2.js: |
+  export function fn2() {
+    return 'fn2';
+  }
+index.js: |
+  import {a} from './a';
+  import {b} from './b';
+
+  output(a() + ' ' + b());
+
+  module.hot.accept();
+utils.js: |
+  export * from './fn1';
+  export * from './fn2';

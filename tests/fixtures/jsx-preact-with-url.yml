@@ -1,0 +1,9 @@
+options:
+  name: jsx-preact-with-url
+package.json:
+  type: module
+  private: true
+  dependencies:
+    preact: https://pkg.csb.dev/preactjs/preact/commit/96082866/preact
+index.js: |
+  module.exports = <div />;

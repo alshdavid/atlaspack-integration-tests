@@ -1,0 +1,16 @@
+options:
+  name: env-node
+package.json:
+  type: module
+  name: env-node
+  engines:
+    node: "8"
+yarn.lock: ""
+index.js: |
+  module.exports = function () {
+    return process.env.NODE_ENV + test(process.env.NODE_ENV);
+  };
+
+  function test(str) {
+    return ':' + str;
+  }

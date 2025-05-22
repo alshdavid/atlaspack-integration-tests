@@ -1,0 +1,24 @@
+options:
+  name: dynamic-static-prefetch-loaded
+package.json:
+  type: module
+async.js: |
+  const loadDependency = async function () {
+    return await import('./prefetched-loaded', {prefetch: true});
+  }
+
+  export default loadDependency;
+index.js: |
+  export default import('./async').then(
+    (dependency) => { 
+      return {
+        children: document.head.children,
+        loadDependency: dependency.default
+      }    
+    }
+  );
+prefetched-loaded.css: ""
+prefetched-loaded.js: |-
+  import './prefetched-loaded.css';
+
+  export default 'foo';

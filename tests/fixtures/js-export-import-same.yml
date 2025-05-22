@@ -1,0 +1,11 @@
+options:
+  name: js-export-import-same
+package.json:
+  type: module
+index.js: |
+  import { foo } from "./other.js";
+  export { foo } from "./other.js";
+
+  export const bar = foo + "4";
+other.js: |
+  export const foo = "123";

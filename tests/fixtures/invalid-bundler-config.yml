@@ -1,0 +1,10 @@
+options:
+  name: invalid-bundler-config
+package.json:
+  type: module
+  browserslist: Chrome 80
+  "@atlaspack/bundler-default":
+    minBundleSizes: 0
+yarn.lock: ""
+index.html: |
+  <h1>Hello</h1>

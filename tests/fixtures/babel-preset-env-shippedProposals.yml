@@ -1,0 +1,18 @@
+options:
+  name: babel-preset-env-shippedProposals
+package.json:
+  type: module
+  browserslist: IE 11
+yarn.lock: ""
+index.js: |
+  class Test {
+  	run() {
+  		return this.#priv();
+  	}
+
+  	#priv() {
+  		return 123;
+  	}
+  }
+
+  export default new Test("hi from inside a private method").run();

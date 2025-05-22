@@ -1,0 +1,5 @@
+options:
+  name: postcss-modules-config-invalid
+package.json:
+  type: module
+src/index.css: ""

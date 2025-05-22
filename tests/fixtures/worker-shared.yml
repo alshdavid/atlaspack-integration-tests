@@ -1,0 +1,16 @@
+options:
+  name: worker-shared
+package.json:
+  type: module
+index.js: |
+  import _ from 'lodash';
+
+  new Worker(new URL('worker-a.js', import.meta.url), {type: 'module'});
+worker-a.js: |
+  import _ from 'lodash'
+
+  console.log(_);
+  new Worker(new URL('worker-b.js', import.meta.url), {type: 'module'})
+worker-b.js: |
+  import _ from 'lodash'
+  console.log(_);

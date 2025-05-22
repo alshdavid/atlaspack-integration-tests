@@ -1,0 +1,8 @@
+options:
+  name: fs-buffer
+package.json:
+  type: module
+index.js: |
+  var fs = require('fs');
+  module.exports = fs.readFileSync(__dirname + '/test.txt');
+test.txt: hello

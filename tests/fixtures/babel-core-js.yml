@@ -1,0 +1,14 @@
+options:
+  name: babel-core-js
+package.json:
+  type: module
+  name: atlaspack-test-babel-polyfill-browserslist
+  private: true
+  browserslist:
+    - Chrome 70
+yarn.lock: ""
+index.js: |
+  import "core-js";
+  export async function Bar() {}
+
+  globalThis.foo = 'foo';

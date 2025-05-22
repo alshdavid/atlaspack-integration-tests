@@ -1,0 +1,9 @@
+options:
+  name: jsx-hyperapp-no-dep
+package.json:
+  type: module
+  private: true
+index.js: |
+  import * as Hyperapp from 'hyperapp'
+
+  module.exports = <div />;

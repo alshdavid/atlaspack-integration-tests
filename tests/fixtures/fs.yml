@@ -1,0 +1,8 @@
+options:
+  name: fs
+package.json:
+  type: module
+index.js: |
+  var fs = require('fs');
+  module.exports = fs.readFileSync(__dirname + '/test.txt', 'utf8');
+test.txt: hello

@@ -1,0 +1,20 @@
+options:
+  name: async-entry-shared
+package.json:
+  type: module
+async.js: |
+  import value from './value';
+
+  export default value + 1;
+index.js: |
+  export default Promise.all([
+    import('./value').then(mod => mod.default),
+    import('./async').then(mod => mod.default),
+  ]);
+scope-hoisting.js: |
+  output = Promise.all([
+    import('./value').then(mod => mod.default),
+    import('./async').then(mod => mod.default),
+  ]);
+value.js: |
+  export default 42;

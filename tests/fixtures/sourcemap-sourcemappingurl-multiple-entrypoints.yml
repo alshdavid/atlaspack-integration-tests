@@ -1,0 +1,6 @@
+options:
+  name: sourcemap-sourcemappingurl-multiple-entrypoints
+package.json:
+  type: module
+a/index.js: console.log('hello1');
+b/index.js: console.log('hello2');

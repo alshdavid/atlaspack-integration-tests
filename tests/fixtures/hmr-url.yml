@@ -1,0 +1,9 @@
+options:
+  name: hmr-url
+package.json:
+  type: module
+index.js: |
+  let url = new URL('test.txt', import.meta.url);
+  output(url);
+  module.hot.accept();
+test.txt: hi

@@ -1,0 +1,8 @@
+options:
+  name: posthtml-plugins
+package.json:
+  type: module
+index.html: |
+  <a href="mailto:sam@smith.com">
+  	sam@smith.com
+  </a>

@@ -1,0 +1,13 @@
+options:
+  name: internalize-no-bundle-split
+package.json:
+  type: module
+bar.js: |
+  export default import('./foo').then(mod => mod.default);
+foo.js: |
+  export default 3;
+index.js: |
+  import bar from './bar';
+  import foo from './foo';
+
+  export default Promise.all([foo, bar]);

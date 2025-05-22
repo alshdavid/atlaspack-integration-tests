@@ -1,0 +1,11 @@
+options:
+  name: typescript-config-extends
+package.json:
+  type: module
+index.ts: |
+  /* test comment */
+  module.exports = 2;
+tsconfig.json: |
+  {
+    "extends": "../typescript-config/tsconfig.json"
+  }

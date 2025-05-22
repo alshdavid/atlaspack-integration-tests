@@ -1,0 +1,7 @@
+options:
+  name: pug-filters
+package.json:
+  type: module
+index.pug: |
+  :custom-filter()
+      Hello!

@@ -1,0 +1,20 @@
+options:
+  name: svg-inline-css-import
+package.json:
+  type: module
+img.svg: |
+  <svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+    <style>
+      @import './test.css';
+    </style>
+    <text>Should be red</text>
+    <text style="fill: url(../svg/gradient.svg#myGradient)">Gradient text</text>
+    <script type="module">
+      import '../svg/script';
+      console.log('module');
+    </script>
+  </svg>
+test.css: |
+  :root {
+    fill: red;
+  }

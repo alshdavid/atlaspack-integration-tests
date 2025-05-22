@@ -1,0 +1,15 @@
+options:
+  name: js-import-member
+package.json:
+  type: module
+foo.js: |
+  export const foo = {
+  	a: "b",
+    bar: "bar"
+  };
+
+  export const bar = "a";
+index.js: |
+  import { foo, bar } from "./foo.js";
+
+  export default [bar, foo[bar], foo.bar];

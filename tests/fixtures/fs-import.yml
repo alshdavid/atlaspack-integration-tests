@@ -1,0 +1,8 @@
+options:
+  name: fs-import
+package.json:
+  type: module
+index.js: |
+  import fs from 'fs';
+  export default fs.readFileSync(__dirname + '/test.txt', 'utf8');
+test.txt: hello

@@ -1,0 +1,31 @@
+options:
+  name: css
+package.json:
+  type: module
+c.css: |
+  .c {
+    color: red;
+  }
+c.js: |
+  require('./c.css');
+index.css: |
+  .index {
+    color: red;
+  }
+index.js: |
+  var local = require('./local');
+  require('./index.css');
+
+  module.exports = function () {
+    return local.a + local.b;
+  };
+local.css: |
+  .local {
+    color: green;
+  }
+local.js: |
+  require('./c.js');
+  require('./local.css');
+
+  exports.a = 1;
+  exports.b = 2;

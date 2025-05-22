@@ -1,0 +1,14 @@
+options:
+  name: jsx-member
+package.json:
+  type: module
+foo.jsx: |
+  export const Foo = null;
+index.jsx: |
+  import { Foo } from "./foo";
+
+  const S = {
+  	Foo: () => "S",
+  };
+
+  module.exports = <S.Foo />;

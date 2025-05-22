@@ -1,0 +1,14 @@
+options:
+  name: sourcemap-sass
+package.json:
+  type: module
+  name: atlaspack-sourcemap-integration-test
+  version: 1.0.0
+  private: true
+yarn.lock: ""
+style.scss: |
+  $variable: #333;
+
+  body {
+    color: $variable;
+  }

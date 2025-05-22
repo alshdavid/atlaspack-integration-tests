@@ -1,0 +1,12 @@
+options:
+  name: commonjs-import-url
+package.json:
+  type: module
+  engines:
+    node: ">=10"
+yarn.lock: ""
+index.js: |
+  import x from "url:./x.txt";
+
+  module.exports = x;
+x.txt: HELLO!

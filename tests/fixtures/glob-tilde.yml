@@ -1,0 +1,15 @@
+options:
+  name: glob-tilde
+package.json:
+  type: module
+yarn.lock: ""
+packages/child/dir/a.js: |
+  module.exports = 1;
+packages/child/dir/b.js: |
+  module.exports = 2;
+packages/child/index.js: |
+  const childVars = require('~/dir/*.js');
+
+  module.exports = childVars.a + childVars.b;
+packages/child/package.json: |
+  {}

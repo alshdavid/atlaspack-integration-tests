@@ -1,0 +1,28 @@
+options:
+  name: sourcemap-nested-minified
+package.json:
+  type: module
+  name: atlaspack-sourcemap-integration-test
+  version: 1.0.0
+  private: true
+  node: dist/index.js
+  targets:
+    node:
+      engines:
+        node: ">= 8.0.0"
+yarn.lock: ""
+index.js: |-
+  const local = require('./local');
+
+  module.exports = function() {
+    return local.a + local.b;
+  }
+local.js: |-
+  const util = require('./utils/util');
+
+  exports.a = 5;
+  exports.b = util.count(4, 5);
+utils/util.js: |-
+  exports.count = function(a, b) {
+    return a + b;
+  }

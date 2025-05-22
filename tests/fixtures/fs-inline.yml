@@ -1,0 +1,7 @@
+options:
+  name: fs-inline
+package.json:
+  type: module
+index.js: |
+  module.exports = require('fs').readFileSync(__dirname + '/test.txt', 'utf8');
+test.txt: hello

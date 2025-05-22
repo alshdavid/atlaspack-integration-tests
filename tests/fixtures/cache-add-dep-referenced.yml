@@ -1,0 +1,19 @@
+options:
+  name: cache-add-dep-referenced
+package.json:
+  type: module
+  "@atlaspack/bundler-default":
+    minBundleSize: 0
+yarn.lock: ""
+a.html: |
+  <!DOCTYPE html>
+  <script type="module" src="./a.js"></script>
+a.js: |
+  call("a");
+b.html: |
+  <!DOCTYPE html>
+  <script type="module" src="./b.js"></script>
+b.js: |
+  call("b");
+c.js: |
+  call("c");

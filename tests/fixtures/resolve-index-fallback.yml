@@ -1,0 +1,20 @@
+options:
+  name: resolve-index-fallback
+package.json:
+  type: module
+incorrect-entry-fallback/index.js: |
+  export default 42;
+incorrect-entry-fallback/package.json: |
+  {
+    "main": "does-not-exist.js"
+  }
+incorrect-entry.js: |
+  import value from './incorrect-entry-fallback';
+  export default value;
+no-entry-fallback/index.js: |
+  export default 42;
+no-entry-fallback/package.json: |
+  {}
+no-entry.js: |
+  import value from './no-entry-fallback';
+  export default value;

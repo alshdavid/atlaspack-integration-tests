@@ -1,0 +1,19 @@
+options:
+  name: commonjs-template-literal-plain
+package.json:
+  type: module
+  name: commonjs-require
+  private: true
+  main: dist/index.js
+  targets:
+    main:
+      context: node
+  dependencies:
+    lodash: "*"
+yarn.lock: ""
+index.js: |
+  const _ = require(`lodash`);
+
+  module.exports = function (a, b) {
+    return _.add(a, b);
+  };

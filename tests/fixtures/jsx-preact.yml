@@ -1,0 +1,9 @@
+options:
+  name: jsx-preact
+package.json:
+  type: module
+  private: true
+  dependencies:
+    preact: ^10.4
+index.js: |
+  module.exports = <div />;

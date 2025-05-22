@@ -1,0 +1,12 @@
+options:
+  name: glob-pipeline
+package.json:
+  type: module
+yarn.lock: ""
+dir/a.txt: |
+  a
+dir/b.txt: |
+  b
+index.js: |
+  var vars = require('url:./dir/*.txt');
+  module.exports = vars;

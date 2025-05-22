@@ -1,0 +1,27 @@
+options:
+  name: alias
+package.json:
+  type: module
+  alias:
+    foo: lodash
+    bar: ./bar.js
+    foo-exclude: false
+    ./bar-exclude: false
+bar.js: |
+  export default "bar";
+exclude-local.js: |
+  import bar from "./bar-exclude";
+
+  export default bar;
+exclude-package.js: |
+  import bar from "foo-exclude";
+
+  export default bar;
+package-to-local.js: |
+  import bar from "bar";
+
+  export default bar;
+package-to-package.js: |
+  import {add} from "foo";
+
+  export default add(1, 2);

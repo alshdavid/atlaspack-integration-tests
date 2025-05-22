@@ -1,0 +1,28 @@
+options:
+  name: css-url
+package.json:
+  type: module
+fonts/test.woff2: test
+index.css: |
+  @font-face {
+    font-family: "Test";
+    src: url("./fonts/test.woff2") format("woff2");
+  }
+
+  .index {
+    background: url("http://google.com");
+  }
+
+  .quotes {
+    background: url("data:image/gif;base64,quotes");
+  }
+
+  .no-quote {
+    background: url(data:image/gif;base64,no-quote);
+  }
+index.js: |
+  require('./index.css');
+
+  module.exports = function () {
+    return 2;
+  };

@@ -1,0 +1,18 @@
+options:
+  name: js-import-default-live
+package.json:
+  type: module
+index.js: |
+  import a, { set } from "./other.js";
+
+  let oldValue = a;
+  set(789);
+  let newValue = a;
+
+  export default [oldValue, newValue]
+other.js: |
+  let a = 123;
+  function set(v) {
+  	a = v;
+  }
+  export { a as default, set };

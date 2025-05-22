@@ -1,0 +1,12 @@
+options:
+  name: shared-sibling-common-dependency
+package.json:
+  type: module
+a.js: |
+  import './b';
+b.css: ""
+b.js: |
+  import './b.css';
+index.js: |
+  import('./a');
+  import('./b');

@@ -1,0 +1,16 @@
+options:
+  name: worker-self
+package.json:
+  type: module
+import-meta.js: |
+  export function startWorker() {
+    new Worker(import.meta.url, {type: 'module'});
+  }
+index.js: |
+  import {startWorkers} from './workerHelpers.js';
+
+  startWorkers();
+workerHelpers.js: >
+  export function startWorkers() {
+    new Worker(new URL('./workerHelpers.js', import.meta.url), {type: 'module'});
+  }

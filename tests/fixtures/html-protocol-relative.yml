@@ -1,0 +1,19 @@
+options:
+  name: html-protocol-relative
+package.json:
+  type: module
+index.css: |
+  @import url("//unpkg.com/xyz/test.css");
+index.html: |
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <script type="text/javascript" src="//unpkg.com/xyz/"></script>
+
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="index.css"
+      />
+    </head>
+  </html>

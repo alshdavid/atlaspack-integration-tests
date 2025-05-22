@@ -1,0 +1,15 @@
+options:
+  name: dynamic-esm
+package.json:
+  type: module
+index.js: |
+  var local = import('./local');
+
+  export default function () {
+    return local.then(function (l) {
+      return l.a + l.b;
+    });
+  };
+local.js: |
+  export const a = 1;
+  export const b = 2;

@@ -1,0 +1,14 @@
+options:
+  name: css-node-modules
+package.json:
+  type: module
+index.css: |
+  @import 'npm:foo/foo.css';
+node_modules/foo/foo.css: |-
+  .foo {
+    background-color: red;
+  }
+node_modules/foo/package.json: |
+  {
+    "name": "foo"
+  }

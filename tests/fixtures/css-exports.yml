@@ -1,0 +1,22 @@
+options:
+  name: css-exports
+package.json:
+  type: module
+  "@atlaspack/resolver-default":
+    packageExports: true
+yarn.lock: ""
+index.css: |
+  @import 'npm:foo';
+node_modules/foo/foo.css: |-
+  .foo {
+    background-color: red;
+  }
+node_modules/foo/index.js: ""
+node_modules/foo/package.json: |-
+  {
+    "name": "foo",
+    "exports": {
+      "style": "./foo.css",
+      "default": "./foo.js"
+    }
+  }

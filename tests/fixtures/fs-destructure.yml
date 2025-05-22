@@ -1,0 +1,8 @@
+options:
+  name: fs-destructure
+package.json:
+  type: module
+index.js: |
+  var {readFileSync, ...fs} = require('fs');
+  module.exports = readFileSync(__dirname + '/test.txt', 'utf8');
+test.txt: hello

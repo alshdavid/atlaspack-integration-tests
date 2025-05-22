@@ -1,0 +1,27 @@
+options:
+  name: html-js-shared-dynamic-nested
+package.json:
+  type: module
+client/index.js: |
+  export default function () {
+  	return import("./simpleHasher").then((v) => v.default());
+  }
+client/simpleHasher.js: |
+  export default function () {
+  	return "hasher";
+  }
+index.html: |
+  <script type="module" src="index.js"></script>
+index.js: |
+  import c from "./client";
+  import v from "./viewer";
+
+  output = Promise.all([c(), v()]);
+  // ["hasher", ["hasher", "hasher"]]
+viewer/index.js: |
+  export default function () {
+  	return Promise.all([
+  		import("../client").then((v) => v.default()),
+  		import("../client/simpleHasher.js").then((v) => v.default()),
+  	]);
+  }

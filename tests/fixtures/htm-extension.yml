@@ -1,0 +1,17 @@
+options:
+  name: htm-extension
+package.json:
+  type: module
+index.htm: |
+  <!doctype html>
+  <html>
+  <head>
+    <title>HTM File</title>
+  </head>
+  <body>
+    <h1>Hello world</h1>
+    <script src="index.js"></script>
+  </body>
+  </html>
+index.js: |
+  alert('Hi');

@@ -1,0 +1,30 @@
+options:
+  name: css-order
+package.json:
+  type: module
+a.css: |
+  @import "./b.css";
+  @import "./e.css";
+
+  .a {
+    background: blue;
+  }
+b.css: |
+  @import "./c.css";
+  @import "./d.css";
+
+  .b {
+    background: green;
+  }
+c.css: |
+  .c {
+    background: red;
+  }
+d.css: |
+  .d {
+    background: purple;
+  }
+e.css: |
+  .e {
+    background: magenta;
+  }

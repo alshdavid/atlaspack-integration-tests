@@ -1,0 +1,44 @@
+options:
+  name: postcss-autoinstall
+package.json:
+  type: module
+npm/index.css: |
+  .test {
+    background: red;
+  }
+npm/package.json: |
+  {
+    "name": "atlaspack-test-autoinstall-npm",
+    "private": true
+  }
+postcss-test/index.js: |
+  module.exports = (opts = {}) => {
+    return {
+      postcssPlugin: 'postcss-test',
+      Once(root, {result}) {
+        root.walkRules((rule) => {
+          rule.each((decl) => {
+            if (decl.value === 'red') {
+              decl.value = 'green';
+            }
+          });
+        });
+      },
+    };
+  };
+  module.exports.postcss = true;
+postcss-test/package.json: |
+  {
+    "name": "postcss-test",
+    "version": "1.0.0",
+    "private": true
+  }
+yarn/index.css: |
+  .test {
+    background: #9d9c;
+  }
+yarn/package.json: |
+  {
+    "name": "atlaspack-test-autoinstall-yarn",
+    "private": true
+  }

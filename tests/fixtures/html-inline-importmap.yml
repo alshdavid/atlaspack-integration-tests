@@ -1,0 +1,13 @@
+options:
+  name: html-inline-importmap
+package.json:
+  type: module
+index.html: |
+  <!DOCTYPE html>
+  <script type="importmap">
+  	{
+  		"imports": {
+  			"lit1.3.0/": "/node_modules/lit1.3.0/"
+  		}
+  	}
+  </script>

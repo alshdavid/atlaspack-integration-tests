@@ -1,0 +1,8 @@
+options:
+  name: typescript-env
+package.json:
+  type: module
+index.ts: |-
+  export function env() {
+    return process.env.NODE_ENV;
+  }

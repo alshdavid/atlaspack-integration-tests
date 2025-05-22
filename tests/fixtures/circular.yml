@@ -1,0 +1,65 @@
+options:
+  name: circular
+package.json:
+  type: module
+about.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Document</title>
+    <script src="./about.js"></script>
+  </head>
+  <body>
+    On About
+
+    <a href="./index.html">Home</a>
+    <a href="./about.html">About</a>
+    <a href="./test.html">Test</a>
+
+  </body>
+  </html>
+about.js: |
+  // eslint-disable-next-line no-unused-vars
+  import index from './index';
+
+  export default function () {
+    index();
+  }
+index.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Document</title>
+    <script src="./index.js"></script>
+  </head>
+  <body>
+    On Home
+
+    <a href="./index.html">Home</a>
+    <a href="./about.html">About</a>
+    <a href="./test.html">Test</a>
+
+  </body>
+  </html>
+index.js: |
+  // eslint-disable-next-line no-unused-vars
+  import about from './about';
+
+  export default function () {
+    about();
+  }
+test.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Document</title>
+  </head>
+  <body>
+    Test
+
+    <a href="./index.html">Home</a>
+    <a href="./about.html">About</a>
+    <a href="./test.html">Test</a>
+
+  </body>
+  </html>

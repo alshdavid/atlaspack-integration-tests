@@ -1,0 +1,21 @@
+options:
+  name: sync-async-when-needed
+package.json:
+  type: module
+  "@atlaspack/bundler-default":
+    maxParallelRequests: 1
+yarn.lock: ""
+async-has-dep.js: |
+  import dep from './dep';
+  import getDep from './get-dep';
+
+  export default getDep;
+dep.js: |
+  export default 42;
+get-dep.js: |
+  export default import('./dep').then(mod => mod.default);
+index.js: |
+  output = Promise.all([
+    import('./async-has-dep').then(mod => mod.default),
+    import('./get-dep').then(mod => mod.default)
+  ]);

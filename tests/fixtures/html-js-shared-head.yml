@@ -1,0 +1,25 @@
+options:
+  name: html-js-shared-head
+package.json:
+  type: module
+  "@atlaspack/runtime-js":
+    splitManifestThreshold: 99999999
+yarn.lock: ""
+async.js: |
+  if (Date.now() > 0) {
+  	console.log("async", require("lodash").add(1, 2));
+  }
+index.html: |
+  <html>
+    <head>
+      <script type="module" src="index.js"></script>
+    </head>
+  </html>
+index.js: |
+  console.log(require("lodash").add(1, 2));
+  import("./async.js");
+  new Worker(new URL("./worker.js", import.meta.url), {type: 'module'});
+worker.js: |
+  if (Date.now() > 0) {
+  	console.log("worker", require("lodash").add(1, 2));
+  }

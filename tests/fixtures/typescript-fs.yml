@@ -1,0 +1,19 @@
+options:
+  name: typescript-fs
+package.json:
+  type: module
+index.ts: |
+  import { readFileSync } from 'fs';
+  import rawFromTsx from './readFromTsx';
+
+  module.exports = {
+    fromTs: readFileSync(__dirname + '/raw.tsx', "utf-8"),
+    fromTsx: rawFromTsx,
+  };
+raw.tsx: export default <div>Hello</div>;
+readFromTsx.tsx: |-
+  import { readFileSync } from 'fs';
+
+  const raw = readFileSync(__dirname + '/raw.tsx', "utf-8");
+
+  export default raw;

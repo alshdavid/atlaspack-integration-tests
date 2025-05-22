@@ -1,0 +1,23 @@
+options:
+  name: react-refresh-library-target
+package.json:
+  type: module
+  source: index.js
+  main: dist/main.js
+  dependencies:
+    "@atlaspack/transformer-react-refresh-wrap": "*"
+    react: "*"
+    react-dom: "*"
+yarn.lock: ""
+Component.jsx: |
+  import React from 'react';
+
+  const Component = () => {
+    return <div>test</div>;
+  }
+
+  export default Component
+index.js: |
+  import Component from './Component'
+
+  export {Component}

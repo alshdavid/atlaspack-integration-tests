@@ -1,0 +1,16 @@
+options:
+  name: css-nesting
+package.json:
+  type: module
+  "@atlaspack/transformer-css":
+    drafts:
+      nesting: true
+yarn.lock: ""
+a.css: |
+  .foo {
+    color: red;
+
+    &.bar {
+      color: blue;
+    }
+  }

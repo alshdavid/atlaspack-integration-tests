@@ -1,0 +1,47 @@
+options:
+  name: parser-case-insensitive-ext
+package.json:
+  type: module
+icons.SVG: >
+  <?xml version="1.0" encoding="utf-8"?>
+
+  <svg xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol viewBox="0 0 14 16" id="icon-code" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9.5 3L8 4.5 11.5 8 8 11.5 9.5 13 14 8 9.5 3zm-5 0L0 8l4.5 5L6 11.5 2.5 8 6 4.5 4.5 3z"/></symbol>
+    <symbol viewBox="0 0 12 16" id="icon-gist" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.5 5L10 7.5 7.5 10l-.75-.75L8.5 7.5 6.75 5.75 7.5 5zm-3 0L2 7.5 4.5 10l.75-.75L3.5 7.5l1.75-1.75L4.5 5zM0 13V2c0-.55.45-1 1-1h10c.55 0 1 .45 1 1v11c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1zm1 0h10V2H1v11z"/></symbol>
+  </svg>
+index.cSs: |
+  body {
+    background: red;
+  }
+index.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <link rel="stylesheet" href="index.cSs" />
+  </head>
+  <body>
+    <h1>Hello world</h1>
+    <p>Linking to <a href="other.HTM">another page</a></p>
+    <a href="#hash_link">Hash link</a>
+    <a href="mailto:someone@acme.com">Mailto link</a>
+    <a href="tel:+33636757575">Tel link</a>
+    <script src="index.js"></script>
+    <script src="https://unpkg.com/parcel-bundler"></script>
+    <i>hello</i> <i>world</i>
+    <svg><use xlink:href="icons.SVG#icon-code"></use></svg>
+  </body>
+  </html>
+index.js: |
+  alert('Hi');
+other.HTM: |
+  <!doctype html>
+  <html>
+  <head>
+    <link rel="stylesheet" href="index.cSs" />
+  </head>
+  <body>
+    <h1>Other page</h1>
+    <script src="index.js"></script>
+  </body>
+  </html>

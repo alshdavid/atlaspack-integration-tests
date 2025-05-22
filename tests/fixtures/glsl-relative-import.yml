@@ -1,0 +1,24 @@
+options:
+  name: glsl-relative-import
+package.json:
+  type: module
+frag.glsl: |
+  #pragma glslify: c = require('./sub/other');
+
+  varying float x;
+
+  void main() { gl_FragColor = vec4(c(x)); }
+index.js: |
+  import frag from "./frag.glsl";
+
+  module.exports = frag;
+sub/other.glsl: |
+  #pragma glslify: b = require('./other2');
+
+  float c(float p) { return b(p)*3.0; }
+
+  #pragma glslify: export(c);
+sub/other2.glsl: |-
+  float b(float p) { return p*2.0; }
+
+  #pragma glslify: export(b);

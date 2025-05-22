@@ -1,0 +1,10 @@
+options:
+  name: sass-include-paths-import
+package.json:
+  type: module
+  private: true
+yarn.lock: ""
+include-path/style.sass: |-
+  .included
+      color: red
+index.sass: '@import "style.sass"'

@@ -1,0 +1,35 @@
+options:
+  name: postcss-modules-optimize
+package.json:
+  type: module
+yarn.lock: ""
+index.css: |
+  .foo {
+    animation: test 200ms;
+  }
+
+  @keyframes test {
+    from {
+      color: red;
+    }
+
+    to {
+      color: green;
+    }
+  }
+
+  @keyframes unused {
+    from {
+      color: green;
+    }
+
+    to {
+      color: blue;
+    }
+  }
+index.js: |
+  var foo = require('./index.css');
+
+  module.exports = function () {
+    return foo.foo;
+  };

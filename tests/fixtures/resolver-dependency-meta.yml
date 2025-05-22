@@ -1,0 +1,59 @@
+options:
+  name: resolver-dependency-meta
+package.json:
+  type: module
+  private: true
+  main: dist/index.js
+yarn.lock: ""
+a.js: |
+  import "./b.js";
+  import "foo";
+b.js: ""
+node_modules/atlaspack-resolver-meta/index.js: |
+  const {Resolver} = require('@atlaspack/plugin');
+
+  module.exports = new Resolver({
+    resolve({dependency, options, filePath}) {
+      if(dependency.specifier === "foo"){
+        return {isExcluded: true, meta: {customValue: 1234}};
+      }
+    }
+  });
+node_modules/atlaspack-resolver-meta/package.json: |
+  {
+    "name": "atlaspack-resolver-meta",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js"
+  }
+node_modules/atlaspack-runtime-meta/index.js: |
+  const { Runtime } = require("@atlaspack/plugin");
+
+  module.exports = new Runtime({
+    apply({bundle}) {
+      let dep;
+      bundle.traverse((node, _, actions) => {
+        if (node.type === "dependency" && node.value.specifier === "foo") {
+          dep = node.value;
+          actions.stop();
+        }
+      });
+
+      if (dep.meta.customValue != null) {
+        return [
+          {
+            filePath: __filename,
+            code: `sideEffect(${dep.meta.customValue});`,
+            dependency: dep,
+          },
+        ];
+      }
+    },
+  });
+node_modules/atlaspack-runtime-meta/package.json: |
+  {
+    "name": "atlaspack-runtime-meta",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js"
+  }

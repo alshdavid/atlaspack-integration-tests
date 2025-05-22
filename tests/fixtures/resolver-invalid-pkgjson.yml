@@ -1,0 +1,20 @@
+options:
+  name: resolver-invalid-pkgjson
+package.json:
+  type: module
+  name: test-invalid-pkg-json
+  private: true
+yarn.lock: ""
+index.js: |
+  const invalidModule = require('invalid-module')
+
+  module.exports = () => {
+      return 'hello world!';
+  }
+node_modules/invalid-module/entry.js: ""
+node_modules/invalid-module/package.json: |
+  {
+      "name": "invalid-module",
+      "private": true,
+      "main": "./entryx.js"
+  }

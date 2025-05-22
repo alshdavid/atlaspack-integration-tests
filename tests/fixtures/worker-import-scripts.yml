@@ -1,0 +1,21 @@
+options:
+  name: worker-import-scripts
+package.json:
+  type: module
+external.js: |
+  importScripts('https://unpkg.com/parcel');
+imported.js: ""
+imported2.js: ""
+importScripts.js: |
+  importScripts('imported.js');
+index-external.js: |
+  new Worker(new URL('./external', import.meta.url))
+index-serviceworker.js: >
+  navigator.serviceWorker.register(new URL('importScripts.js', import.meta.url));
+index-variable.js: |
+  new Worker(new URL('./variable', import.meta.url))
+index-webworker.js: |
+  new Worker(new URL('importScripts.js', import.meta.url));
+variable.js: |
+  var url = '/my-worker-script.js';
+  importScripts(url);

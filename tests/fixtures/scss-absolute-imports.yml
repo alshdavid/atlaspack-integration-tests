@@ -1,0 +1,15 @@
+options:
+  name: scss-absolute-imports
+package.json:
+  type: module
+yarn.lock: ""
+b.scss: |
+  .b {
+    color: red;
+  }
+style.scss: |
+  @import '/b.scss';
+
+  .a {
+    color: blue;
+  }

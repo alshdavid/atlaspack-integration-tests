@@ -1,0 +1,14 @@
+options:
+  name: js-import-shadow
+package.json:
+  type: module
+foo.js: |
+  export function foo() {
+    return 'foo';
+  }
+index.js: |
+  import { foo } from './foo';
+  export function baz() {
+    const _foo = foo();
+    return _foo;
+  }

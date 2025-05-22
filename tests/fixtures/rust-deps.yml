@@ -1,0 +1,20 @@
+options:
+  name: rust-deps
+package.json:
+  type: module
+add.rs: |
+  pub fn add(a: i32, b: i32) -> i32 {
+      return a + b
+  }
+index.js: |
+  module.exports = import('./test.rs').then(function ({test}) {
+    return test(2, 3);
+  });
+test.rs: |
+  mod add;
+  use add::*;
+
+  #[no_mangle]
+  pub fn test(a: i32, b: i32) -> i32 {
+      return add(a, b) + 5;
+  }

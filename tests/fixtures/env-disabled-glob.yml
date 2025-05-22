@@ -1,0 +1,12 @@
+options:
+  name: env-disabled-glob
+package.json:
+  type: module
+  "@atlaspack/transformer-js":
+    inlineEnvironment:
+      - B_*
+yarn.lock: ""
+index.js: |
+  module.exports = function () {
+    return process.env.A_1 + ":" + process.env.B_1 + ":" + process.env.B_2;
+  };

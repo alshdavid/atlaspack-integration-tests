@@ -1,0 +1,33 @@
+options:
+  name: svg-xml-stylesheet
+package.json:
+  type: module
+img.svg: |
+  <?xml-stylesheet href="style1.css"?>
+  <?xml-stylesheet href="style2.css?>
+    <?xml-stylesheet
+      href
+      =
+      "style3.css"type="text/css"
+        ?>
+  <?xml-not-a-stylesheet href="style4.css"?>
+  <svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+    <text>Should be red and monospace</text>
+  </svg>
+style1.css: |
+  :root {
+    fill: red;
+    font-family: serif;
+  }
+style2.css: |
+  :root {
+    font-family: sans-serif;
+  }
+style3.css: |
+  :root {
+    font-family: monospace;
+  }
+style4.css: |
+  :root {
+    font-family: cursive;
+  }

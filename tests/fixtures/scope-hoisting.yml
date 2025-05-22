@@ -1,0 +1,4947 @@
+options:
+  name: scope-hoisting
+package.json:
+  type: module
+commonjs/browserify-compat/browserify-bundle.js: >
+  /*
+   * The following is a browserify-produced umd bundle created with:
+   * `echo "module.exports = 'foo';" | browserify - -s foo | prettier --parser babel`
+   * using browserify@16.5.0
+   *
+   * Includes the prelude and umd wrapper from browserify. Browserify's MIT
+   * license is reproduced below.
+   * https://github.com/browserify/browserify/blob/b8ddf68ac3ebc80ee3b9b1cb67e013256503efe9/LICENSE
+   * https://github.com/browserify/browser-pack/blob/cd0bd31f8c110e19a80429019b64e887b1a82b2b/LICENSE
+   */
+
+  /**
+   * MIT License
+   *
+   * Copyright (c) 2010 James Halliday
+   *
+   * Permission is hereby granted, free of charge, to any person obtaining a copy
+   * of this software and associated documentation files (the "Software"), to deal
+   * in the Software without restriction, including without limitation the rights
+   * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   * copies of the Software, and to permit persons to whom the Software is
+   * furnished to do so, subject to the following conditions:
+   *
+   * The above copyright notice and this permission notice shall be included in all
+   * copies or substantial portions of the Software.
+   *
+   * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   * SOFTWARE.
+   */
+
+  (function(f) {
+    if (typeof exports === "object" && typeof module !== "undefined") {
+      module.exports = f();
+    } else if (typeof define === "function" && define.amd) {
+      define([], f);
+    } else {
+      var g;
+      if (typeof window !== "undefined") {
+        g = window;
+      } else if (typeof global !== "undefined") {
+        g = global;
+      } else if (typeof self !== "undefined") {
+        g = self;
+      } else {
+        g = this;
+      }
+      g.foo = f();
+    }
+  })(function() {
+    var define, module, exports;
+    return (function() {
+      function r(e, n, t) {
+        function o(i, f) {
+          if (!n[i]) {
+            if (!e[i]) {
+              var c = "function" == typeof require && require;
+              if (!f && c) return c(i, !0);
+              if (u) return u(i, !0);
+              var a = new Error("Cannot find module '" + i + "'");
+              throw ((a.code = "MODULE_NOT_FOUND"), a);
+            }
+            var p = (n[i] = { exports: {} });
+            e[i][0].call(
+              p.exports,
+              function(r) {
+                var n = e[i][1][r];
+                return o(n || r);
+              },
+              p,
+              p.exports,
+              r,
+              e,
+              n,
+              t
+            );
+          }
+          return n[i].exports;
+        }
+        for (
+          var u = "function" == typeof require && require, i = 0;
+          i < t.length;
+          i++
+        )
+          o(t[i]);
+        return o;
+      }
+      return r;
+    })()(
+      {
+        1: [
+          function(require, module, exports) {
+            module.exports = "foo";
+          },
+          {}
+        ]
+      },
+      {},
+      [1]
+    )(1);
+  });
+commonjs/browserify-compat/index.js: |
+  output = require('./browserify-bundle');
+commonjs/concat-order-globals/a.js: |
+  const other = require("./b.js");
+
+  output = Buffer.from(other).toString();
+commonjs/concat-order-globals/b.js: |
+  const {Buffer} = require("buffer");
+
+  module.exports = Buffer.from("foobar").toString();
+commonjs/concat-order/a.js: |
+  "use strict";
+
+  module.exports.a = () => 1;
+
+  var b = require("./b.js");
+
+  output = b + 1;
+commonjs/concat-order/b.js: |
+  "use strict";
+
+  var t = require("./a.js");
+
+  module.exports = t.a();
+commonjs/conditional-import-reference/a.js: module.exports = 'hello';
+commonjs/conditional-import-reference/index.js: |-
+  const a = require('./a');
+
+  if (false) {
+    console.log(a);
+  }
+
+  output = a;
+commonjs/default-import/a.js: |
+  import foo from './b';
+
+  output = foo;
+commonjs/default-import/b.js: |
+  module.exports = 2;
+commonjs/define-exports/a.js: |
+  export const foo = 'bar'
+
+  export function getExports() {
+      return exports
+  }
+
+  output = getExports() === exports && getExports().foo
+commonjs/eliminate-exports/a.js: |
+  var b = require('./b');
+
+  b.setFoo(3);
+  output = b.foo + b['bar'];
+commonjs/eliminate-exports/b.js: |
+  exports.foo = 2;
+  exports['bar'] = 3;
+
+  exports.setFoo = function (foo) {
+    exports.foo = foo;
+  };
+commonjs/empty-module/a.js: |
+  output = {
+    b: require('./b')
+  };
+commonjs/empty-module/b.js: ""
+commonjs/es6-commonjs-hybrid/a.js: |
+  const {a, b} = require('./b');
+
+  output = a + b;
+commonjs/es6-commonjs-hybrid/b.js: |-
+  export var a = 2;
+  exports.b = 3;
+commonjs/export-assign-scope/a.js: |
+  var b = require('./b');
+
+  b.setValue(2);
+  output = b.value;
+commonjs/export-assign-scope/b.js: |
+  exports.setValue = function (value) {
+    exports.value = value;
+  }
+commonjs/export-local/a.js: |
+  output = require('./b').foo;
+commonjs/export-local/b.js: |
+  var x = exports.foo = exports.bar = 3;
+commonjs/export-non-object/index.js: |
+  import "./other";
+commonjs/export-non-object/other.js: |
+  module.exports = 1;
+commonjs/export-order/a.js: |
+  const {a, b} = require('./b');
+
+  output = a + b;
+commonjs/export-order/b.js: |
+  exports.a = 2;
+  export var b = 3;
+commonjs/exports-access-bailout/exports-assign-entry.js: |
+  import {COMMENT_KEYS} from './exports-assign-imported';
+
+  output = COMMENT_KEYS;
+commonjs/exports-access-bailout/exports-assign-imported.js: |
+  var t = exports;
+  exports.COMMENT_KEYS = undefined;
+
+  let v = "COMMENT_KEYS"
+  exports[v] = 5;
+commonjs/exports-access-bailout/exports-assign-reexport-entry.js: |
+  import { COMMENT_KEYS, other } from "./exports-assign-reexport";
+
+  output = [COMMENT_KEYS, other.COMMENT_KEYS];
+commonjs/exports-access-bailout/exports-assign-reexport.js: |
+  export * from "./exports-assign";
+  export * as other from "./exports-assign";
+commonjs/exports-access-bailout/exports-assign.js: |
+  var t = exports;
+  exports.COMMENT_KEYS = undefined;
+
+  let v = "COMMENT_KEYS"
+  exports[v] = 5;
+
+  output = t.COMMENT_KEYS;
+commonjs/exports-access-bailout/exports-define-entry.js: |
+  import {COMMENT_KEYS} from './exports-define-imported';
+
+  output = COMMENT_KEYS;
+commonjs/exports-access-bailout/exports-define-imported.js: |
+  exports.COMMENT_KEYS = undefined;
+
+  Object.defineProperty(exports, "COMMENT_KEYS", {
+  	get() {
+  		return 5;
+  	}
+  });
+commonjs/exports-access-bailout/exports-define.js: |
+  var t = exports;
+  exports.COMMENT_KEYS = undefined;
+
+  Object.defineProperty(exports, "COMMENT_KEYS", {
+  	get() {
+  		return 5;
+  	}
+  });
+
+  output = t.COMMENT_KEYS;
+commonjs/exports-access-bailout/module-exports-assign-entry.js: |
+  import {COMMENT_KEYS} from './module-exports-assign-imported';
+
+  output = COMMENT_KEYS;
+commonjs/exports-access-bailout/module-exports-assign-imported.js: |
+  module.exports.COMMENT_KEYS = undefined;
+
+  let v = "COMMENT_KEYS"
+  module.exports[v] = 5;
+commonjs/exports-access-bailout/module-exports-assign.js: |
+  var t = module.exports;
+  module.exports.COMMENT_KEYS = undefined;
+
+  let v = "COMMENT_KEYS"
+  module.exports[v] = 5;
+
+  output = t.COMMENT_KEYS;
+commonjs/exports-access-bailout/module-exports-define-entry.js: |
+  import {COMMENT_KEYS} from './module-exports-define-imported';
+
+  output = COMMENT_KEYS;
+commonjs/exports-access-bailout/module-exports-define-imported.js: |
+  module.exports.COMMENT_KEYS = undefined;
+
+  Object.defineProperty(module.exports, "COMMENT_KEYS", {
+  	get() {
+  		return 5;
+  	}
+  });
+commonjs/exports-access-bailout/module-exports-define.js: |
+  var t = module.exports;
+  module.exports.COMMENT_KEYS = undefined;
+
+  Object.defineProperty(module.exports, "COMMENT_KEYS", {
+  	get() {
+  		return 5;
+  	}
+  });
+
+  output = t.COMMENT_KEYS;
+commonjs/exports-before-module-exports/a.js: |
+  'use strict';
+
+  output = require('./b');
+commonjs/exports-before-module-exports/b.js: |
+  // Assign to both `exports` and `module.exports` in CommonJS.
+  // Some published packages do this in babel-generated output:
+  // https://unpkg.com/browse/dom-helpers@3.4.0/class/hasClass.js
+
+  exports.foo = 27;
+  module.exports = 42;
+commonjs/exports-self-reference/a.js: |
+  const b = require('./b');
+
+  output = b.run();
+commonjs/exports-self-reference/b.js: |
+  module.exports.other = () => 'other';
+
+  module.exports.run = () => `Say ${exports.other()}`;
+commonjs/exports-self-reference/package.json: |
+  {
+    "browserslist": "Chrome 80"
+  }
+commonjs/exports-self-reference/yarn.lock: ""
+commonjs/exports-this/a.js: |-
+  exports.foo = function() {
+      exports.bar()
+  }
+
+  exports.bar = function() {
+      this.baz()
+  }
+
+  exports.baz = function() {
+      return 2
+  }
+commonjs/globals-polyfills/a.js: |
+  const test = require('./b');
+
+  output = !test("abc");
+commonjs/globals-polyfills/b.js: >
+  ;(function () {
+    module.exports = test
+
+    function test(data) {
+      if (typeof Buffer === 'function' && typeof Buffer.isBuffer === 'function' && Buffer.isBuffer(data)) {
+        return true;
+      }
+      return false;
+    }
+  })();
+commonjs/globals-polyfills/package.json: |
+  {
+    "browserslist": ["last 1 Chrome versions"]
+  }
+commonjs/globals-polyfills/yarn.lock: ""
+commonjs/import-namespace/a.js: |
+  import * as test from './b';
+
+  output = test.foo;
+commonjs/import-namespace/b.js: |
+  exports.foo = 2;
+commonjs/interop-commonjs-hybrid-dynamic/a.js: |
+  import b from './b';
+  export const foo = b.foo; // <-- missing default interop
+  export const bar = (() => require('./b').foo)();
+
+  output = foo + bar;
+commonjs/interop-commonjs-hybrid-dynamic/b.js: |
+  module.exports = {foo: 1};
+commonjs/interop-commonjs-hybrid/a.js: |
+  import b from './b';
+  const foo = b.foo;
+  const bar = require('./b').foo;
+
+  output = foo + bar;
+commonjs/interop-commonjs-hybrid/b.js: |
+  module.exports = {foo: 1};
+commonjs/interop-require-commonjs-wrapped/a.js: |
+  var b = require('./b');
+  output = b['default'];
+commonjs/interop-require-commonjs-wrapped/b.js: |
+  exports.default = 'default';
+  eval('');
+commonjs/interop-require-commonjs/a.js: |
+  exports = module.exports = require('./b')['default'];
+  exports['default'] = exports;
+  output = exports;
+commonjs/interop-require-commonjs/b.js: |
+  exports['default'] = {
+    test: 2
+  };
+commonjs/interop-require-es-module-code-split-intermediate/import_child.js: |
+  import shared from './shared';
+
+  export default shared.foo;
+commonjs/interop-require-es-module-code-split-intermediate/import.js: |
+  import child from './import_child';
+
+  export default child;
+commonjs/interop-require-es-module-code-split-intermediate/main_child.js: |
+  import shared from './shared';
+
+  export default shared.foo;
+commonjs/interop-require-es-module-code-split-intermediate/main.js: >
+  import mainValue from './main_child';
+
+  const importBundle = import('./import');
+
+
+  output = importBundle.then(importValue => importValue.default + ':' +
+  mainValue);
+commonjs/interop-require-es-module-code-split-intermediate/shared_sub.js: |
+  module.exports = 'bar'
+commonjs/interop-require-es-module-code-split-intermediate/shared.js: |
+  const bar = require('./shared_sub');
+  const shared = { foo: bar };
+
+  export default shared;
+commonjs/interop-require-es-module-code-split/import.js: |
+  import shared from "./shared";
+
+  export default shared.foo
+commonjs/interop-require-es-module-code-split/main.js: >
+  import sharedBundle from './shared';
+
+  const importBundle = import('./import');
+
+
+  output = importBundle.then(importValue => importValue.default + ':' +
+  sharedBundle.foo);
+commonjs/interop-require-es-module-code-split/shared_sub.js: |
+  module.exports = 'bar'
+commonjs/interop-require-es-module-code-split/shared.js: |
+  const bar = require('./shared_sub');
+  const exp = { foo: bar }
+
+  export default exp;
+commonjs/interop-require-es-module/a.js: |
+  output = require('./b');
+commonjs/interop-require-es-module/b.js: |
+  export default 2;
+commonjs/keep-local-function-var/a.js: |
+  const foo = require("./b");
+
+  let render = function() {
+  	let root = "foo";
+  	output = root;
+  };
+
+  render();
+commonjs/keep-local-function-var/b.js: >
+  var root = require('./c');
+
+
+  var freeModule = typeof module == 'object' && module && !module.nodeType &&
+  module;
+
+  module.exports = freeModule ? null : root;
+commonjs/keep-local-function-var/c.js: |
+  var root = "something else";
+  module.exports = root;
+commonjs/live-bindings/a.js: |
+  const b = require('./b');
+
+  b.changeFoo(3);
+
+  output = b.default + b.foo + b.bar;
+commonjs/live-bindings/b.js: |
+  var foo = 2;
+  export default foo;
+  export {foo, foo as bar};
+
+  export function changeFoo(v) {
+    foo = v;
+  }
+commonjs/missing-non-js/a.js: |
+  import './index.css';
+
+  output = 27;
+commonjs/missing-non-js/index.css: ""
+commonjs/module-exports-before-exports/a.js: |
+  'use strict';
+
+  output = require('./b');
+commonjs/module-exports-before-exports/b.js: |
+  module.exports = 42;
+  exports.foo = 27;
+commonjs/module-exports-default-assignment/a.js: |
+  import f from "./b";
+  export var foo = f();
+commonjs/module-exports-default-assignment/b.js: |
+  "use strict";
+  exports.__esModule = true;
+  exports.default = function () {
+    return 'b';
+  };
+  module.exports = exports["default"];
+commonjs/module-exports-default-assignment/index.js: |
+  function x() {
+  	require("./b");
+  }
+  output = require("./a");
+commonjs/module-exports-self-reference/a.js: |
+  const b = require('./b');
+
+  output = b.run();
+commonjs/module-exports-self-reference/b.js: |
+  module.exports.other = () => 'other';
+
+  module.exports.run = () => `Say ${module.exports.other()}`;
+commonjs/module-exports-self-reference/package.json: |
+  {
+    "browserslist": "Chrome 80"
+  }
+commonjs/module-exports-self-reference/yarn.lock: ""
+commonjs/module-object/a.js: |
+  output = {
+    id: module.id,
+    hot: module.hot,
+    moduleRequire: module.require,
+    type: typeof module,
+    exports: exports,
+    exportsType: typeof exports,
+    require: typeof require
+  };
+commonjs/module-object/package.json: |
+  {
+    "browserslist": ["last 1 Chrome versions"]
+  }
+commonjs/module-object/yarn.lock: ""
+commonjs/module-require/a.js: |
+  output = module.require("./b.js");
+commonjs/module-require/b.js: |
+  module.exports.b = 2;
+commonjs/module-require/package.json: |
+  {}
+commonjs/module-require/yarn.lock: ""
+commonjs/multi-assign/a.js: |
+  var foo = exports.foo = exports.baz = 2;
+  exports.bar = foo;
+  output = exports;
+commonjs/mutated-exports-mixed-module/index.js: |
+  const value = require('./value');
+  value.cjs = value.cjs + ' mutated';
+  value.esm = value.esm + ' mutated';
+
+
+  output = [value.cjs, value.esm, value];
+commonjs/mutated-exports-mixed-module/value.js: |-
+  export const esm = 'ESM';
+
+  module.exports.cjs = 'CJS'
+commonjs/mutated-exports-object-different/index.js: |
+  require('./mutates');
+  const value = require('./value');
+
+  output = value.foo;
+commonjs/mutated-exports-object-different/mutates.js: |
+  const value = require('./value');
+  value.foo = 43;
+commonjs/mutated-exports-object-different/value.js: |
+  exports.foo = 42;
+commonjs/mutated-exports-object-expression/index.js: |
+  const v = require("./value");
+
+  let x = ((v.foo = 3), v[["f", "o", "o"].join("")]);
+
+  output = [v, v.foo, x];
+commonjs/mutated-exports-object-expression/value.js: |
+  exports.foo = 2;
+commonjs/mutated-exports-object-importer/index.js: |
+  const value = require('./value');
+  value.foo = 43;
+
+  output = [value.foo, value];
+commonjs/mutated-exports-object-importer/value.js: |
+  exports.foo = 42;
+commonjs/mutated-non-static-require/index.js: |
+  let x = require('./other');
+  let prop = 'fo' + 'o';
+  x[prop] = 4;
+  let res = require('./other').foo;
+  output = res;
+commonjs/mutated-non-static-require/other.js: |
+  exports.foo = 2;
+commonjs/named-import/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+commonjs/named-import/b.js: |
+  exports.foo = 2;
+commonjs/non-identifier-symbol-name/a.js: |
+  const x = require("./b.js");
+  output = x["ab c"];
+commonjs/non-identifier-symbol-name/b.js: |
+  module.exports["ab c"] = 1;
+commonjs/non-static-exports/a.js: |
+  output = require('./b');
+commonjs/non-static-exports/b.js: |
+  function foo(e) {
+    e.foo = 2;
+  }
+
+  foo(exports);
+  exports.bar = 4;
+  exports.baz = exports.bar + 2;
+commonjs/object-pattern/a.js: |
+  var {foo, bar} = require('./b');
+  output = foo + bar;
+commonjs/object-pattern/b.js: |
+  exports.foo = 2;
+  exports.bar = 3;
+commonjs/object-pattern/package.json: |
+  {
+    "name": "object-pattern",
+    "browserslist": ["last 1 Chrome version"]
+  }
+commonjs/object-pattern/yarn.lock: ""
+commonjs/re-export-var/a.js: |
+  const {foo, bar} = require('./b');
+
+  output = foo() + bar()
+commonjs/re-export-var/b.js: |
+  import {foo, bar} from './c'
+
+  export {foo, bar}
+commonjs/re-export-var/c.js: |
+  const foo = () => 'foo'
+
+  function bar() {
+      return 'bar'
+  }
+
+  export {foo, bar}
+commonjs/require-assign/a.js: |
+  require('./b').foo = 4;
+  output = require('./b').foo;
+commonjs/require-assign/b.js: |
+  exports.foo = 2;
+commonjs/require-circular/a.js: |
+  module.exports.foo = 'foo'
+  module.exports = require('./b');
+  output = module.exports;
+commonjs/require-circular/b.js: |
+  module.exports = require('./a').foo + ' bar'
+commonjs/require-conditional/a.js: |
+  output('a');
+
+  if (b) {
+    require('./b');
+  }
+
+  output('d');
+commonjs/require-conditional/b.js: |
+  output('b');
+  require('./c');
+commonjs/require-conditional/c.js: |
+  output('c');
+commonjs/require-css/a.js: |
+  const x = require("./b.css");
+  output = x;
+commonjs/require-css/b.css: |
+  body {
+  	color: blue;
+  }
+commonjs/require-default-export-declaration/a.js: |
+  const foo = require('./b').default;
+
+  output = foo();
+commonjs/require-default-export-declaration/b.js: |
+  export default function foo() {
+    return 2;
+  }
+commonjs/require-default-export-expression/a.js: |
+  const foo = require('./b').default;
+
+  output = foo;
+commonjs/require-default-export-expression/b.js: |
+  export default 2;
+commonjs/require-default-export-variable/a.js: |
+  const foo = require('./b').default;
+
+  output = foo;
+commonjs/require-default-export-variable/b.js: |
+  var foo = 2;
+  export default foo;
+commonjs/require-execution-order/a.js: |-
+  output('a');
+  require('./b');
+  output('d');
+commonjs/require-execution-order/b.js: |
+  output('b');
+  require('./c');
+commonjs/require-execution-order/c.js: |
+  output('c');
+commonjs/require-extensions/index.js: |
+  if (typeof require !== 'undefined' && require.extensions) {
+    require.extensions['.handlebars'] = extension;
+    require.extensions['.hbs'] = extension;
+  }
+commonjs/require-in-function-import-hoist/a.js: |
+  output('a');
+
+  function x() {
+    return require('./b');
+  }
+
+  output('d');
+  x();
+commonjs/require-in-function-import-hoist/b.js: |
+  output('b');
+  import './c';
+commonjs/require-in-function-import-hoist/c.js: |
+  output('c');
+commonjs/require-in-function-import/a.js: |
+  output('a');
+
+  function x() {
+    return require('./b');
+  }
+
+  output('d');
+  x();
+commonjs/require-in-function-import/b.js: |
+  import './c';
+  output('b');
+commonjs/require-in-function-import/c.js: |
+  output('c');
+commonjs/require-in-function-reexport/a.js: |
+  output('a');
+
+  function x() {
+    return require('./b');
+  }
+
+  output('d');
+  x();
+commonjs/require-in-function-reexport/b.js: |
+  export {x} from './c';
+  output('b');
+commonjs/require-in-function-reexport/c.js: |
+  export var x = 2;
+  output('c');
+commonjs/require-in-function/a.js: |
+  output('a');
+
+  function x() {
+    return require('./b');
+  }
+
+  output('c');
+  x();
+commonjs/require-in-function/b.js: |+
+  output('b');
+
+commonjs/require-local-assign/b.js: |
+  export let foo = 2;
+commonjs/require-local-assign/basic.js: |
+  let b = require('./b');
+  let b2 = require('./b');
+  output([b, b2]);
+  b = 4;
+  output([b, b2]);
+commonjs/require-local-assign/destructure.js: |
+  let {foo} = require('./b');
+  let {foo: foo2} = require('./b');
+  output([foo, foo2]);
+  foo = 4;
+  output([foo, foo2]);
+commonjs/require-local-assign/in-function.js: |
+  function test() {
+    b = 4;
+  }
+
+  let b = require('./b');
+  let b2 = require('./b');
+  output([b, b2]);
+  test();
+  output([b, b2]);
+commonjs/require-local-assign/member.js: |
+  let b = require('./b').foo;
+  let b2 = require('./b').foo;
+  output([b, b2]);
+  b = 4;
+  output([b, b2]);
+commonjs/require-member-wrapped/a.js: |
+  let b = require('./b');
+  output = b({
+    foo: 2
+  });
+commonjs/require-member-wrapped/b.js: |
+  module.exports = function (self) {
+    return require('./c').bind(self)
+  };
+commonjs/require-member-wrapped/c.js: |
+  module.exports = function () {
+    return {
+      ...this,
+      bar: 4
+    };
+  };
+commonjs/require-multiple/a.js: |
+  var before = 'before', 
+    b = require('./b'), 
+    middle = 'middle', 
+    c = require('./c'), 
+    after = 'after';
+
+  output = `${before} ${b.foo()} ${middle} ${c.bar()} ${after}`;
+commonjs/require-multiple/b.js: |
+  exports.foo = function () {
+    return 'foo';
+  };
+commonjs/require-multiple/c.js: |
+  exports.bar = function () {
+    return 'bar';
+  }
+commonjs/require-named-export-declaration/a.js: |
+  const {foo} = require('./b');
+
+  output = foo;
+commonjs/require-named-export-declaration/b.js: |
+  export var foo = 2;
+commonjs/require-named-export-variable/a.js: |
+  const {foo} = require('./b');
+
+  output = foo;
+commonjs/require-named-export-variable/b.js: |
+  var foo = 2;
+  export {foo};
+commonjs/require-new/a.js: |
+  output = new (require("./b.js"))();
+commonjs/require-new/b.js: |
+  module.exports = class {
+    foo() {
+      return 1;
+    }
+  };
+commonjs/require-non-const-export/b.js: |
+  exports.foo = 2;
+  exports.setFoo = (foo) => {
+    exports.foo = foo;
+  };
+commonjs/require-non-const-export/destructure.js: |
+  var {foo, setFoo} = require('./b');
+
+  output(foo);
+  setFoo(3);
+  output(foo);
+commonjs/require-non-const-export/live.js: |
+  var b = require('./b');
+
+  output(b.foo);
+  b.setFoo(3);
+  output(b.foo);
+commonjs/require-non-const-export/member.js: |
+  var foo = require('./b').foo;
+  var setFoo = require('./b').setFoo;
+
+  output(foo);
+  setFoo(3);
+  output(foo);
+commonjs/require-re-export-all/a.js: |
+  const {foo, bar, baz} = require('./b');
+
+  output = foo + bar + baz;
+commonjs/require-re-export-all/b.js: |
+  export * from './c';
+  export var baz = 1;
+commonjs/require-re-export-all/c.js: |
+  export var foo = 2, bar = 3;
+commonjs/require-re-export-default/a.js: |
+  const {foo, baz} = require('./b');
+
+  output = foo + baz;
+commonjs/require-re-export-default/b.js: |
+  export {default as foo} from './c';
+  export var baz = 1;
+commonjs/require-re-export-default/c.js: |
+  export default 2;
+commonjs/require-re-export-exclude-default/a.js: |
+  output = require('./b');
+commonjs/require-re-export-exclude-default/b.js: |
+  export * from './c';
+commonjs/require-re-export-exclude-default/c.js: |
+  export default 2;
+  export var foo = 3;
+commonjs/require-re-export-multiple/a.js: |
+  const {foo, bar, baz, d} = require('./b');
+
+  output = foo + bar + baz + d;
+commonjs/require-re-export-multiple/b.js: |
+  export * from './c';
+  export var baz = 1;
+commonjs/require-re-export-multiple/c.js: |
+  export var foo = 2, bar = 3;
+  export * from './d';
+commonjs/require-re-export-multiple/d.js: |
+  export var d = 1;
+commonjs/require-re-export-named/a.js: |
+  const {foo, baz} = require('./b');
+
+  output = foo + baz;
+commonjs/require-re-export-named/b.js: |
+  export {foo} from './c';
+  export var baz = 1;
+commonjs/require-re-export-named/c.js: |
+  export var foo = 2, bar = 3;
+commonjs/require-re-export-namespace/a.js: |
+  const {c, baz} = require('./b');
+
+  output = c.foo + c.bar + baz;
+commonjs/require-re-export-namespace/b.js: |
+  import * as c from './c';
+
+  export {c};
+  export var baz = 1;
+commonjs/require-re-export-namespace/c.js: |
+  export var foo = 2, bar = 3;
+commonjs/require-renamed-export/a.js: |
+  const {foo} = require('./b');
+
+  output = foo;
+commonjs/require-renamed-export/b.js: |
+  var bar = 2;
+  export {bar as foo};
+commonjs/require-resolve-excluded/a.js: |
+  module.exports = require.resolve('fs');
+commonjs/require-resolve-excluded/package.json: |
+  {
+      "private": true,
+      "engines": {
+          "node": "10"
+      }
+  }
+commonjs/require-resolve-excluded/yarn.lock: ""
+commonjs/require-resolve/a.js: |
+  const foo = require('./b');
+
+  output = require.resolve('./b');
+commonjs/require-resolve/b.js: |
+  module.exports = 2;
+commonjs/require-self/a.js: |
+  const { b } = require("./b.js");
+
+  output = b;
+commonjs/require-self/b.js: |+
+  const other = require("./b.js");
+  module.exports.a = 3;
+  module.exports.b = other.a + 1;
+
+commonjs/require/a.js: |
+  const foo = require('./b');
+
+  output = foo;
+commonjs/require/b.js: |
+  module.exports = 2;
+commonjs/self-reference-assignment/a.js: |
+  var foo;
+  (function (foo) {
+    foo["bar"] = "bar";
+  })(foo = exports.foo || (exports.foo = {}));
+  output = exports;
+commonjs/self-reference-default/a.js: |
+  import b from './b';
+  output = b;
+commonjs/self-reference-default/b.js: |
+  exports.default = 2;
+  module.exports = exports['default'];
+commonjs/side-effects-false/a.js: |
+  output = require('bar').foo(3)
+commonjs/side-effects-false/node_modules/bar/bar.js: |
+  export default function bar() {
+    return 2;
+  }
+commonjs/side-effects-false/node_modules/bar/foo.js: |
+  export default function foo(a) {
+    return a * a;
+  }
+commonjs/side-effects-false/node_modules/bar/index.js: |
+  export {default as foo} from './foo';
+  export {default as bar} from './bar';
+commonjs/side-effects-false/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+commonjs/stream-module/a.js: |
+  output = require('stream');
+commonjs/this-arrow-function/a.js: |
+  const b = require('./b');
+
+  output = b.run();
+commonjs/this-arrow-function/b.js: |
+  module.exports.other = () => 'other';
+
+  module.exports.run = () => `Say ${this.other()}`;
+commonjs/this-arrow-function/package.json: |
+  {
+    "browserslist": "Chrome 80"
+  }
+commonjs/this-arrow-function/yarn.lock: ""
+commonjs/this-reference-wrapped/a.js: |
+  const b = require('./b');
+
+  output = [b.foo, b.bar, b.foobar];
+commonjs/this-reference-wrapped/b.js: |
+  this.foo = 5;
+
+  class X {
+    constructor() {
+      this.bar = 2;
+    }
+    x() {
+      this.bar = 2;
+    }
+  }
+
+  function f() {
+    this.bar = 2;
+  }
+
+  if (Date.now() > 0) {
+    this.foo += 1;
+  }
+
+  new f();
+  new X().x();
+
+
+  eval('this.foobar = 4');
+commonjs/this-reference/a.js: |
+  const b = require('./b');
+
+  output = [b.foo, b.bar];
+commonjs/this-reference/b.js: |
+  this.foo = 5;
+
+  class X {
+    constructor() {
+      this.bar = 2;
+    }
+    x() {
+      this.bar = 2;
+    }
+  }
+
+  function f() {
+    this.bar = 2;
+  }
+
+  if (Date.now() > 0) {
+    this.foo += 1;
+  }
+
+  new f();
+  new X().x();
+commonjs/tree-shaking-no-unknown-objects/a.js: |
+  module.exports = window;
+commonjs/tree-shaking-no-unknown-objects/index.js: |
+  const foo = require('./a');
+  foo.bar = 42;
+  output = window.bar;
+commonjs/tree-shaking-string/a.js: |
+  output = [require('./b').foo, require('./c').foo];
+commonjs/tree-shaking-string/b.js: |
+  exports['foo'] = 2;
+  exports['bar'] = 3;
+commonjs/tree-shaking-string/c.js: |
+  module.exports['foo'] = 20;
+  module.exports['bar'] = 30;
+commonjs/tree-shaking/a.js: |
+  output = require('./b').foo;
+commonjs/tree-shaking/b.js: |
+  exports.foo = 2;
+  exports.bar = 3;
+commonjs/wrap-aliases/a.js: |
+  try {
+      output = require('foo')
+  }
+  catch(_) {
+      output = require('foo-bar')
+  }
+commonjs/wrap-aliases/node_modules/foo-bar/index.js: |
+  module.exports = 42
+commonjs/wrap-aliases/package.json: |-
+  {
+      "name": "a",
+      "browser": {
+          "foo": "foo-bar"
+      }
+  }
+commonjs/wrap-aliases/yarn.lock: ""
+commonjs/wrap-concat-order/a.js: |
+  sideEffect(1);
+  require("./b.js");
+  sideEffect(3);
+  if (Date.now() > 0) {
+  	sideEffect(4);
+  	require("./c.js");
+  	sideEffect(6);
+  }
+  sideEffect(7);
+commonjs/wrap-concat-order/b.js: |
+  sideEffect(2);
+commonjs/wrap-concat-order/c.js: |
+  sideEffect(5);
+commonjs/wrap-default-interop/async.js: |
+  import x from "./shared";
+  if (Date.now() > 0) {
+  	let x = require("./run-interop.js");
+  	sideEffect("async " + x.default);
+  }
+commonjs/wrap-default-interop/index.js: |
+  if (Date.now() < 0) {
+  	require("./run-cjs.js");
+  }
+
+  import("./async.js");
+commonjs/wrap-default-interop/run-cjs.js: |
+  "use strict";
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  sideEffect("run1");
+  exports.default = 123;
+commonjs/wrap-default-interop/run-interop.js: |
+  import x from "./run-cjs.js";
+  export default "c: " + x;
+commonjs/wrap-default-interop/shared.js: |
+  sideEffect("shared");
+commonjs/wrap-deps-circular/a.js: |
+  require('./b');
+  const AWS = require('./core');
+  AWS.test = 2;
+commonjs/wrap-deps-circular/b.js: |
+  require('./a');
+commonjs/wrap-deps-circular/c.js: |
+  function test() {
+    require('./a');
+  }
+commonjs/wrap-deps-circular/core.js: |
+  module.exports = {};
+commonjs/wrap-deps-circular/index.js: |
+  require('./a');
+  require('./c');
+
+  let AWS = require('./core');
+  output = AWS;
+commonjs/wrap-destructuring-array/a.js: |
+  (function(){
+    output = require('./b');
+  })();
+commonjs/wrap-destructuring-array/b.js: |
+  const x = [1, 2]
+  const [a, b] = x;
+
+  module.exports = [a, b];
+commonjs/wrap-destructuring-array/package.json: |
+  {
+      "private": true,
+      "browserslist": ["node 8"]
+  }
+commonjs/wrap-destructuring-array/yarn.lock: ""
+commonjs/wrap-destructuring-object/a.js: |
+  (function(){
+    output = require('./b');
+  })();
+commonjs/wrap-destructuring-object/b.js: |
+  const x = {
+    a: 4,
+    b: 2
+  }
+  const {a, b} = x;
+
+  module.exports = [a, b];
+commonjs/wrap-destructuring-object/package.json: |
+  {
+      "private": true,
+      "browserslist": ["node 8"]
+  }
+commonjs/wrap-destructuring-object/yarn.lock: ""
+commonjs/wrap-eval/a.js: |
+  const foo = require('./b');
+
+  output = foo;
+commonjs/wrap-eval/b.js: |
+  module.exports = 2;
+  eval('module.exports = 4');
+commonjs/wrap-expressions/a.js: |
+  let x = (sideEffect('before'), require('./require'), sideEffect('after'));
+commonjs/wrap-expressions/b.js: |
+  function before() {
+    sideEffect('before');
+    return 'before';
+  }
+
+  function after() {
+    sideEffect('after');
+    return 'after';
+  }
+
+  output = before() + ' ' + require('./require') + ' ' + after();
+commonjs/wrap-expressions/require.js: |
+  sideEffect('require');
+  module.exports = 'bar';
+commonjs/wrap-interop-url-import/a.js: |
+  function run() {
+  	return require("./b.js");
+  }
+
+  output = run().default;
+commonjs/wrap-interop-url-import/b.js: |
+  import logo from "url:./data.txt";
+
+  export default logo;
+commonjs/wrap-interop-url-import/data.txt: ""
+commonjs/wrap-module-codesplit/a.js: |
+  if (Date.now() < 0) {
+  	let x = require("./c.js");
+  }
+
+  output = import("./b.js");
+commonjs/wrap-module-codesplit/b.js: |
+  const x = require("./c.js");
+
+  module.exports = x;
+commonjs/wrap-module-codesplit/c.js: |
+  module.exports = 2;
+commonjs/wrap-module-computed/a.js: |
+  exports.foo = 2;
+  output = module['exports'];
+commonjs/wrap-module-obj-literal-require/a.js: |
+  const v = require("./b.js");
+
+  output = v;
+commonjs/wrap-module-obj-literal-require/b.js: |
+  const value = require("./c.js");
+
+  const obj = {
+    value,
+  };
+
+  exports = module.exports = obj.value;
+commonjs/wrap-module-obj-literal-require/c.js: |
+  module.exports = 1234;
+commonjs/wrap-module/a.js: |
+  exports.foo = 2;
+  output = module;
+commonjs/wrap-optional/a.js: |
+  try {
+      output = require('noop')
+  }
+  catch(_) {
+      output = 42
+  }
+commonjs/wrap-return/a.js: |
+  const foo = require('./b');
+
+  output = foo;
+commonjs/wrap-return/b.js: |
+  module.exports = 2;
+  return;
+  module.exports = 4;
+commonjs/wrap-typeof-require/a.js: |
+  const b = require("./b");
+  output = b();
+commonjs/wrap-typeof-require/b.js: |
+  if (typeof require === "function") {
+    var jSuites = require("./c.js");
+  }
+  let x = () => {
+    return jSuites + eval("1");
+  };
+  module.exports = x;
+commonjs/wrap-typeof-require/c.js: |
+  module.exports = "c";
+commonjs/wrap-unused/a.js: |
+  if (Date.now() > 0) {
+  	output = require("./b").foo();
+  }
+commonjs/wrap-unused/b.js: |
+  function foo() {
+    return 1;
+  }
+
+  function bar() {
+    return 2;
+  }
+
+  exports.foo = foo;
+  exports.bar = bar;
+commonjs/wrap-var-hoisting/a.js: |
+  if (Date.now() > 0) {
+  	const b = require("./b");
+  	output = b.run();
+  }
+commonjs/wrap-var-hoisting/b.js: |
+  for(var BigIntSupported in [0, 1]){}
+  for (var i = 0, len = 100; i < len; ++i) {}
+
+  if (BigIntSupported) {
+  	var bigIntValue = () => true;
+    let inner_let = false;
+    if (inner_let){
+      throw new Error();
+    }
+  }
+
+  function testIsHoisted() {
+  	return BigIntSupported && bigIntValue();
+  }
+
+  const f1 = () => {
+    var f1_var = 0;
+  };
+  const f2 = function() {
+    var f2_var = 0;
+  };
+  function f3() {
+    var f3_var = 0;
+  }
+  const o = {
+    f4() {	
+      var f4_var = 0;
+    }
+  };
+  class c1 {
+    method() {
+      var c1_var = 0;
+    }
+  }
+  const c2 = class {
+    method() {
+      var c2_var = 0;
+    }
+  };
+
+  function run(){
+  	f1();
+  	f2();
+  	f3();
+  	o.f4();
+  	
+  	return testIsHoisted(c1, c2);
+  }
+
+  exports.run = run;
+es6/ancestor-reexport/a.js: |
+  import {createAndFireEvent} from './b.js';
+  const createAndFireEventOnAtlaskit = createAndFireEvent('index');
+  output = import('./async.js').then(m => [
+  	createAndFireEventOnAtlaskit(),
+  	m.default(),
+  ]);
+es6/ancestor-reexport/async.js: |
+  import {createAndFireEvent} from './b.js';
+  var createAndFireEventOnAtlaskit = createAndFireEvent('async');
+  export default () => createAndFireEventOnAtlaskit();
+  export const a = 1;
+es6/ancestor-reexport/b.js: |
+  export {default as createAndFireEvent} from './c.js';
+  export const b = 1;
+es6/ancestor-reexport/c.js: |
+  export default function(name) {
+  	return () => name;
+  }
+es6/ancestor-reexport2/a.js: |
+  import { foo } from "./library/a.js";
+
+  output = import("./async.js").then(v => [foo, v.default]);
+es6/ancestor-reexport2/async.js: |
+  import { foo } from "./library/a.js";
+
+  export default foo;
+es6/ancestor-reexport2/b.js: |
+  import { foo } from "./library/b.js";
+
+  output = import("./async.js").then(v => [foo, v.default]);
+es6/ancestor-reexport2/library/a.js: |
+  export * from "./b.js";
+es6/ancestor-reexport2/library/b.js: |
+  export { foo } from "./c.js";
+es6/ancestor-reexport2/library/c.js: |
+  export const foo = 123;
+es6/async-internalize-unused/a.js: |
+  import c from "./c.js";
+  import b from "./b.js";
+
+  output = b + c;
+es6/async-internalize-unused/b.js: |
+  import("./c.js");
+
+  export default "b";
+es6/async-internalize-unused/c.js: |
+  export default "c";
+es6/async-interop-conditional/async.js: |
+  import value from './value';
+
+  let out;
+  switch (3) {
+    case false:
+      value.foo;
+      break;
+    case 3:
+      out = value.foo;
+      break;
+  }
+
+  export default out;
+es6/async-interop-conditional/index.js: |
+  import value from './value';
+
+  output = import('./async').then(mod => mod.default);
+es6/async-interop-conditional/value.js: |
+  module.exports = {foo: 42};
+es6/async-named-import-ns-reexport/async.js: |
+  import {ns, ns2} from './reexports';
+
+  export default [ns.foo, ns2.foo];
+es6/async-named-import-ns-reexport/index.js: |
+  import {ns, ns2} from './reexports';
+
+  output = import('./async').then(mod => [ns.foo, ns2.foo].concat(mod.default));
+es6/async-named-import-ns-reexport/ns.js: |
+  export const foo = 42;
+es6/async-named-import-ns-reexport/reexports.js: |
+  import * as ns from './ns';
+
+  export {ns};
+  export * as ns2 from './ns';
+es6/cache-add-specifier/a.1.js: |
+  import {foo, bar} from "./b";
+
+  output = foo + bar;
+es6/cache-add-specifier/a.js: |
+  import {foo} from "./b";
+
+  output = foo;
+es6/cache-add-specifier/b.js: |
+  export const foo = "foo";
+  export const bar = "bar";
+es6/circular-wrap/a.mjs: |
+  import "./b.mjs";
+  output('a');
+es6/circular-wrap/b.mjs: |
+  import "./c.mjs";
+  output('b');
+es6/circular-wrap/c.mjs: |
+  import "./d.mjs";
+  eval('output("c")');
+es6/circular-wrap/d.mjs: |-
+  import "./a.mjs";
+  output('d');
+es6/circular-wrap/index.mjs: |
+  import "./a.mjs";
+  output('index');
+es6/circular/a.mjs: |
+  import { run } from "./b.mjs";
+
+  output = run();
+es6/circular/b.mjs: |
+  export const foo = "foo";
+  export { run } from "./c.mjs";
+es6/circular/c.mjs: |
+  import { foo } from "./b.mjs";
+  export const run = () => "c:" + foo;
+es6/circular2/a.mjs: |
+  import { run } from "./b.mjs";
+
+  output = run();
+es6/circular2/b.mjs: |
+  import { foo as bar } from "./c.mjs";
+
+  export const foo = "foo";
+
+  export function run() {
+  	return `b:${foo}:${bar}`;
+  }
+es6/circular2/c.mjs: |
+  export { foo } from "./b.mjs";
+es6/circular3/a.mjs: |
+  import { h } from "./b.mjs";
+
+  output = h;
+es6/circular3/b.mjs: |
+  export { a as b } from "./c.mjs";
+  export { d as e } from "./c.mjs";
+  export { g as h } from "./c.mjs";
+es6/circular3/c.mjs: |
+  export const a = 123;
+
+  export { c as d } from "./d.mjs";
+  export { f as g } from "./d.mjs";
+es6/circular3/d.mjs: |
+  export { b as c } from "./b.mjs";
+  export { e as f } from "./b.mjs";
+es6/class-selfreference/a.js: |
+  class Bar {
+    constructor() {
+      this.foo = 'bar';
+    }
+
+    duplicate() {
+      return new Bar();
+    }
+  }
+
+  output = new Bar().duplicate();
+es6/class-selfreference/package.json: |
+  {
+    "browserslist": ["last 1 Chrome version"]
+  }
+es6/class-selfreference/yarn.lock: ""
+es6/codesplit-reexports/library/bar.js: |
+  export const bar = 3;
+es6/codesplit-reexports/library/bar2.js: |
+  export const bar2 = 30;
+es6/codesplit-reexports/library/foo.js: |
+  export const foo = 2;
+es6/codesplit-reexports/library/foo2.js: |+
+  export const foo2 = 20;
+
+es6/codesplit-reexports/library/index.js: |
+  export { foo } from "./foo";
+  export * from "./bar";
+
+  export { foo2 as foo3 } from "./foo2";
+  export { bar2 as bar3 } from "./bar2";
+
+  export const own = 3;
+es6/codesplit-reexports/library/package.json: |
+  {
+    "name": "lib",
+    "sideEffects": false
+  }
+es6/codesplit-reexports/src/async.js: |
+  import { foo3, bar3 } from "../library";
+
+  export default [foo3, bar3];
+es6/codesplit-reexports/src/entry.js: |
+  import { foo, bar } from "../library";
+
+  output = import("./async").then(v => [v.default, [foo, bar]])
+es6/commonjs-exports-reassign/a.js: |
+  const b = require('./b')
+
+  output = [b.fn(), b];
+es6/commonjs-exports-reassign/b.js: |
+  exports.fn = () => 'foobar';
+  exports = 42;
+es6/conditional-import-reference/a.js: module.exports = 'hello';
+es6/conditional-import-reference/index.js: |-
+  import a from './a';
+
+  if (false) {
+    console.log(a);
+  }
+
+  output = a;
+es6/conditional-import-side-effect-free-reexport/foo/bar.mjs: |
+  export const bar = 42;
+es6/conditional-import-side-effect-free-reexport/foo/foo.mjs: |
+  export {bar} from './bar.mjs';
+es6/conditional-import-side-effect-free-reexport/foo/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/conditional-import-side-effect-free-reexport/index.mjs: |
+  output = import('./foo/foo.mjs').then(({bar}) => bar);
+es6/default-export-anonymous/a.js: |
+  import foo from './b';
+
+  output = foo();
+es6/default-export-anonymous/b.js: |
+  export default function() {
+    return 2;
+  }
+es6/default-export-class-rename/a.js: |
+  import Test from './b';
+  output = Test.create();
+es6/default-export-class-rename/b.js: |
+  export default class Test {
+    constructor() {
+      this.foo = 'bar';
+    }
+
+    static create() {
+      return new Test();
+    }
+  }
+es6/default-export-class-rename/package.json: |
+  {
+    "name": "default-export-class-rename",
+    "private": true,
+    "browserslist": ["last 1 Chrome version"]
+  }
+es6/default-export-class-rename/yarn.lock: ""
+es6/default-export-declaration/a.js: |
+  import foo from './b';
+
+  output = foo();
+es6/default-export-declaration/b.js: |
+  export default function foo() {
+    return 2;
+  }
+es6/default-export-expression/a.js: |
+  import foo from './b';
+
+  output = foo;
+es6/default-export-expression/b.js: |
+  export default 2;
+es6/default-export-variable/a.js: |
+  import foo from './b';
+
+  output = foo;
+es6/default-export-variable/b.js: |
+  var foo = 2;
+  export default foo;
+es6/double-esmodule/foo.js: |
+  export const __esModule = true;
+
+  export default 'default';
+es6/double-esmodule/index.js: |
+  import * as foo from './foo';
+
+  output = foo['def' + (Date.now() > 0 ? 'ault' : '')];
+es6/dynamic-default-interop/a.js: |
+  import shared from './shared';
+
+  output = import('./b').then(b => b.out + shared);
+es6/dynamic-default-interop/b.js: |
+  import shared from './shared';
+
+  export var out = 2 + shared;
+es6/dynamic-default-interop/shared.js: |
+  module.exports = 2;
+es6/dynamic-import-dynamic/a.js: |
+  output = import("./b.js").then(b => b.default);
+es6/dynamic-import-dynamic/b.js: |
+  export default import('./c.js').then(b => b.default + 1);
+es6/dynamic-import-dynamic/c.js: |
+  export default 122;
+es6/dynamic-import/a.js: |
+  import {compute} from './c'
+
+  var b = import('./b');
+
+  output = b.then(function ({foo, bar}) {
+    return compute(foo, 0) + compute(bar, 0);
+  });
+es6/dynamic-import/b.js: |
+  import {compute} from './c'
+
+  export var foo = compute(2, 1);
+  export var bar = compute(3, 1);
+es6/dynamic-import/c.js: |
+  export function compute(x, q) {
+      return q ? x * 2 : x / 2
+  }
+es6/empty-module/a.js: |
+  import b from './b';
+
+  output = {b};
+es6/empty-module/b.js: ""
+es6/empty-ts/index.ts: |
+  output = import('./lib').then(({test}) => test);
+es6/empty-ts/lib.ts: |
+  export * from './test';
+  export * from './types';
+es6/empty-ts/test.ts: |
+  import {Test} from './types';
+
+  export function test(test: Test) {
+    return test.foo;
+  }
+es6/empty-ts/types.ts: |
+  export interface Test {
+    foo: string
+  }
+es6/export-before-declaration/a.js: |
+  import * as b from "./b.js";
+  output = b;
+es6/export-before-declaration/b.js: |
+  export { x };
+  const x = 2;
+es6/export-binding-identifiers/a.js: |
+  import {test} from './b'
+
+  output = test(exports => Object.keys(exports))
+es6/export-binding-identifiers/b.js: |
+  export function test(arg) {
+      return arg(exports)
+  }
+es6/export-default-class-wrapped/a.js: |
+  import b from "./b.js";
+
+  output = b;
+es6/export-default-class-wrapped/b.js: |
+  export default class Log {}
+  Log.VERSION = 1234;
+
+  sideEffectNoop(module)
+es6/export-default-function-wrapped/a.js: |
+  import b from "./b.js";
+
+  output = b;
+es6/export-default-function-wrapped/b.js: |
+  export default function log(){}
+  log.VERSION = 1234;
+
+  sideEffectNoop(module)
+es6/export-default-global/a.js: |
+  import b from "./b.js";
+
+  output = b;
+es6/export-default-global/b.js: |
+  export default Test;
+es6/export-default-js-global/a.js: |
+  import b from "./b.js";
+
+  output = b;
+es6/export-default-js-global/b.js: |
+  export default Set;
+es6/export-default-live/a.js: |
+  import foo, {change} from "./b.js";
+  output(foo);
+  change(10);
+  output(foo);
+es6/export-default-live/b.js: |
+  export default class foo {}
+  foo = 5;
+
+  export function change(v) {
+  	foo = v;
+  }
+es6/export-intermediate-wrapped-reexports/async.js: |
+  export default import("./foo/foo.mjs")
+    .then(({ bar }) => bar);
+es6/export-intermediate-wrapped-reexports/foo/bar.mjs: |
+  export * from "./baz.mjs";
+es6/export-intermediate-wrapped-reexports/foo/baz.mjs: |
+  export const bar = 42;
+es6/export-intermediate-wrapped-reexports/foo/foo.mjs: |
+  export * from "./bar.mjs";
+es6/export-intermediate-wrapped-reexports/foo/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/export-intermediate-wrapped-reexports/index.html: |
+  <!DOCTYPE html>
+  <html>
+  <body>
+    <script type="module" src="./index.mjs"></script>
+  </body>
+  </html>
+es6/export-intermediate-wrapped-reexports/index.mjs: |
+  import { bar } from "./foo/foo.mjs";
+
+  output = [bar, import("./async").then(mod => mod.default)];
+es6/export-named-empty/a.js: |
+  output = 2;
+  export {};
+es6/export-undefined/a.js: |
+  export {Test};
+es6/import-commonjs-default/a.js: |
+  import foo from './wrapped'
+  import bar from './notwrapped'
+
+  function calc() {
+    return foo() + bar();
+  }
+
+  output = calc() + ':' + foo() + ':' + bar();
+es6/import-commonjs-default/notwrapped.js: |
+  module.exports = () => 'bar'
+es6/import-commonjs-default/wrapped.js: |
+  // triggers wrapping
+  eval('void 0')
+  module.exports = () => 'foo'
+es6/import-commonjs-export-individual-default/a.js: |
+  import x from "./b1.js";
+  import y from "./b2.js";
+  import z from "./b3.js";
+
+  output = {x, y, z};
+es6/import-commonjs-export-individual-default/b1.js: |
+  exports.foo = 1;
+  exports.default = 2;
+es6/import-commonjs-export-individual-default/b2.js: |
+  exports.__esModule = true;
+
+  exports.foo = 3;
+  exports.default = 4;
+es6/import-commonjs-export-individual-default/b3.js: |
+  Object.defineProperty(exports, '__esModule', {value: true});
+
+  exports.foo = 5;
+  exports.default = 6;
+es6/import-commonjs-export-individual/a.js: |
+  import {getId} from "./b.js";
+
+  output = getId();
+es6/import-commonjs-export-individual/b.js: |
+  import { name, version } from './c.js';
+  function getId() {
+      return name + ":"+ version
+  };
+  export { name, version, getId };
+es6/import-commonjs-export-individual/c.js: |
+  module.exports.name = "name";
+  module.exports.version = "1.2.3";
+es6/import-commonjs-export-object-default/a.js: |
+  import x from "./b1.js";
+  import y from "./b2.js";
+
+  output = {x, y};
+es6/import-commonjs-export-object-default/b1.js: |
+  module.exports = {
+    foo: 1,
+    default: 2
+  };
+es6/import-commonjs-export-object-default/b2.js: |
+  module.exports = Object.defineProperty({
+    foo: 3,
+    default: 4
+  }, '__esModule', {value: true});
+es6/import-commonjs-export-object/a.js: |
+  import {getId} from "./b.js";
+
+  output = getId();
+es6/import-commonjs-export-object/b.js: |
+  import { name, version } from './c.js';
+  function getId() {
+      return name + ":"+ version
+  };
+  export { name, version, getId };
+es6/import-commonjs-export-object/c.js: |
+  module.exports = {
+  	name: "name",
+  	version: "1.2.3",
+  };
+es6/import-commonjs-missing/a.js: |
+  import { x } from "./b.js";
+
+  output = x;
+es6/import-commonjs-missing/b.js: |
+  module.exports.y = 2;
+es6/import-local-assign/b.js: |
+  export let foo = 2;
+  export default 4;
+es6/import-local-assign/default.js: |
+  import b from './b';
+  b = 2;
+es6/import-local-assign/destructure-assign.js: |
+  import {foo} from './b';
+  ({bar: foo} = {bar: 3})
+es6/import-local-assign/multiple.js: |
+  import {foo} from './b';
+  foo = 2;
+  foo = 4;
+es6/import-local-assign/named.js: |
+  import {foo} from './b';
+  foo = 2;
+es6/import-local-assign/namespace.js: |
+  import * as b from './b';
+  b = 2;
+es6/import-missing/a.js: |
+  import {foo} from "./b.js";
+
+  output = foo;
+es6/import-missing/b.js: |
+  export const bar = 1;
+es6/import-multiple-wildcards/a.js: |
+  import * as all from '../re-export-all-multiple/b'
+
+  // Don't do the the sum here to prevent treeshaking optimizations
+  output = all
+es6/import-multiple-wrapped/a.js: |
+  import "./b.js";
+  import "./b.js";
+  import "./b.js";
+  import "./b.js";
+  import "./b.js";
+  import "./b.js";
+  import "./b.js";
+  import { v1 } from "./b.js";
+  import { v2 } from "./b.js";
+  import { v3 } from "./b.js";
+  import { v4 } from "./b.js";
+  import { v5 } from "./b.js";
+
+  export const result = v1 + v2 + v3 + v4 + v5;
+es6/import-multiple-wrapped/b.js: |
+  export const v1 = 1;
+  export const v2 = 2;
+  export const v3 = 3;
+  export const v4 = 4;
+  export const v5 = 5;
+es6/import-multiple-wrapped/index.js: |
+  output = require("./a.js").result;
+es6/import-namespace-commonjs-transpiled/a.js: |
+  import * as all from './b';
+
+  output = all;
+es6/import-namespace-commonjs-transpiled/b.js: |
+  export * from './c';
+
+  export const foo = 1;
+es6/import-namespace-commonjs-transpiled/c.js: |
+  Object.defineProperty(module.exports, "__esModule", { value: true });
+
+  module.exports.default = 2;
+  module.exports.bar = 3;
+es6/import-namespace-commonjs/a.js: |+
+  import {foo} from './c';
+
+  output = import('./b').then(function (b) {
+    return foo + b.foo;
+  });
+
+es6/import-namespace-commonjs/b.js: |
+  import * as c from './c';
+
+  module.exports = c;
+es6/import-namespace-commonjs/c.js: |
+  exports.foo = 2;
+es6/import-namespace-external/a.js: |
+  import * as lodash from "./b";
+
+  let x = lodash;
+
+  export default x.add(10,2);
+es6/import-namespace-external/b.js: |
+  export * from "lodash";
+es6/import-namespace-external/package.json: |
+  {
+      "default": "dist/index.js",
+      "targets": {
+          "default": {
+              "isLibrary": true,
+              "context": "node"
+          }
+      },
+      "dependencies": {
+          "lodash": "*"
+      }
+  }
+es6/import-namespace-external/yarn.lock: ""
+es6/import-namespace-sideEffects/index.js: |
+  import * as lib from "./other";
+
+  output = lib;
+es6/import-namespace-sideEffects/other/exports.js: |
+  export { a } from "./version";
+  export { b } from "./version2";
+es6/import-namespace-sideEffects/other/index.js: |
+  export * from "./exports";
+
+  export const Main = "main";
+es6/import-namespace-sideEffects/other/package.json: |
+  {
+  	"name": "lib",
+  	"private": true,
+  	"sideEffects": false
+  }
+es6/import-namespace-sideEffects/other/version.js: |
+  export var a = "foo";
+es6/import-namespace-sideEffects/other/version2.js: |
+  export var b = "bar";
+es6/import-namespace-static-member/a.js: |
+  import * as test from './library/index.js';
+
+  output = test.foo + test['foobar'];
+es6/import-namespace-static-member/b.js: |
+  import * as b from "./library/index.js";
+
+  let val = "foo";
+  output = b[val];
+es6/import-namespace-static-member/library/c1.js: |
+  sideEffect("c1");
+  export const foo = "foo";
+es6/import-namespace-static-member/library/c2.js: |
+  sideEffect("c2");
+  export const bar = "bar";
+es6/import-namespace-static-member/library/c3.js: |
+  sideEffect("c3");
+  export const foobar = "foobar";
+es6/import-namespace-static-member/library/index.js: |
+  export * from "./c1.js";
+  export * from "./c2.js";
+  export * from "./c3.js";
+es6/import-namespace-static-member/library/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/import-namespace-wrapped-self/a.js: |
+  if (Date.now() > 0) {
+  	const { f } = require("./b.js");
+  	output = f();
+  }
+es6/import-namespace-wrapped-self/b.js: |
+  import * as ns from "./b.js";
+
+  export function f() {
+  	return foo(ns).f === f;
+  }
+
+  function foo(x) {
+  	return x;
+  }
+es6/import-namespace-wrapped/a.js: |
+  if (Date.now() < 0) {
+  	require("./c.js");
+  }
+  import * as b from "./b";
+
+  output = b.foo;
+es6/import-namespace-wrapped/b.js: |
+  export * from "./c";
+es6/import-namespace-wrapped/c.js: |
+  export const foo = 1;
+  export const bar = 2;
+es6/import-namespace/a.js: |
+  import * as test from './b';
+
+  let x = test;
+
+  output = x.foo;
+es6/import-namespace/b.js: |
+  export var foo = 2;
+es6/import-self/a.js: |
+  import { b } from "./b.js";
+
+  output = b;
+es6/import-self/b.js: |
+  import * as other from "./b.js";
+  export const a = 3;
+  export const b = other.a + 1;
+es6/import-wrapped-bundle-unused/a.js: |
+  if (Date.now() < 0) {
+  	require("./c.js");
+  }
+
+  import("./b.js");
+es6/import-wrapped-bundle-unused/b.js: |
+  import "./c.js";
+es6/import-wrapped-bundle-unused/c.js: |
+  sideEffect();
+es6/import-wrapped/a.js: |
+  import {foo} from './b'
+
+  output = foo
+es6/import-wrapped/b.js: |
+  export const foo = eval("'bar'")
+es6/interop-async/client.js: |
+  export default Buffer.from("client");
+es6/interop-async/index.html: |
+  <script type="module" src="./index.js"></script>
+es6/interop-async/index.js: |
+  import c from "./client.js";
+
+  output = import("./viewer.js")
+  	.then((v) => v.default)
+  	.then((v) => [c.toString(), v[0].toString(), v[1].toString()]);
+es6/interop-async/viewer.js: |
+  export default import("./client.js").then((c) => [
+  	c.default,
+  	Buffer.from("viewer"),
+  ]);
+es6/interop-pure/a.js: |
+  import x from "./b.js";
+
+  let value = x;
+  if (false) {
+  	console.log(value);
+  }
+es6/interop-pure/b.js: |
+  module.exports = "some unused data"
+es6/jsx-pragma/a.jsx: |
+  import React from './react';
+
+  output = <span test="working">Test</span>;
+es6/jsx-pragma/react.jsx: |-
+  // mock for React.createElement
+
+  export default {
+  	createElement(type, props, children){
+  		return {
+  			type, props, children
+  		};
+  	}
+  }
+es6/live-bindings-cross-bundle/a.html: |
+  <script type="module" src="a.js"></script>
+es6/live-bindings-cross-bundle/a.js: |
+  import "./library/a.js";
+  import { a } from "./library/index.js";
+
+  output = a;
+es6/live-bindings-cross-bundle/b.html: |
+  <script type="module" src="b.js"></script>
+es6/live-bindings-cross-bundle/b.js: |
+  import "./library/a.js";
+  import { a } from "./library/index.js";
+
+  output = a;
+es6/live-bindings-cross-bundle/library/a.js: |
+  import { b } from "./index.js";
+  export var a = "aaa";
+es6/live-bindings-cross-bundle/library/b.js: |
+  export var b = "bbb";
+es6/live-bindings-cross-bundle/library/index.js: |
+  export { a } from "./a.js";
+  export { b } from "./b.js";
+es6/live-bindings-cross-bundle/package.json: |
+  {
+  	"@atlaspack/bundler-default": {
+  		"minBundleSize": 0
+  	}
+  }
+es6/live-bindings-cross-bundle/yarn.lock: ""
+es6/live-bindings-reexports-namespace/a.js: |
+  import * as x from "./b.js";
+
+  function get(obj, prop) {
+  	return obj[prop];
+  }
+
+  let a = get(x, "v");
+  get(x, "update")();
+  let b = get(x, "v");
+
+  output = [a, b];
+es6/live-bindings-reexports-namespace/b.js: |
+  export {v, update} from "./c.js";
+es6/live-bindings-reexports-namespace/c.js: |
+  export let v = 1;
+  export function update() {
+  	v++;
+  }
+es6/live-bindings/a.js: |
+  import b, {foo, bar, changeFoo} from './b';
+
+  changeFoo(3);
+
+  output = b + foo + bar;
+es6/live-bindings/b.js: |
+  var foo = 2;
+  export default foo;
+  export {foo, foo as bar};
+
+  export function changeFoo(v) {
+    foo = v;
+  }
+es6/multi-entry-duplicates/one.js: |-
+  import { getValue, add } from './shared';
+
+  add();
+
+  output = import('./two').then(() => getValue());
+es6/multi-entry-duplicates/shared.js: |
+  let counter = 0;
+
+  export function getValue() {
+    return counter;
+  }
+
+  export function add() {
+    counter++;
+  }
+es6/multi-entry-duplicates/two.js: |-
+  import { getValue, add } from './shared';
+
+  add();
+es6/multi-export/a.js: |
+  import b, {foo, bar} from './b';
+
+  output = b + foo + bar;
+es6/multi-export/b.js: |
+  var foo = 2;
+  export default foo;
+  export {foo, foo as bar};
+es6/multiple-ancestors-wrap/index.js: |
+  import value from './shouldBeWrapped';
+  import otherValue from './wraps';
+
+  output = [value, otherValue];
+es6/multiple-ancestors-wrap/shouldBeWrapped.js: |
+  export default 42;
+es6/multiple-ancestors-wrap/wraps.js: |
+  import value from './shouldBeWrapped';
+
+  eval('void 0');
+
+  export default value + 1;
+es6/name-clash/a.js: |
+  import {foo} from './b'
+
+  output = foo()
+es6/name-clash/b.js: |
+  var $exports = module.exports = {}
+
+  $exports.foo = () => 'bar'
+es6/named-export-declaration/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+es6/named-export-declaration/b.js: |
+  export var foo = 2;
+es6/named-export-variable-rename-wrapped/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+es6/named-export-variable-rename-wrapped/b.js: |
+  var bar = module && 2;
+  export {bar as foo};
+es6/named-export-variable-rename/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+es6/named-export-variable-rename/b.js: |
+  var bar = 2;
+  export {bar as foo};
+es6/named-export-variable/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+es6/named-export-variable/b.js: |
+  var foo = 2;
+  export {foo};
+es6/no-reexport-default/a.js: |
+  export {default} from './b.js';
+  export * from './b.js';
+
+  export {default as other} from './c.js';
+  export * from './c.js';
+es6/no-reexport-default/async.js: |
+  import _default, {other} from './a.js';
+
+  sideEffectNoop(_default, other);
+
+  export default _default;
+es6/no-reexport-default/b.js: |
+  export default 42;
+es6/no-reexport-default/c.js: |
+  export default 99;
+es6/no-reexport-default/index.js: |
+  import _default, {other} from './a.js';
+
+  output = import('./async').then(mod => mod.default);
+es6/no-reexport-esmodule/a.js: |
+  module.exports.foo = 42;
+  module.exports.__esModule = true;
+es6/no-reexport-esmodule/async.js: |
+  export * from './a';
+es6/no-reexport-esmodule/index.js: |
+  import * as a from './a.js';
+
+  output = import('./async').then(mod => mod.__esModule);
+es6/non-ascii-identifiers/a.js: |
+  const ɵ2 = 1;
+  const ɵ3 = 2;
+  const ꝍ2 = 3
+  const ꝍ3 = 4
+
+  output = [ɵ2, ɵ3, ꝍ2, ꝍ3];
+es6/non-deterministic-bundle-hashes/index.html: |
+  <!DOCTYPE html>
+  <html>
+  <body>
+    <script type="module" src="./index.js"></script>
+  </body>
+  </html>
+es6/non-deterministic-bundle-hashes/index.js: |
+  import {foo,bar} from './library';
+
+  function other() {
+    return foo+bar;
+  }
+
+  export {other};
+es6/non-deterministic-bundle-hashes/library/bar.js: |
+  import {baz, bag} from '../utils';
+
+  function bar() {
+    return baz+bag;
+  }
+
+  export {bar};
+es6/non-deterministic-bundle-hashes/library/foo.js: |
+  import {bag} from '../utils';
+
+  function foo() {
+    return bag;
+  }
+
+  export {foo};
+es6/non-deterministic-bundle-hashes/library/index.js: |
+  export {foo} from './foo';
+  export {bar} from './bar';
+es6/non-deterministic-bundle-hashes/library/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/non-deterministic-bundle-hashes/utils/bag.js: |
+  export function bag() {
+    return 'bag';
+  };
+
+  export function baz() {
+    return bag() + 'baz';
+  }
+es6/non-deterministic-bundle-hashes/utils/empty.js: ""
+es6/non-deterministic-bundle-hashes/utils/index.js: |
+  export * from './bag';
+  export * from './empty';
+es6/non-deterministic-bundle-hashes/utils/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/non-deterministic-bundle-hashes/yarn.lock: ""
+es6/non-identifier-symbol-name/a.js: |
+  import { "ab c" as x } from "./b.js";
+
+  output = x;
+es6/non-identifier-symbol-name/b.js: |
+  const x = 1;
+  export { x as "ab c" };
+es6/pure-assignment/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+es6/pure-assignment/b.js: |
+  export const foo = 2;
+
+  export function bar() {}
+  bar.displayName = 'hello';
+es6/raw-url/foo.png: file://<root>/assets/es6/raw-url/foo.png
+es6/raw-url/index-import.js: |
+  import assetUrl from 'url:./foo.png';
+
+  output = assetUrl;
+es6/raw-url/index-reexport.js: |
+  import {assetUrl} from './reexports';
+
+  output = assetUrl;
+es6/raw-url/reexports.js: |
+  export {default as assetUrl} from 'url:./foo.png';
+es6/re-export-all-ambiguous/entry.js: |
+  if (Date.now() > 0) {
+  	output = require("./index.js").default;
+  }
+es6/re-export-all-ambiguous/index.js: |
+  import { b,c } from "./lib";
+
+  export default b + " " + c;
+es6/re-export-all-ambiguous/lib-a.js: |
+  module.exports = {};
+  // export const a = 89;
+es6/re-export-all-ambiguous/lib-b.js: |
+  export const b = 123;
+es6/re-export-all-ambiguous/lib-c.js: |
+  export { c2 as c } from "./lib-c2.js";
+es6/re-export-all-ambiguous/lib-c2.js: |
+  export const c2 = 999;
+es6/re-export-all-ambiguous/lib.js: |
+  export * from "./lib-a";
+  export * from "./lib-b";
+  export * from "./lib-c";
+es6/re-export-all-ambiguous/package.json: |
+  {
+  	"sideEffects": [
+  		"entry.js",
+  		"index.js",
+  		"lib-a.js",
+  		"lib-b.js",
+  		"lib-c2.js",
+  		"lib.js"
+  	]
+  }
+es6/re-export-all-empty-no-side-effects/index.js: |
+  import {bar} from 'lib';
+
+  output = `foo ${bar}`;
+es6/re-export-all-empty-no-side-effects/node_modules/lib/bar.js: |
+  export default 'bar';
+es6/re-export-all-empty-no-side-effects/node_modules/lib/empty.js: ""
+es6/re-export-all-empty-no-side-effects/node_modules/lib/index.js: |
+  export * from './other';
+  export * from './empty';
+es6/re-export-all-empty-no-side-effects/node_modules/lib/other.js: |
+  export {default as bar} from './bar';
+es6/re-export-all-empty-no-side-effects/node_modules/lib/package.json: |
+  {
+    "name": "lib",
+    "module": "./index.js",
+    "sideEffects": false
+  }
+es6/re-export-all-external/a.js: |
+  import {add} from "./b";
+
+  output = add(1, 2)
+es6/re-export-all-external/b.js: |
+  export * from "lodash";
+es6/re-export-all-external/package.json: |
+  {
+    "engines": {
+      "node": ">= 10"
+    }
+  }
+es6/re-export-all-external/yarn.lock: ""
+es6/re-export-all-fallback-1/empty.js: ""
+es6/re-export-all-fallback-1/index.js: |
+  import { mergeWith } from "./lib";
+  output = mergeWith;
+es6/re-export-all-fallback-1/lib.js: |
+  export * from "./other";
+  export * from "./empty";
+es6/re-export-all-fallback-1/mergeWith.js: |
+  module.exports = 2;
+es6/re-export-all-fallback-1/other.js: |
+  export { default as mergeWith } from "./mergeWith";
+es6/re-export-all-fallback-2/a.js: |
+  module.exports = { a: 1 };
+es6/re-export-all-fallback-2/b.js: |
+  module.exports = { b: 2 };
+es6/re-export-all-fallback-2/index.js: |
+  import { b } from "./lib";
+
+  output = b;
+es6/re-export-all-fallback-2/lib.js: |
+  export * from "./a";
+  export * from "./b";
+es6/re-export-all-fallback-3/async.ts: |
+  import { FOO } from './re-exports';
+
+  sideEffectNoop(FOO)
+es6/re-export-all-fallback-3/entry.ts: |
+  import {doStuff} from './stuff';
+
+  output = doStuff();
+es6/re-export-all-fallback-3/foo.ts: |
+  export const FOO = 'FOO';
+es6/re-export-all-fallback-3/other/index.ts: |+
+  import {FOO, BAR, type MyString} from '../re-exports';
+
+  const myFunc = (): MyString => FOO + BAR;
+
+  let res = myFunc();
+
+  export const fooBar = (): MyString => res;
+
+es6/re-export-all-fallback-3/package.json: |
+  {
+    "sideEffects": [
+      "entry.ts"
+    ]
+  }
+es6/re-export-all-fallback-3/re-exports.ts: |+
+  export * from './foo';
+  export * from './rest';
+
+es6/re-export-all-fallback-3/rest/bar.js: |
+  export const BAR = 'BAR';
+es6/re-export-all-fallback-3/rest/hello.ts: |
+  export type Hello = 1 | 2;
+es6/re-export-all-fallback-3/rest/index.ts: |
+  export * from './bar';
+  export * from './myString';
+  export * from './hello';
+es6/re-export-all-fallback-3/rest/myString.ts: |
+  export type MyString = string;
+es6/re-export-all-fallback-3/stuff.ts: |
+  import {fooBar} from './other'
+  import {FOO, BAR, type MyString} from './re-exports'
+  import("./async");
+
+  const res = (): MyString => fooBar() + "!";
+  // $FlowFixMe
+  sideEffectNoop(res());
+
+  export const doStuff = res;
+es6/re-export-all-fallback-3/yarn.lock: ""
+es6/re-export-all-fallback-nested/a.js: |
+  module.exports = { a: 1 };
+es6/re-export-all-fallback-nested/b.js: |
+  module.exports = { b: 2 };
+es6/re-export-all-fallback-nested/c.js: |
+  module.exports = { c: 3 };
+es6/re-export-all-fallback-nested/d.js: |
+  module.exports = { d: 4 };
+es6/re-export-all-fallback-nested/index.js: |
+  import { b } from "./lib";
+  import { d } from "./lib2";
+
+  output = `${b} ${d}`
+es6/re-export-all-fallback-nested/lib.js: |
+  export * from "./lib1";
+  export * from "./lib2";
+es6/re-export-all-fallback-nested/lib1.js: |
+  export * from "./a";
+  export * from "./b";
+es6/re-export-all-fallback-nested/lib2.js: |
+  export * from "./c";
+  export * from "./d";
+es6/re-export-all-multiple/a.js: |
+  import {foo, bar, baz, a, b} from './b';
+
+  output = foo + bar + baz + a + b;
+es6/re-export-all-multiple/b.js: |
+  export * from './c';
+  export * from './d';
+  export var baz = 1;
+es6/re-export-all-multiple/c.js: |
+  export var foo = 2, bar = 3;
+es6/re-export-all-multiple/d.js: |
+  export var a = 4, b = 5;
+es6/re-export-all-override/a.js: |
+  import { foo, c } from "./b.js";
+
+  export default foo() + c;
+es6/re-export-all-override/b.js: |
+  import { foo as old } from "./c";
+  export * from "./c";
+
+  function foo() {
+  	return "fooB" + old();
+  }
+
+  export { foo };
+es6/re-export-all-override/c.js: |
+  export function foo() {
+  	return "fooC";
+  }
+
+  export const c = "C";
+es6/re-export-all-override/index.js: |
+  if (Date.now() > 0) {
+  	output = require("./a.js").default;
+  }
+es6/re-export-all/a.js: |
+  import {foo, bar, baz} from './b';
+
+  output = foo + bar + baz;
+es6/re-export-all/b.js: |
+  export * from './c';
+  export var baz = 1;
+es6/re-export-all/c.js: |
+  export var foo = 2, bar = 3;
+es6/re-export-bundle-boundary-side-effects/async.js: |
+  import {UI_EVENT_TYPE} from "./switcher";
+  export default UI_EVENT_TYPE;
+es6/re-export-bundle-boundary-side-effects/index.js: |
+  import { OPERATIONAL_EVENT_TYPE } from "./types";
+
+  output = import("./async").then(({default: v}) => [OPERATIONAL_EVENT_TYPE, v])
+es6/re-export-bundle-boundary-side-effects/switcher/index.js: |
+  import { UI_EVENT_TYPE } from "../types";
+  export { UI_EVENT_TYPE };
+es6/re-export-bundle-boundary-side-effects/switcher/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/re-export-bundle-boundary-side-effects/types/index.js: |
+  export var UI_EVENT_TYPE = "ui";
+  export var TRACK_EVENT_TYPE = "track";
+  export var SCREEN_EVENT_TYPE = "screen";
+  export var OPERATIONAL_EVENT_TYPE = "operational";
+  export var DEFAULT_SOURCE = "unknown";
+es6/re-export-bundle-boundary/async.js: |
+  import {UI_EVENT_TYPE} from "./switcher";
+  export default UI_EVENT_TYPE;
+es6/re-export-bundle-boundary/index.js: |
+  import { OPERATIONAL_EVENT_TYPE } from "./types";
+
+  output = import("./async").then(({default: v}) => [OPERATIONAL_EVENT_TYPE, v])
+es6/re-export-bundle-boundary/switcher/index.js: |
+  import { UI_EVENT_TYPE } from "../types";
+  export { UI_EVENT_TYPE };
+es6/re-export-bundle-boundary/types/index.js: |
+  export var UI_EVENT_TYPE = "ui";
+  export var TRACK_EVENT_TYPE = "track";
+  export var SCREEN_EVENT_TYPE = "screen";
+  export var OPERATIONAL_EVENT_TYPE = "operational";
+  export var DEFAULT_SOURCE = "unknown";
+es6/re-export-bundle-boundary2/async.js: |+
+  import { layers } from './library/index.js';
+
+  export default layers.a;
+
+es6/re-export-bundle-boundary2/index.js: |
+  import t from "./library/components.js";
+
+  output = import("./async.js").then((c) => [c.default, t().a]);
+es6/re-export-bundle-boundary2/library/components.js: |
+  import { layers } from './constants.js';
+  export default function(){
+  	return layers;
+  }
+es6/re-export-bundle-boundary2/library/constants.js: |
+  export const layers = {
+  	a: "foo",
+  };
+es6/re-export-bundle-boundary2/library/index.js: |
+  export * from "./constants.js";
+es6/re-export-bundle-boundary3/index.js: |
+  import { themed } from './theme/components.js';
+
+  output = import('./media-card/index.js').then(m => [m.default, themed()])
+es6/re-export-bundle-boundary3/media-card/index.js: |
+  import { layers } from '../theme/index.js';
+
+  export default Object.keys(layers);
+es6/re-export-bundle-boundary3/theme/components.js: |
+  export { createTheme } from "./createTheme.js";
+  export function themed() {
+  	return "themed";
+  }
+es6/re-export-bundle-boundary3/theme/createTheme.js: |
+  export function createTheme() {
+      return "foo";
+  }
+es6/re-export-bundle-boundary3/theme/index.js: |
+  export var layers = {
+      a: 1,
+      b: 2
+  };
+  export * from './createTheme.js';
+es6/re-export-commonjs-wildcard/a.js: |
+  import { createElement } from "./b.js";
+
+  output = createElement();
+es6/re-export-commonjs-wildcard/b.js: |
+  export * from './c.js';
+es6/re-export-commonjs-wildcard/c.js: |
+  import { createElement } from './d.js';
+
+  export { createElement };
+es6/re-export-commonjs-wildcard/d.js: |
+  module.exports = {
+  	createElement: function () {
+  		return 'foo';
+  	},
+  };
+es6/re-export-commonjs/a.js: |
+  import {foo} from './b'
+
+  output = foo()
+es6/re-export-commonjs/b.js: |
+  export {default as foo} from './c'
+es6/re-export-commonjs/c.js: |
+  Object.defineProperty(exports, '__esModule', {
+      value: true
+  })
+  Object.defineProperty(exports, 'default', {
+      value: () => 'foo'
+  })
+es6/re-export-default-hybrid/a.js: |
+  import b from './b';
+
+  output = b.foo + b.bar;
+es6/re-export-default-hybrid/b.js: |
+  import * as c from './c';
+  export default c;
+es6/re-export-default-hybrid/c.js: |
+  export foo from './d';
+  export const bar = require('./d');
+es6/re-export-default-hybrid/d.js: |
+  module.exports = 1;
+es6/re-export-default/a.js: |
+  import {foo, baz} from './b';
+
+  output = foo + baz;
+es6/re-export-default/b.js: |
+  export foo from './c';
+  export var baz = 1;
+es6/re-export-default/c.js: |
+  export default 2;
+es6/re-export-exclude-default/a.js: |
+  import b, {foo} from './b';
+
+  output = {b, foo};
+es6/re-export-exclude-default/b.js: |
+  export * from './c';
+es6/re-export-exclude-default/c.js: |
+  export default 2;
+  export var foo = 3;
+es6/re-export-hybrid/a.js: |
+  import {foo, bar} from './b';
+
+  output = foo + bar;
+es6/re-export-hybrid/b.js: |
+  export * from './c';
+es6/re-export-hybrid/c.js: |
+  export foo from './d';
+  export const bar = require('./d');
+es6/re-export-hybrid/d.js: |
+  module.exports = 1;
+es6/re-export-import/a.js: |
+  import { foo, Other } from "./b.js";
+  import { foo as foo2, Other as Other2 } from "./c.js";
+  import { foo as foo3 } from "./d.js";
+
+  output = foo() + Other + foo2() + Other2 + foo3();
+es6/re-export-import/b.js: |
+  export { default as Other } from "./e.js";
+  import Foo from "./e.js";
+  export function foo() {
+  	return Foo;
+  }
+es6/re-export-import/c.js: |
+  export { default as Other } from "./e";
+  import Foo from "./e";
+  export function foo() {
+  	return Foo;
+  }
+es6/re-export-import/d.js: |
+  import Foo from "./e2.js";
+  export { default as Other } from "./e2.js";
+  export function foo() {
+  	return Foo;
+  }
+es6/re-export-import/e.js: export default 123;
+es6/re-export-import/e2.js: export default 123;
+es6/re-export-interop/a.js: |
+  import * as translations from './translations';
+  output = translations;
+es6/re-export-interop/en.json: |
+  {
+    "test": "foo"
+  }
+es6/re-export-interop/translations.js: |
+  export {default as en_US} from './en.json';
+es6/re-export-missing/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+es6/re-export-missing/b.js: |
+  export {foo} from './c';
+es6/re-export-missing/c.js: |
+  export var bar = 3;
+es6/re-export-multiple/a.js: |
+  import {foo, bar, baz, d} from './b';
+
+  output = foo + bar + baz + d;
+es6/re-export-multiple/b.js: |
+  export * from './c';
+  export var baz = 1;
+es6/re-export-multiple/c.js: |
+  export var foo = 2, bar = 3;
+  export * from './d'
+es6/re-export-multiple/d.js: |
+  export var d = 1;
+es6/re-export-named/a.js: |
+  import {foo, baz} from './b';
+
+  output = foo + baz;
+es6/re-export-named/b.js: |
+  export {foo} from './c';
+  export var baz = 1;
+es6/re-export-named/c.js: |
+  export var foo = 2, bar = 3;
+es6/re-export-namespace-chained/a.js: |
+  import { Foo, Bar } from "./b.js";
+
+  output = {Foo, Bar};
+es6/re-export-namespace-chained/b.js: |
+  export * from "./c1.js";
+  export * from "./c2.js";
+es6/re-export-namespace-chained/c1.js: |
+  export * as Foo from "./d.js";
+es6/re-export-namespace-chained/c2.js: |
+  import * as Bar from "./d.js";
+  export { Bar };
+es6/re-export-namespace-chained/d.js: |
+  export const A = 1, B = 2;
+es6/re-export-namespace-order/index.js: |
+  import { b } from "./library/index.js";
+
+  if(Date.now() < 0){
+    b();
+  }
+es6/re-export-namespace-order/library/a.js: |
+  import { ForwardRef } from "../other.js";
+
+  export function a() {
+  	return ForwardRef;
+  }
+es6/re-export-namespace-order/library/b.js: |
+  import { ForwardRef } from "../other.js";
+
+  output = ForwardRef;
+
+  export function b() {
+  	return ForwardRef;
+  }
+es6/re-export-namespace-order/library/index.js: |
+  export * from "./a";
+  export { b } from "./b";
+es6/re-export-namespace-order/library/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/re-export-namespace-order/other.js: |
+  export const ForwardRef = Symbol.for('abc');
+es6/re-export-namespace/a.js: |
+  import {c, baz} from './b';
+
+  output = c.foo + c.bar + baz;
+es6/re-export-namespace/b.js: |
+  export * as c from './c';
+  export var baz = 1;
+es6/re-export-namespace/c.js: |
+  export var foo = 2, bar = 3;
+es6/re-export-priority/a.mjs: |
+  export const foo = 2;
+  export * from './foo.mjs'
+es6/re-export-priority/b.mjs: |
+  export * from './foo.mjs'
+  export const foo = 2;
+es6/re-export-priority/entry-a.mjs: |
+  import {foo} from './a.mjs';
+  output = foo;
+es6/re-export-priority/entry-b.mjs: |
+  import {foo} from './b.mjs';
+  output = foo;
+es6/re-export-priority/foo.mjs: |
+  export const foo = 3;
+es6/re-export-priority/namespace-a.mjs: |
+  import * as a from './a.mjs';
+  output = a;
+es6/re-export-priority/namespace-b.mjs: |
+  import * as b from './b.mjs';
+  output = b;
+es6/re-export-pseudo/a.js: |
+  import {foo} from './b.js';
+
+  output = foo;
+es6/re-export-pseudo/b.js: |
+  import { foo, bar } from "./c";
+  export { foo, bar };
+es6/re-export-pseudo/c.js: |
+  export const foo = 'foo';
+es6/re-export-renamed-namespace/a.js: |
+  import x, { x as x2 } from './b.js';
+
+  output = [x, x2];
+es6/re-export-renamed-namespace/b.js: |
+  export * from "./c.js";
+  export { x as default } from './c.js'
+es6/re-export-renamed-namespace/c.js: |
+  export const x = 123;
+  export const y = 789;
+es6/re-export-renamed/a.js: |
+  import { x } from './b.js';
+
+  output = x;
+es6/re-export-renamed/b.js: |
+  export const x = 'foobar';
+
+  export { x as y } from './c.js'
+es6/re-export-renamed/c.js: |
+  export const x = 'xyz';
+es6/re-export-renamed2/a.js: |
+  import { x } from './b.js';
+
+  output = x;
+es6/re-export-renamed2/b.js: |+
+  export { x as y } from './c.js'
+
+  export const x = 'foobar';
+
+es6/re-export-renamed2/c.js: |
+  export const x = 'xyz';
+es6/re-export-var/a.js: |
+  import {foo, bar} from './b'
+
+  output = foo() + bar()
+es6/re-export-var/b.js: |
+  import {foo, bar} from './c'
+
+  export {foo, bar}
+es6/re-export-var/c.js: |
+  const foo = () => 'foo'
+
+  function bar() {
+      return 'bar'
+  }
+
+  export {foo, bar}
+es6/re-export-wrapped-bailout/a.js: |
+  import { logger, run } from "./b.js";
+
+  output = [logger, run()];
+es6/re-export-wrapped-bailout/b.js: |
+  export * from "./c.js";
+  export * from "./d.js";
+es6/re-export-wrapped-bailout/c.js: |
+  import { run } from "./d.js";
+
+  var logger = run(module) ? "a" : "b";
+  export { logger };
+es6/re-export-wrapped-bailout/d.js: |
+  export function run(m) {
+  	if (!module || m) return false;
+  	else return true;
+  }
+es6/re-export-wrapped/a.js: |
+  import { logger, run } from "./b.js";
+
+  output = [logger, run()];
+es6/re-export-wrapped/b.js: |
+  export * from "./c.js";
+  export * from "./d.js";
+es6/re-export-wrapped/c.js: |
+  import { run } from "./d.js";
+
+  var logger = run() ? "a" : "b";
+  export { logger };
+es6/re-export-wrapped/d.js: |
+  export function run() {
+  	if (!module) return false;
+  	else return true;
+  }
+es6/rename-helpers/a.js: |
+  import {B} from './b.js';
+  import {C} from './c.js';
+
+  output = [B[Symbol.toStringTag], C[Symbol.toStringTag]];
+es6/rename-helpers/b.js: |
+  export class B {
+    static [Symbol.toStringTag] = 1;
+  }
+es6/rename-helpers/c.js: |
+  export class C {
+    static [Symbol.toStringTag] = 2;
+  }
+es6/rename-helpers/package.json: |
+  {
+    "browserslist": "Chrome 50"
+  }
+es6/rename-helpers/yarn.lock: ""
+es6/rename-member-prop/a.js: |
+  import {B} from "./b.js";
+
+  export function foo(x) {
+    return [x.foo, x?.foo, x[B], x?.[B]];
+  }
+
+  output = foo;
+es6/rename-member-prop/b.js: |
+  export const B = "bar";
+es6/rename-superclass/a.js: |
+  import Superclass from './b';
+
+  class Test extends Superclass {}
+
+  output = new Test().parentMethod();
+es6/rename-superclass/b.js: |
+  export default class Superclass {
+  	parentMethod(){
+  		return 2;
+  	}
+  }
+es6/renamed-export/a.js: |
+  import {foo} from './b';
+
+  output = foo;
+es6/renamed-export/b.js: |
+  var bar = 2;
+  export {bar as foo};
+es6/renamed-import/a.js: |
+  import {foo as bar} from './b';
+
+  output = bar;
+es6/renamed-import/b.js: |
+  export var foo = 2;
+es6/retarget-namespace-single/index.js: |
+  import { v } from "./library/a.js";
+
+  import * as y from "./library/a.js";
+
+  output = [v, sideEffectNoop(y).v];
+es6/retarget-namespace-single/library/a.js: |
+  export * from "./b.js";
+es6/retarget-namespace-single/library/b.js: |
+  export {v} from "./c.js";
+es6/retarget-namespace-single/library/c.js: |
+  export const v = 123;
+es6/retarget-namespace-single/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/rewrite-export-star/index.js: |
+  import * as foo from "./library/a.js";
+  output = foo.bar();
+es6/rewrite-export-star/library/a.js: |
+  export * from "./b.js";
+es6/rewrite-export-star/library/b.js: |
+  export { default as bar } from "./c.js";
+es6/rewrite-export-star/library/c.js: |
+  export default function () {
+    return 2;
+  }
+es6/rewrite-export-star/library/package.json: |
+  {
+    "sideEffects": [
+      "a.js"
+    ]
+  }
+es6/shared-bundle-reexport/index1.html: |
+  <script type="module" src="index1.js"></script>
+es6/shared-bundle-reexport/index1.js: |
+  import a from "./shared/a.js";
+
+  call(a);
+es6/shared-bundle-reexport/index2.html: |
+  <script type="module" src="index2.js"></script>
+es6/shared-bundle-reexport/index2.js: |
+  import b from "./shared/b.js";
+
+  call(b);
+es6/shared-bundle-reexport/index3.html: |
+  <script type="module" src="index3.js"></script>
+es6/shared-bundle-reexport/index3.js: |
+  import b from "./shared/b.js";
+
+  call(b);
+es6/shared-bundle-reexport/shared/a.js: |
+  export default `abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc
+  abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc`;
+es6/shared-bundle-reexport/shared/b.js: |
+  export { default } from "./a.js";
+es6/shared-bundle-side-effect-duplication/async1.js: |
+  import "./v.js";
+es6/shared-bundle-side-effect-duplication/async2.js: |
+  import "./v.js";
+es6/shared-bundle-side-effect-duplication/index.js: |
+  output = import("./async1.js").then(() => import("./async2.js"));
+es6/shared-bundle-side-effect-duplication/package.json: |
+  {
+    "@atlaspack/bundler-default": {
+      "minBundleSize": 1000
+    }
+  }
+es6/shared-bundle-side-effect-duplication/v.js: |
+  sideEffect("v")
+es6/shared-bundle-side-effect-order/a.js: |
+  import "./run1.js";
+  import "./run2.js";
+es6/shared-bundle-side-effect-order/b.js: |
+  import "./shared1.js";
+  import "./shared2.js";
+es6/shared-bundle-side-effect-order/index.js: |
+  output = import('./a.js').then(() => import('./b.js'));
+es6/shared-bundle-side-effect-order/run1.js: |
+  import x from "./shared1.js";
+  sideEffect("run1 " + x);
+es6/shared-bundle-side-effect-order/run2.js: |
+  import x from "./shared2.js";
+  sideEffect("run2 " + x);
+es6/shared-bundle-side-effect-order/shared1.js: |
+  sideEffect("shared1");
+  export default 1;
+es6/shared-bundle-side-effect-order/shared2.js: |
+  sideEffect("shared2");
+  export default 2;
+es6/sibling-dependencies/a.js: |
+  export function a() {
+    return 'a';
+  }
+es6/sibling-dependencies/b.js: |
+  import {a} from './a';
+  output = a();
+es6/sibling-dependencies/index.html: |
+  <script type="module" src="a.js"></script>
+  <script type="module" src="b.js"></script>
+es6/side-effects-array/a.js: |
+  import {foo} from 'bar';
+
+  output = foo(2);
+es6/side-effects-array/node_modules/bar/bar.js: |
+  sideEffect('bar');
+
+  export default function bar() {
+    return 2;
+  }
+es6/side-effects-array/node_modules/bar/foo.js: |
+  sideEffect('foo');
+
+  export default function foo(a) {
+    return a * a;
+  }
+es6/side-effects-array/node_modules/bar/index.js: |
+  export {default as foo} from './foo';
+  export {default as bar} from './bar';
+es6/side-effects-array/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": ["./foo.js"]
+  }
+es6/side-effects-chained-re-exports-multiple/a.js: |
+  import { message1 } from "./library/index.js";
+
+  output = message1;
+es6/side-effects-chained-re-exports-multiple/library/index.js: |
+  export * from "./message";
+  export * from "./symbol";
+es6/side-effects-chained-re-exports-multiple/library/message.js: |
+  sideEffect("message");
+  export { default as message1 } from "./message1";
+  export { default as message2 } from "./message2";
+es6/side-effects-chained-re-exports-multiple/library/message1.js: |
+  sideEffect("message1");
+
+  export default "Message 1";
+es6/side-effects-chained-re-exports-multiple/library/message2.js: |
+  sideEffect("message2");
+
+  export default "Message 2";
+es6/side-effects-chained-re-exports-multiple/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-chained-re-exports-multiple/library/symbol.js: |
+  sideEffect("symbol");
+  export { default as symbol1 } from "./symbol1";
+  export { default as symbol2 } from "./symbol2";
+es6/side-effects-chained-re-exports-multiple/library/symbol1.js: |
+  sideEffect("symbol1");
+
+  export default "Symbol 1";
+es6/side-effects-chained-re-exports-multiple/library/symbol2.js: |
+  sideEffect("symbol2");
+
+  export default "Symbol 2";
+es6/side-effects-commonjs/a.js: |
+  import { message1 } from "./library/index.js";
+
+  output = message1;
+es6/side-effects-commonjs/b.js: |
+  import { message2 } from "./library/index.js";
+
+  output = message2;
+es6/side-effects-commonjs/library/commonjs.js: |
+  sideEffect("commonjs");
+
+  let x = module.exports;
+
+  x["message2"] = "Message 2";
+es6/side-effects-commonjs/library/esm.js: |
+  sideEffect("esm");
+
+  export const message1 = "Message 1";
+es6/side-effects-commonjs/library/index.js: |
+  sideEffect("index")
+  export * from "./esm.js";
+  export * from "./commonjs.js";
+es6/side-effects-commonjs/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-css/index.html: |
+  <div id="react-root"></div>
+  <script type="module" src="./index.js"></script>
+es6/side-effects-css/index.js: |
+  import { b1 } from "./library/a.js";
+
+  output = b1
+es6/side-effects-css/library/a.js: |
+  export * from "./b1.js";
+  export * from "./b2.js";
+es6/side-effects-css/library/b1.css: |
+  .b1 {
+  	color: red;
+  }
+es6/side-effects-css/library/b1.js: |
+  import "./b1.css";
+  sideEffect("b1");
+  export const b1 = 2;
+es6/side-effects-css/library/b2.css: |-
+  .b2 {
+  	color: blue;
+  }
+es6/side-effects-css/library/b2.js: |
+  import "./b2.css";
+  sideEffect("b2");
+  export const b2 = "b2";
+es6/side-effects-css/library/package.json: |
+  {
+  	"sideEffects": [
+  		"b1.css",
+  		"b2.css"
+  	]
+  }
+es6/side-effects-export-reexport/a.js: |
+  import { message1 } from "./library/index.js";
+
+  output = message1;
+es6/side-effects-export-reexport/library/index.js: |
+  sideEffect("index");
+  export const message1 = "Message 1";
+  export * from "./other.js";
+es6/side-effects-export-reexport/library/other.js: |
+  sideEffect("other");
+  export const message2 = " esm2";
+es6/side-effects-export-reexport/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-false-duplicate/a.js: |
+  import {foo} from 'bar';
+
+  output = foo(2);
+es6/side-effects-false-duplicate/node_modules/bar/bar.js: |
+  import shared from './shared';
+
+  sideEffect();
+
+  export default function bar() {
+    return shared;
+  }
+es6/side-effects-false-duplicate/node_modules/bar/foo.js: |
+  import shared from './shared';
+
+  export default function foo(a) {
+    return a * a + shared;
+  }
+es6/side-effects-false-duplicate/node_modules/bar/index.js: |
+  export {default as foo} from './foo';
+  export {default as bar} from './bar';
+  export {default as shared} from './shared';
+es6/side-effects-false-duplicate/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+es6/side-effects-false-duplicate/node_modules/bar/shared.js: |
+  export default 2;
+es6/side-effects-false-order/foo/a.js: |
+  export const a = "a";
+es6/side-effects-false-order/foo/b.js: |
+  export const b = "b";
+es6/side-effects-false-order/foo/c.js: |
+  import { x } from "../x.js";
+
+  export const c = x;
+es6/side-effects-false-order/foo/index.js: |
+  import { a } from "./a.js";
+  import { b } from "./b.js";
+  import { c } from "./c.js";
+  import { w } from "../w/index.js";
+
+  export const foo = [a, b, c, w];
+es6/side-effects-false-order/index.js: |
+  import { foo } from "./foo/index.js";
+
+  output = foo;
+es6/side-effects-false-order/package.json: |
+  {
+    "browserslist": "Chrome 80"
+  }
+es6/side-effects-false-order/w/index.js: |
+  export { w } from "./w.js";
+
+  sideEffect("unused!");
+es6/side-effects-false-order/w/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-false-order/w/w.js: |
+  import { x } from "../x.js";
+
+  export class w extends x {}
+es6/side-effects-false-order/x.js: |
+  export class x {}
+es6/side-effects-false-order/yarn.lock: ""
+es6/side-effects-false-wildcards/a.js: |
+  import {foo} from 'bar'
+
+  output = foo
+es6/side-effects-false-wildcards/node_modules/bar/a.js: |
+  export const foo = 'bar'
+es6/side-effects-false-wildcards/node_modules/bar/b.js: |
+  sideEffect('bar');
+
+  export const bar = 'foo'
+es6/side-effects-false-wildcards/node_modules/bar/index.js: |
+  export * from './a'
+  export * from './b'
+es6/side-effects-false-wildcards/node_modules/bar/package.json: "{
+
+  \    \"name\": \"bar\",
+
+  \    \"sideEffects\": false
+
+  \  }
+
+  \  "
+es6/side-effects-false-wrap-excluded/a.js: |
+  if (Date.now() > 0) {
+    const bar = require("bar");
+    output = bar.default(2);
+  }
+es6/side-effects-false-wrap-excluded/node_modules/bar/foo.js: |
+  export default function foo(a) {
+    return a * a;
+  }
+es6/side-effects-false-wrap-excluded/node_modules/bar/index.js: |
+  export {default} from "./other.js";
+es6/side-effects-false-wrap-excluded/node_modules/bar/other.js: |
+  export {default} from "./foo.js";
+es6/side-effects-false-wrap-excluded/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+es6/side-effects-false/a.js: |
+  import {foo} from 'bar';
+
+  output = foo(2);
+es6/side-effects-false/node_modules/bar/bar.js: |
+  sideEffect();
+
+  export default function bar() {
+    return 2;
+  }
+es6/side-effects-false/node_modules/bar/foo.js: |
+  export default function foo(a) {
+    return a * a;
+  }
+es6/side-effects-false/node_modules/bar/index.1.js: |
+  export {default as foo} from './foo';
+es6/side-effects-false/node_modules/bar/index.js: |
+  export {default as foo} from './foo';
+  export {default as bar} from './bar';
+es6/side-effects-false/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+es6/side-effects-no-new-bundle/index.html: |
+  <div id="react-root"></div>
+  <script type="module" src="./index.js"></script>
+es6/side-effects-no-new-bundle/index.js: |
+  import { b1 } from "./library/a.js";
+
+  output = b1
+es6/side-effects-no-new-bundle/library/a.js: |
+  sideEffect("a");
+  export * from "./b1.js";
+  export * from "./b2.js";
+es6/side-effects-no-new-bundle/library/b1.js: |
+  sideEffect("b1");
+  export const b1 = 2;
+es6/side-effects-no-new-bundle/library/b2.js: |
+  sideEffect("b2");
+  export const b2 = import("./c");
+es6/side-effects-no-new-bundle/library/c.js: |
+  // import styled from "styled-components";
+  export const c = 123;
+es6/side-effects-no-new-bundle/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-package-redirect-down/index.js: |
+  import {one} from 'foo/bar'
+
+  output = one;
+es6/side-effects-package-redirect-down/node_modules/foo/bar/baz/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/side-effects-package-redirect-down/node_modules/foo/bar/baz/real-bar.js: |
+  export const one = 1;
+es6/side-effects-package-redirect-down/node_modules/foo/bar/package.json: |
+  {
+    "module": "baz/real-bar.js"
+  }
+es6/side-effects-package-redirect-down/node_modules/foo/package.json: |
+  {}
+es6/side-effects-package-redirect-up/index.js: |
+  import {one} from 'foo/bar'
+
+  output = one;
+es6/side-effects-package-redirect-up/node_modules/foo/bar/package.json: |
+  {
+    "module": "../real-bar.js"
+  }
+es6/side-effects-package-redirect-up/node_modules/foo/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/side-effects-package-redirect-up/node_modules/foo/real-bar.js: |
+  export const one = 1;
+es6/side-effects-re-exports-all-empty/a.js: |
+  import {baz} from './library/index.js';
+
+  output = baz;
+es6/side-effects-re-exports-all-empty/library/empty.js: |
+  // empty: thank you, Typescript!
+es6/side-effects-re-exports-all-empty/library/index.js: |
+  export * from './empty.js';
+  export var baz = 123;
+es6/side-effects-re-exports-all-empty/library/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/side-effects-re-exports-chained/index.js: |
+  import { key, foo } from "./library/index.js";
+
+  output = [key, foo];
+es6/side-effects-re-exports-chained/library/bar.js: |
+  sideEffect("bar");
+  export var bar = "bar";
+es6/side-effects-re-exports-chained/library/foo.js: |
+  sideEffect("foo");
+  export var foo = "foo";
+es6/side-effects-re-exports-chained/library/index.js: |
+  sideEffect("index");
+  import { key as thing } from "./key";
+  export { foo, bar } from "./types";
+  export var key = thing;
+es6/side-effects-re-exports-chained/library/key.js: |
+  sideEffect("key");
+  export var key = "key";
+es6/side-effects-re-exports-chained/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-chained/library/types.js: |
+  sideEffect("types");
+  export { foo } from './foo.js';
+  export { bar } from './bar.js';
+es6/side-effects-re-exports-import-different/a.js: |
+  import foo from "bar";
+
+  output = foo();
+es6/side-effects-re-exports-import-different/node_modules/bar/foo.js: |
+  export const foo = 123;
+  export const bar = 456;
+es6/side-effects-re-exports-import-different/node_modules/bar/index.js: |
+  import {foo} from './foo.js';
+  export {bar} from './foo.js';
+
+  export default function() {
+      return foo;
+  }
+es6/side-effects-re-exports-import-different/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+es6/side-effects-re-exports-import/a.js: |
+  import foo from "bar";
+
+  output = foo();
+es6/side-effects-re-exports-import/node_modules/bar/foo.js: |
+  export default 123;
+es6/side-effects-re-exports-import/node_modules/bar/index.js: |
+  import Foo from './foo.js';
+  export { default as Foo } from './foo.js';
+
+  export default function() {
+      return Foo;
+  }
+es6/side-effects-re-exports-import/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+es6/side-effects-re-exports-library/a.js: |
+  export {c1} from "./b.js";
+es6/side-effects-re-exports-library/b.js: |
+  export {default as c1} from "./c1.js";
+  export {default as c2} from "./c2.js";
+es6/side-effects-re-exports-library/c1.js: |
+  export default "foo";
+es6/side-effects-re-exports-library/c2.js: |
+  console.log("c2 wasn't deferred!");
+
+  export default "bar";
+es6/side-effects-re-exports-library/package.json: |
+  {
+      "main": "build.js",
+      "sideEffects": false
+  }
+es6/side-effects-re-exports-library/yarn.lock: ""
+es6/side-effects-re-exports-multiple-dynamic/a.js: |
+  import Foo from "lib";
+
+  output = import("./b.js").then(v => ([Foo, v]));
+es6/side-effects-re-exports-multiple-dynamic/b.js: |
+  import Foo from "lib";
+
+  export default Foo;
+es6/side-effects-re-exports-multiple-dynamic/node_modules/lib/index.js: |
+  export default 1234;
+  export {default as other} from './lib.js';
+es6/side-effects-re-exports-multiple-dynamic/node_modules/lib/lib.js: |
+  export default 5678;
+es6/side-effects-re-exports-multiple-dynamic/node_modules/lib/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-multiple/a.js: |
+  import { message1 } from "./library/index.js";
+
+  output = message1;
+es6/side-effects-re-exports-multiple/library/index.js: |
+  sideEffect("index");
+  export * from "./message";
+es6/side-effects-re-exports-multiple/library/message.js: |
+  sideEffect("message");
+  export * from "./message1";
+  export * from "./message2";
+es6/side-effects-re-exports-multiple/library/message1.js: |
+  sideEffect("message1");
+
+  export const message1 = "Message 1";
+es6/side-effects-re-exports-multiple/library/message2.js: |
+  sideEffect("message2");
+
+  export const message2 = "Message 2";
+es6/side-effects-re-exports-multiple/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-namespace-same/a.js: |
+  import { foo } from "./library/index.js";
+
+  output = [foo];
+es6/side-effects-re-exports-namespace-same/b.js: |
+  import { bar } from "./library/index.js";
+
+  output = [bar];
+es6/side-effects-re-exports-namespace-same/c.js: |
+  import { foo, bar } from "./library/index.js";
+
+  output = [foo, bar];
+es6/side-effects-re-exports-namespace-same/library/index.js: |
+  sideEffect("index");
+  export {default as foo} from "./other.js";
+  export * from "./other.js";
+es6/side-effects-re-exports-namespace-same/library/other.js: |
+  sideEffect("other");
+  export default "foo";
+  export const bar = "bar";
+es6/side-effects-re-exports-namespace-same/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-partially-used/index.js: |
+  import { Context } from "./library";
+
+  output = [Context, () => import("./library/dynamic")];
+es6/side-effects-re-exports-partially-used/library/a.js: |
+  sideEffect("a");
+  export const Ctx = 1;
+es6/side-effects-re-exports-partially-used/library/b.js: |
+  sideEffect("b");
+  export const Ctx = 2;
+es6/side-effects-re-exports-partially-used/library/dynamic.js: |
+  sideEffect("dynamic");
+  import { Ctx } from "./a.js";
+  import { id } from "./index.js";
+  export default [Ctx, id];
+es6/side-effects-re-exports-partially-used/library/index.js: |
+  sideEffect("index");
+  export { Ctx } from "./a.js";
+  export { Ctx as Context } from "./b.js";
+  export const id = 3;
+es6/side-effects-re-exports-partially-used/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-rename-chained/a.js: |
+  import { message1 } from "./library/index.js";
+
+  output = message1;
+es6/side-effects-re-exports-rename-chained/library/index.js: |
+  sideEffect("index");
+  export { message1, message2 } from "./index2";
+es6/side-effects-re-exports-rename-chained/library/index2.js: |
+  sideEffect("index2");
+  export { message1, message2 } from "./message";
+es6/side-effects-re-exports-rename-chained/library/message.js: |
+  sideEffect("message");
+  export { default as message1 } from "./message1";
+  export { default as message2 } from "./message2";
+es6/side-effects-re-exports-rename-chained/library/message1.js: |
+  sideEffect("message1");
+
+  export default "Message 1";
+es6/side-effects-re-exports-rename-chained/library/message2.js: |
+  sideEffect("message2");
+
+  export default "Message 2";
+es6/side-effects-re-exports-rename-chained/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-rename-same/index.js: |
+  import * as ns from "./library/a";
+
+  output = [ns, ns.value1, ns.value2];
+es6/side-effects-re-exports-rename-same/library/a.js: |
+  export { value1, value2 } from './b.js';
+es6/side-effects-re-exports-rename-same/library/b.js: |
+  export { value1, value1 as value2 } from "./c";
+es6/side-effects-re-exports-rename-same/library/c.js: |
+  export const value1 = 123;
+es6/side-effects-re-exports-rename-same/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-rename-same2/a.js: |
+  import bar from "./library/index.js";
+
+  output = bar;
+es6/side-effects-re-exports-rename-same2/b.js: |
+  import {bar} from "./library/index.js";
+
+  output = bar;
+es6/side-effects-re-exports-rename-same2/library/index.js: |
+  sideEffect("index");
+  export { bar as default, bar } from './other';
+es6/side-effects-re-exports-rename-same2/library/other.js: |
+  sideEffect("other");
+  export const bar = "bar";
+es6/side-effects-re-exports-rename-same2/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-re-exports-rename-var-unused/index.js: |
+  output = import("./library").then(({ a }) => a);
+es6/side-effects-re-exports-rename-var-unused/library/a.js: |
+  export var foo = "foo";
+es6/side-effects-re-exports-rename-var-unused/library/b.js: |
+  class b {}
+
+  export { b as default };
+es6/side-effects-re-exports-rename-var-unused/library/index.js: |
+  import * as a from "./a";
+  import b from "./b";
+  export { a, b };
+  export var b2 = b;
+es6/side-effects-re-exports-rename-var-unused/library/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/side-effects-re-exports/a.js: |
+  import { message1 } from "./library/index.js";
+
+  output = message1;
+es6/side-effects-re-exports/b.js: |
+  import { message2 } from "./library/index.js";
+
+  output = message2;
+es6/side-effects-re-exports/c.js: |
+  import { message3 } from "./library/index.js";
+
+  output = message3;
+es6/side-effects-re-exports/d.js: |
+  import { message4 } from "./library/index.js";
+
+  output = message4;
+es6/side-effects-re-exports/library/index.js: |
+  sideEffect("index");
+  export * from "./message1.js";
+  export { value as message2 } from "./message2.js";
+  export * as message3 from "./message3.js";
+  export const message4 = "Message 4";
+es6/side-effects-re-exports/library/message1.js: |
+  sideEffect("message1");
+
+  export const message1 = "Message 1";
+es6/side-effects-re-exports/library/message2.js: |
+  sideEffect("message2");
+
+  export const value = "Message 2";
+es6/side-effects-re-exports/library/message3.js: |
+  sideEffect("message3");
+
+  export default "Message 3";
+es6/side-effects-re-exports/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-semi-weak/a.js: |
+  import { message1 } from "./library/index.js";
+
+  output = message1;
+es6/side-effects-semi-weak/library/esm1.js: |
+  sideEffect("esm1");
+
+  export const message1 = "Message 1";
+es6/side-effects-semi-weak/library/esm2.js: |
+  import { data } from "./other.js";
+
+  sideEffect("esm2");
+
+  export const message2 = data + " via esm2";
+es6/side-effects-semi-weak/library/index.js: |
+  sideEffect("index");
+  export * from "./esm1.js";
+  export * from "./esm2.js";
+es6/side-effects-semi-weak/library/other.js: |
+  sideEffect("other");
+
+  export const data = "Message 2";
+es6/side-effects-semi-weak/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-split/a.js: >
+  // ensure lib is hoisted (without using any exports) to simulate bundle
+  reference in b.js
+
+  import 'lib';
+
+
+  output = import('./b').then(p => p.default + p.foo + 456);
+es6/side-effects-split/b.js: |
+  import lib from 'lib';
+  export default lib;
+  export * from 'lib';
+es6/side-effects-split/node_modules/lib/index.js: |
+  export default 123;
+  export * from './other';
+es6/side-effects-split/node_modules/lib/other.js: |
+  export const foo = 2;
+es6/side-effects-split/node_modules/lib/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-split2/a.js: |
+  import * as x from 'lib';
+
+  output = import('./b').then(p => [x, p.default + p.foo + 456]);
+es6/side-effects-split2/b.js: |
+  import lib from 'lib';
+  export default lib;
+  export * from 'lib';
+es6/side-effects-split2/node_modules/lib/index.js: |
+  export default 123;
+  export * from './other';
+es6/side-effects-split2/node_modules/lib/other.js: |
+  export const foo = 2;
+es6/side-effects-split2/node_modules/lib/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/side-effects-update-deferred-direct/index.js: |
+  import foo from "foo";
+
+  output = foo();
+es6/side-effects-update-deferred-direct/node_modules/bar/a.js: |
+  export default 12345;
+es6/side-effects-update-deferred-direct/node_modules/bar/b.js: |
+  export default 56789;
+es6/side-effects-update-deferred-direct/node_modules/bar/index.js: |
+  export { default as a } from './a.js';
+  export { default as b } from './b.js';
+es6/side-effects-update-deferred-direct/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+es6/side-effects-update-deferred-direct/node_modules/foo/foo_updated.js: |
+  import {b} from 'bar';
+
+  export default function(){
+      return b;
+  }
+es6/side-effects-update-deferred-direct/node_modules/foo/foo.js: |
+  export default function(){
+      return "hello";
+  }
+es6/side-effects-update-deferred-direct/node_modules/foo/index.js: |
+  import a from 'bar/a.js';
+  import other from './foo.js';
+
+  export default function() {
+      return `${a}${other()}`;
+  }
+es6/side-effects-update-deferred-direct/node_modules/foo/package.json: |
+  {
+    "name": "foo",
+    "sideEffects": false
+  }
+es6/side-effects-update-deferred-reexported/index.js: |
+  import foo from "foo";
+
+  output = foo();
+es6/side-effects-update-deferred-reexported/node_modules/bar/a.js: |
+  export default 12345;
+es6/side-effects-update-deferred-reexported/node_modules/bar/b.js: |
+  export default 56789;
+es6/side-effects-update-deferred-reexported/node_modules/bar/index.js: |
+  export { default as a } from './a.js';
+  export { default as b } from './b.js';
+es6/side-effects-update-deferred-reexported/node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }
+es6/side-effects-update-deferred-reexported/node_modules/foo/foo_updated.js: |
+  import {b} from 'bar';
+
+  export default function(){
+      return b;
+  }
+es6/side-effects-update-deferred-reexported/node_modules/foo/foo.js: |
+  export default function(){
+      return "hello";
+  }
+es6/side-effects-update-deferred-reexported/node_modules/foo/index.js: |
+  import {a} from 'bar';
+  import other from './foo.js';
+
+  export default function() {
+      return `${a}${other()}`;
+  }
+es6/side-effects-update-deferred-reexported/node_modules/foo/package.json: |
+  {
+    "name": "foo",
+    "sideEffects": false
+  }
+es6/side-effects/a.js: |
+  import {foo} from 'bar';
+
+  output = foo(2);
+es6/side-effects/node_modules/bar/bar.js: |
+  sideEffect();
+
+  export default function bar() {
+    return 2;
+  }
+es6/side-effects/node_modules/bar/foo.js: |
+  export default function foo(a) {
+    return a * a;
+  }
+es6/side-effects/node_modules/bar/index.js: |
+  export {default as foo} from './foo';
+  export {default as bar} from './bar';
+es6/side-effects/node_modules/bar/package.json: |
+  {
+    "name": "bar"
+  }
+es6/tree-shaking-classes-babel/a.js: |
+  import {foo} from './b';
+  output = foo;
+es6/tree-shaking-classes-babel/b.js: |
+  export const foo = 3;
+  export class Bar {
+  	method() {
+  		console.log("bar");
+  	}
+  }
+es6/tree-shaking-classes-babel/package.json: |
+  {
+    "browserslist": [
+      "IE 11"
+    ]
+  }
+es6/tree-shaking-classes-babel/yarn.lock: ""
+es6/tree-shaking-cross-bundle-re-export-wildcard/a.js: >
+  output = Promise.all([import("./b1.js").then(m => m.default),
+  import("./b2.js").then(m => m.default)]);
+es6/tree-shaking-cross-bundle-re-export-wildcard/b1.js: |
+  import { foo } from "./c.js";
+
+  export default "b1:" + foo;
+es6/tree-shaking-cross-bundle-re-export-wildcard/b2.js: |
+  import { foo } from "./c.js";
+
+  export default "b2:" + foo;
+es6/tree-shaking-cross-bundle-re-export-wildcard/c.js: |
+  export * from "./d.js";
+es6/tree-shaking-cross-bundle-re-export-wildcard/d.js: |
+  export const foo = "foo";
+  export const bar = "bar";
+es6/tree-shaking-cross-bundle-re-export/a.js: >
+  output = Promise.all([import("./b1.js").then(m => m.default),
+  import("./b2.js").then(m => m.default)]);
+es6/tree-shaking-cross-bundle-re-export/b1.js: |
+  import { foo } from "./c.js";
+
+  export default "b1:" + foo;
+es6/tree-shaking-cross-bundle-re-export/b2.js: |
+  import { foo } from "./c.js";
+
+  export default "b2:" + foo;
+es6/tree-shaking-cross-bundle-re-export/c.js: |
+  export {foo, bar} from "./d.js";
+es6/tree-shaking-cross-bundle-re-export/d.js: |
+  export const foo = "foo";
+  export const bar = "bar";
+es6/tree-shaking-cross-bundle/a.js: >
+  output = Promise.all([import("./b1.js").then(m => m.default),
+  import("./b2.js").then(m => m.default)]);
+es6/tree-shaking-cross-bundle/b1.js: |
+  import { foo } from "./c.js";
+
+  export default "b1:" + foo;
+es6/tree-shaking-cross-bundle/b2.js: |
+  import { foo } from "./c.js";
+
+  export default "b2:" + foo;
+es6/tree-shaking-cross-bundle/c.js: |
+  export const foo = "foo";
+  export const bar = "bar";
+es6/tree-shaking-dynamic-import/a1.js: |
+  export const other = "other";
+es6/tree-shaking-dynamic-import/a2.js: |
+  export const thing = "thing";
+  export const stuff = "stuff";
+es6/tree-shaking-dynamic-import/async.js: |
+  export var foo = "foo";
+  export var bar = "bar";
+  export * from "./a1.js";
+  export {thing, stuff} from "./a2.js";
+es6/tree-shaking-dynamic-import/await-assignment-error.js: |
+  output = (async () => {
+    let missing;
+    ({missing} = await import("./async.js"));
+    return missing;
+  })();
+es6/tree-shaking-dynamic-import/await-assignment.js: |
+  output = (async () => {
+    let y, thing;
+    ({foo: y, thing} = await import("./async.js"));
+    return [y, thing];
+  })();
+es6/tree-shaking-dynamic-import/await-declaration-error.js: |
+  output = (async () => {
+    let {missing} = await import("./async.js");
+    return missing;
+  })();
+es6/tree-shaking-dynamic-import/await-declaration-namespace-bailout-eval.js: |
+  output = (async () => {
+    let ns = await import("./async.js");
+    let other;
+    eval('other = ns.thing;');
+    return other;
+  })();
+es6/tree-shaking-dynamic-import/await-declaration-namespace-bailout.js: |
+  output = (async () => {
+    let ns = await import("./async.js");
+    return ns;
+  })();
+es6/tree-shaking-dynamic-import/await-declaration-namespace-error.js: |
+  output = (async () => {
+    let ns = await import("./async.js");
+    return ns.missing;
+  })();
+es6/tree-shaking-dynamic-import/await-declaration-namespace.js: |
+  output = (async () => {
+    let ns = await import("./async.js");
+    return [ns.foo, ns.thing];
+  })();
+es6/tree-shaking-dynamic-import/await-declaration.js: |
+  output = (async () => {
+    let {foo: y, thing} = await import("./async.js");
+    return [y, thing];
+  })();
+es6/tree-shaking-dynamic-import/package.json: |
+  {
+    "browserslist": "Chrome 80",
+    "sideEffects": [
+      "await-assignment.js",
+      "await-declaration*.js",
+      "then*.js"
+    ]
+  }
+es6/tree-shaking-dynamic-import/then-error.js: |
+  output = import("./async.js").then(({missing}) => [missing]);
+es6/tree-shaking-dynamic-import/then-namespace-bailout.js: |
+  output = import("./async.js").then((ns) => ns);
+es6/tree-shaking-dynamic-import/then-namespace-error.js: |
+  output = import("./async.js").then((ns) => [ns.missing]);
+es6/tree-shaking-dynamic-import/then-namespace.js: |
+  output = import("./async.js").then((ns) => [ns.foo, ns.thing]);
+es6/tree-shaking-dynamic-import/then.js: |
+  output = import("./async.js").then(({foo: y, thing}) => [y, thing]);
+es6/tree-shaking-dynamic-import/yarn.lock: ""
+es6/tree-shaking-export-computed-prop/a.js: |
+  import b from './b.js';
+  import c from './b.js';
+
+  output = [b('abc'), b('x'), c('abc'), c('x')];
+es6/tree-shaking-export-computed-prop/b.js: |
+  let x = "abc",
+    y = "def";
+  let data = {};
+  data[x] = data[y] = true;
+
+  export default function(a) {
+    return data[a];
+  }
+es6/tree-shaking-export-computed-prop/c.js: |
+  let x = "abc",
+    y = "def";
+  let data = {};
+  data[x] = true;
+  data[y] = true;
+
+  export default function(a) {
+  	return data[a];
+  }
+es6/tree-shaking-functions/a.js: |
+  import {add} from './b';
+  output = add(4, 5);
+es6/tree-shaking-functions/b.js: |
+  export function add(a, b) {
+  	return a + b;
+  }
+
+  export function sub(a, b) {
+  	return a - b;
+  }
+es6/tree-shaking-increment-object/a.js: |
+  import "./b.js";
+es6/tree-shaking-increment-object/b.js: |
+  let counter = 1;
+  function unused() {
+  	return {
+  		id: counter++,
+  	};
+  }
+es6/tree-shaking-multiassignment/a.js: |
+  import x, {y} from "./b";
+  export default [x, y];
+es6/tree-shaking-multiassignment/b.js: |
+  exports.default = exports.y = exports.z = undefined;
+  var y = 'y';
+  exports.y = y;
+  var z = 'z';
+  exports.z = z;
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+es6/tree-shaking-no-unknown-objects/a.js: |
+  export const foo = window;
+es6/tree-shaking-no-unknown-objects/index.js: |
+  import {foo} from './a';
+
+  foo.bar = 42;
+
+  output = window.bar;
+es6/tree-shaking/a.js: |
+  import {foo} from './b';
+  output = foo;
+es6/tree-shaking/b.js: |
+  export var foo = 2;
+  export var bar = 3;
+es6/unmarks-defer-for-assetgroup/index1.js: |
+  import { barer } from './package';
+
+  output = barer;
+es6/unmarks-defer-for-assetgroup/index2.js: |
+  import { barer, foo } from './package';
+
+  output = `${barer} ${foo}`;
+es6/unmarks-defer-for-assetgroup/index3.js: |
+  import { barer, foo, bar } from './package';
+
+  output = `${barer} ${foo} ${bar}`;
+es6/unmarks-defer-for-assetgroup/package/bar.js: |
+  export const bar = 'bar';
+es6/unmarks-defer-for-assetgroup/package/barer.js: |
+  export {bar as barer} from "./bar";
+es6/unmarks-defer-for-assetgroup/package/foo.js: |
+  export const foo = 'foo';
+es6/unmarks-defer-for-assetgroup/package/index.js: |
+  export {foo} from './foo';
+  export {bar} from './bar';
+  export {barer} from './barer';
+
+  sideEffectNoop(module);
+es6/unmarks-defer-for-assetgroup/package/package.json: |
+  {
+    "sideEffects": ["index.js"]
+  }
+es6/unmarks-defer-for-new-deps/index.js: |
+  import {a} from "./package/";
+
+  sideEffectNoop(a);
+es6/unmarks-defer-for-new-deps/package.json: |
+  {}
+es6/unmarks-defer-for-new-deps/package/a.js: |
+  import { v } from "./b";
+  import c from "./c";
+
+  export default class a {
+    constructor() {
+      c(v);
+    }
+  }
+es6/unmarks-defer-for-new-deps/package/b1.js: |
+  export const d1 = "def";
+  export const v = "abc";
+es6/unmarks-defer-for-new-deps/package/b2.js: |
+  export { d1 } from "./d";
+  export const v = "abc";
+es6/unmarks-defer-for-new-deps/package/c.js: |
+  import { d1 } from "./b";
+  export default function c() {
+    return d1;
+  }
+es6/unmarks-defer-for-new-deps/package/d.js: |
+  export const d1 = "hello", d2 = 2 , d3 = 3;
+es6/unmarks-defer-for-new-deps/package/index.js: |
+  export {d2} from './d';
+  export {default as a} from "./a";
+es6/unmarks-defer-for-new-deps/package/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/unmarks-defer-for-new-deps/yarn.lock: ""
+es6/unused-require/index.js: |
+  import {foo} from './library';
+
+  output = foo;
+es6/unused-require/library/foo/index.js: |
+  export const unusedFoo = 'unusedFoo';
+  export { foo } from './other';
+es6/unused-require/library/foo/other.js: |
+  export const foo = 'foo';
+es6/unused-require/library/foo/package.json: |
+  {
+    "sideEffects": false
+  }
+es6/unused-require/library/index.js: |
+  export { foo, unusedFoo } from './foo';
+
+  eval('')
+es6/update-used-symbols-dependency-add-inline/index.js: |+
+  import { a } from "./other.js";
+
+  output = a;
+
+es6/update-used-symbols-dependency-add-inline/node_modules/atlaspack-transformer-test/index.js: |
+  // @flow
+  const {Transformer} = require('@atlaspack/plugin');
+
+  module.exports = new Transformer({
+    async transform({asset}) {
+      let code = await asset.getCode();
+
+      if (code.includes('PROCESS_ME')) {
+        asset.setCode(`export {a} from "xyz";`);
+
+        return [
+          asset,
+          {
+            type: 'js',
+            uniqueKey: 'xyz',
+            content: 'export const a = 123; export const b = 789;',
+          },
+        ];
+      } else {
+        return [asset];
+      }
+    },
+  });
+es6/update-used-symbols-dependency-add-inline/node_modules/atlaspack-transformer-test/package.json: |
+  {
+    "name": "atlaspack-transformer-test",
+    "version": "0.0.0",
+    "engines": {
+      "node": ">= 10.0.0"
+    }
+  }
+es6/update-used-symbols-dependency-add-inline/other.1.js: |
+  PROCESS_ME
+es6/update-used-symbols-dependency-add-inline/other.2.js: |
+  export const a = 1;
+es6/update-used-symbols-dependency-add-inline/package.json: |
+  {}
+es6/update-used-symbols-dependency-add-inline/yarn.lock: ""
+es6/update-used-symbols-dependency-add-namespace/index.1.js: |
+  output = import('./library/Toolbar');
+es6/update-used-symbols-dependency-add-namespace/index.2.js: |
+  import * as x from './library/emoji';
+  output = import('./library/Toolbar').then(v => [v, x]);
+es6/update-used-symbols-dependency-add-namespace/index.html: |
+  <div id="react-root"></div>
+  <script type="module" src="./index.js"></script>
+es6/update-used-symbols-dependency-add-namespace/library/emoji.js: |
+  export * from './emojiStyles';
+es6/update-used-symbols-dependency-add-namespace/library/emojiStyles.js: |
+  export { akEmojiSelectedBackgroundColor } from './emojiStylesShared';
+es6/update-used-symbols-dependency-add-namespace/library/emojiStylesShared.js: |
+  import { borderRadius, colors } from './theme';
+  export var noDialogContainerBorderRadius = borderRadius() + "px";
+  export var akEmojiSelectedBackgroundColor = colors.N30;
+es6/update-used-symbols-dependency-add-namespace/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+es6/update-used-symbols-dependency-add-namespace/library/theme.js: |-
+  export * as colors from './themeColors';
+  export * from './themeConstants';
+es6/update-used-symbols-dependency-add-namespace/library/themeColors.js: |
+  export var N30 = '#EBECF0';
+es6/update-used-symbols-dependency-add-namespace/library/themeConstants.js: |
+  export var borderRadius = function () { return 3; };
+  export var gridSize = function () { return 8; };
+es6/update-used-symbols-dependency-add-namespace/library/Toolbar.js: |
+  import { gridSize } from './theme';
+  export var akGridSize = gridSize();
+es6/update-used-symbols-dependency-add/index.1.js: |
+  import {a} from "./library/a.js";
+
+  output = [a];
+es6/update-used-symbols-dependency-add/index.2.js: |
+  import {a} from "./library/a.js";
+  import {b, d} from "./library/b.js";
+
+  output = [a, b, d];
+es6/update-used-symbols-dependency-add/index.3.js: |
+  import {b, d} from "./library/b.js";
+
+  output = [b, d];
+es6/update-used-symbols-dependency-add/library/a.js: |
+  export {a, b} from "./b.js";
+es6/update-used-symbols-dependency-add/library/b.js: |
+  export {a, b, d} from "./c.js";
+es6/update-used-symbols-dependency-add/library/c.js: |
+  export {a,b} from "./d1.js";
+  export * as d from "./d2.js";
+es6/update-used-symbols-dependency-add/library/d1.js: |
+  export const a = 123;
+  export const b = 789;
+es6/update-used-symbols-dependency-add/library/d2.js: |
+  export const d1 = 1;
+  export const d2 = 2;
+es6/update-used-symbols-dependency-add/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/update-used-symbols-dependency-symbols/index.1.js: |
+  import {b} from "./library/a.js";
+
+  output = [b];
+es6/update-used-symbols-dependency-symbols/index.2.js: |
+  import {b, c} from "./library/a.js";
+
+  output = [b, c];
+es6/update-used-symbols-dependency-symbols/library/a.js: |
+  export {b} from "./b.js";
+  export {c} from "./c.js";
+es6/update-used-symbols-dependency-symbols/library/b.js: |
+  export const b = 123;
+es6/update-used-symbols-dependency-symbols/library/c.js: |
+  export const c = 789;
+es6/update-used-symbols-dependency-symbols/library/package.json: |
+  {
+  	"sideEffects": false
+  }
+es6/update-used-symbols-remove-export/a.js: |
+  import { foo } from "./b.js";
+
+  output = foo;
+es6/update-used-symbols-remove-export/b.1.js: |
+  export const foo = 123;
+es6/update-used-symbols-remove-export/b.2.js: |
+  export const bar = 123;
+es6/used-assignmentexpression/a.js: |
+  var bar = 1;
+  var foo = bar += 2;
+
+  output = foo;
+es6/wrap-import-arrowfunction/a.js: |
+  const f = () => import("./b.js");
+
+  output = f;
+es6/wrap-import-arrowfunction/b.js: |
+  sideEffect("async");
+  export default 1234;
+es6/wrap-import-arrowfunction/package.json: |
+  {
+    "browserslist": "Chrome 80"
+  }
+es6/wrap-import-arrowfunction/yarn.lock: ""

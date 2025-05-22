@@ -1,0 +1,6 @@
+options:
+  name: babel-warn-some-json5
+package.json:
+  type: module
+yarn.lock: ""
+index.js: ""

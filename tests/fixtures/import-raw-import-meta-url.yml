@@ -1,0 +1,21 @@
+options:
+  name: import-raw-import-meta-url
+package.json:
+  type: module
+yarn.lock: ""
+cjs.js: |
+  export default new URL("test.txt", 'file:' + __filename);
+index.js: |
+  export default new URL("test.txt", import.meta.url);
+local-url.js: |
+  class URL {
+    toString(){
+      return "test.js";
+    }
+  }
+
+  export default new URL("./invalid.js", import.meta.url);
+missing.js: |
+  export default new URL("invalid.txt", import.meta.url);
+test.txt: |
+  hi there

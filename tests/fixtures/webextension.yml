@@ -1,0 +1,120 @@
+options:
+  name: webextension
+package.json:
+  type: module
+yarn.lock: ""
+_locales/en_US/messages.json: |-
+  {
+    "prompt_for_name": {
+      "message": "What's your name?",
+      "description": "Ask for the user's name"
+    },
+    "hello": {
+      "message": "Hello, $USER$",
+      "description": "Greet the user",
+      "placeholders": {
+        "user": {
+          "content": "$1",
+          "example": "Cira"
+        }
+      }
+    },
+    "bye": {
+      "message": "Goodbye, $USER$. Come back to $OUR_SITE$ soon!",
+      "description": "Say goodbye to the user",
+      "placeholders": {
+        "our_site": {
+          "content": "Example.com"
+        },
+        "user": {
+          "content": "$1",
+          "example": "Cira"
+        }
+      }
+    }
+  }
+dicts/tmp.aff: World!!
+dicts/tmp.dic: Hello
+manifest.json: |
+  {
+    "manifest_version": 2,
+    "name": "Atlaspack WebExt",
+    "version": "0.1.2.65535",
+    "default_locale": "en_US",
+    "icons": {
+      "100": "src/assets/foo.png"
+    },
+    "background": {
+      "scripts": ["./src/background.ts"],
+      "persistent": true
+    },
+    "browser_action": {
+      "default_icon": {
+        "100": "src/assets/foo.png"
+      },
+      "theme_icons": [{
+        "dark": "src/assets/foo-dark.png",
+        "light": "src/assets/foo.png",
+        "size": 16
+      }],
+      "default_popup": "src/popup.html"
+    },
+    "content_scripts": [{
+      "matches": ["https://parceljs.org/*"],
+      "js": ["src/content.js"],
+      "css": ["src/content.css"]
+    }],
+    "declarative_net_request": {
+      "rule_resources": [{
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "./rulesets/ruleset_1.json"
+      }]
+    },
+    "dictionaries": {
+      "en-US": "./dicts/tmp.dic"
+    },
+    "devtools_page": "src/devtools.html",
+    "web_accessible_resources": [
+      "src/assets/**/*.txt"
+    ]
+  }
+rulesets/ruleset_1.json: "[]"
+src/assets/a.txt: |
+  Hello Parcel WebExt!
+src/assets/foo-dark.png: file://<root>/assets/src/assets/foo-dark.png
+src/assets/foo.png: file://<root>/assets/src/assets/foo.png
+src/assets/nested/b.txt: |
+  Hello Parcel WebExt (VERSION B)!
+src/background.ts: |
+  console.log('Hello Parcel!')
+src/content.css: |
+  div::before {
+    content: 'Hello Parcel!'
+  }
+src/content.js: |
+  console.log('Hello Parcel! CONTENT EDITION')
+src/devtools.html: |-
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devtools</title>
+  </head>
+  <body>
+    
+  </body>
+  </html>
+src/popup.html: |-
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup</title>
+  </head>
+  <body>
+    
+  </body>
+  </html>

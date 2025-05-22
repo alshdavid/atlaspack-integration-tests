@@ -1,0 +1,13 @@
+options:
+  name: posthtml
+package.json:
+  type: module
+index.html: |-
+  <!doctype html>
+  <html>
+  <body>
+      <include src="other.html"></include>
+  </body>
+  </html>
+other.html: |
+  <h1>Other page</h1>

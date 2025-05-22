@@ -1,0 +1,22 @@
+options:
+  name: same-resource-multiple-bundles
+package.json:
+  type: module
+a.js: |
+  import url from './shared';
+  export default url;
+b.js: |
+  import url from './shared';
+  export default url;
+index.js: |+
+  function doesNotRun() {
+    return import('./a');
+  }
+
+  export default () => import('./b').then(b => b.default);
+
+resource.txt: ""
+shared.js: |
+  import url from 'url:./resource.txt';
+
+  export default url;

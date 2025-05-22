@@ -1,0 +1,15 @@
+options:
+  name: globals-module-specifier
+package.json:
+  type: module
+  browserslist: Chrome 75
+a.js: |
+  import { process } from "./b.js";
+
+  module.exports = process;
+b.js: |
+  export { process } from "./c.js";
+  export default "DEFAULT";
+c.js: |
+  var process_ = 1234;
+  export { process_ as process };

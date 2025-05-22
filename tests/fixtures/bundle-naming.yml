@@ -1,0 +1,4 @@
+options:
+  name: bundle-naming
+package.json:
+  type: module

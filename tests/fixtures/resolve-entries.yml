@@ -1,0 +1,172 @@
+options:
+  name: resolve-entries
+package.json:
+  type: module
+both-fields.js: |
+  const required = require('./pkg-both')
+
+  if(required.test() !== 'pkg-es6-module') {
+      throw new Error('Invalid module')
+  }
+
+  export const test = required.test
+browser-multiple.js: |
+  const projected = require('./pkg-browser-multiple/projected')
+  const entry = require('./pkg-browser-multiple')
+
+  export const test = {projected, entry}
+browser.js: |
+  const required = require('./pkg-browser')
+
+  export const test = required.test
+ignore-fs.js: |
+  import file from './pkg-ignore-fs'
+
+  export function test() {
+    return file()
+  }
+jsnext-field.js: |
+  const required = require('./pkg-jsnext-module')
+
+  if(required.test() !== 'pkg-jsnext-module') {
+      throw new Error('Invalid module')
+  }
+
+  export const test = required.test
+main-field.js: |
+  const required = require('./pkg-main')
+
+  if(required.test() !== 'pkg-main-module') {
+      throw new Error('Invalid module')
+  }
+
+  export const test = required.test
+module-field.js: |
+  const required = require('./pkg-es6-module')
+
+  if(required.test() !== 'pkg-es6-module') {
+      throw new Error('Invalid module')
+  }
+
+  export const test = required.test
+pkg-both/es6.module.js: |
+  export function test() {
+      return 'pkg-es6-module'
+  }
+pkg-both/package.json: |-
+  {
+      "name": "pkg-both",
+      "main": "./does-not-exist.js",
+      "jsnext:main": "./jsnext.module.js",
+      "module": "./es6.module.js"
+  }
+pkg-browser-multiple/browser-entry.js: |
+  export function test() {
+      return 'pkg-browser-multiple browser-entry'
+  }
+pkg-browser-multiple/node-entry.js: |
+  export function test() {
+    return 'pkg-browser-multiple main-entry'
+  }
+pkg-browser-multiple/package.json: |
+  {
+      "name": "pkg-browser-multiple",
+      "main": "./node-entry.js",
+      "browser": {
+          "./projected.js": "./projected-browser.js",
+          "pkg-browser-multiple": "browser-entry.js"
+      }
+  }
+pkg-browser-multiple/projected-browser.js: |
+  export function test() {
+      return 'pkg-browser-multiple'
+  }
+pkg-browser-multiple/projected.js: |
+  export function test() {
+    return 'pkg-main-multiple'
+  }
+pkg-browser/browser-module.js: |
+  export function test() {
+      return 'pkg-browser'
+  }
+pkg-browser/node-module.js: |
+  export function test() {
+    return 'pkg-main'
+  }
+pkg-browser/package.json: |-
+  {
+      "name": "pkg-browser",
+      "main": "./node-module.js",
+      "browser": "./browser-module.js"
+  }
+pkg-es6-module/es6.module.js: |
+  export function test() {
+      return 'pkg-es6-module'
+  }
+pkg-es6-module/package.json: |-
+  {
+      "name": "pkg-es6-module",
+      "main": "./does-not-exist.js",
+      "module": "./es6.module.js"
+  }
+pkg-ignore-browser/ignore-me-in-browsers.js: |
+  module.exports = "this should only exist in non-browser builds";
+pkg-ignore-browser/index.js: |
+  module.exports = require('./ignore-me-in-browsers');
+pkg-ignore-browser/package.json: |
+  {
+    "main": "index.js",
+    "browser": {
+      "./ignore-me-in-browsers": false
+    },
+    "targets": {
+      "browsers": {
+        "engines": {
+          "browsers": [">= 1%"]
+        }
+      },
+      "node": {
+        "engines": {
+          "node": "12"
+        }
+      }
+    }
+  }
+pkg-ignore-browser/yarn.lock: ""
+pkg-ignore-fs/index.js: >
+  export default () => {
+    try {
+      // We expect browser-resolve to replace fs with an empty module, so readFileSync will be undefined
+      return require('fs').readFileSync(__dirname + '/package.json')
+    }
+    catch(_) {
+      return 'test-pkg-ignore-fs-ok'
+    }
+  }
+pkg-ignore-fs/package.json: |
+  {
+    "name": "pkg-ignore-fs",
+    "main": "index.js",
+    "browser": {
+      "fs": false
+    }
+  }
+pkg-jsnext-module/jsnext.module.js: |
+  export function test() {
+      return 'pkg-jsnext-module'
+  }
+pkg-jsnext-module/package.json: |-
+  {
+      "name": "pkg-jsnext-module",
+      "main": "./does-not-exist.js",
+      "jsnext:main": "./jsnext.module.js"
+  }
+pkg-main/main.js: |
+  export function test() {
+      return 'pkg-main-module'
+  }
+pkg-main/package.json: |-
+  {
+      "name": "pkg-main",
+      "main": "./main.js"
+  }

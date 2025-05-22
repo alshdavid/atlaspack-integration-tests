@@ -1,0 +1,11 @@
+options:
+  name: dont-autoinstall-if-env-var-is-false
+package.json:
+  type: module
+  name: dont-autoinstall-if-env-var-is-false
+  dependencies: {}
+index.js: |
+  const _ = require('lodash');
+  module.exports = function() {
+    return 'hello world';
+  }

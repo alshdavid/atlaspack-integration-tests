@@ -1,0 +1,28 @@
+options:
+  name: included-file
+package.json:
+  type: module
+yarn.lock: ""
+included.txt: ""
+index.txt: ""
+node_modules/atlaspack-transformer-included/index.js: |
+  const Transformer = require("@atlaspack/plugin").Transformer;
+  const path = require("path");
+
+  module.exports = new Transformer({
+    async transform({ asset, options }) {
+      let file = path.join(path.dirname(asset.filePath), "included.txt");
+      asset.invalidateOnFileChange(file);
+      let content = await options.inputFS.readFile(file, "utf8");
+      if (content === "ERROR") {
+        throw new Error("Custom error");
+      }
+      asset.setCode(content);
+      return [asset];
+    }
+  });
+node_modules/atlaspack-transformer-included/package.json: |
+  {
+    "name": "atlaspack-transformer-included",
+    "version": "1.2.3"
+  }

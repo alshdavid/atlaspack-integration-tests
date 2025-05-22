@@ -1,0 +1,33 @@
+options:
+  name: css-module-self-references
+package.json:
+  type: module
+a/index.js: |
+  import foo from '../bar.module.css';
+
+  console.log('a', foo);
+a/package.json: |
+  {
+    "main": "dist/main.js",
+    "module": "dist/module.js",
+    "source": "index.js"
+  }
+b/index.js: |
+  import foo from '../bar.module.css';
+
+  console.log('b', foo);
+b/package.json: |
+  {
+    "main": "dist/main.js",
+    "module": "dist/module.js",
+    "source": "index.js"
+  }
+bar.module.css: |-
+  .foo {
+    composes: composed;
+    color: white;
+  }
+
+  .composed {
+    background: pink;
+  }

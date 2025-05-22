@@ -1,0 +1,22 @@
+options:
+  name: html-multi-entry
+package.json:
+  type: module
+a.html: |-
+  <head>
+  	<link rel="stylesheet" href="./style.css">
+  </head>
+
+  <body>
+  	<script type="module" src="./index.js"></script>
+  </body>
+b.html: |-
+  <head>
+  	<link rel="stylesheet" href="./style.css">
+  </head>
+
+  <body>
+  	<script type="module" src="./index.js"></script>
+  </body>
+index.js: import "./style.css";
+style.css: ""

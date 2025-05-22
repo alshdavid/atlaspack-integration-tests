@@ -1,0 +1,9 @@
+options:
+  name: jsx-nervjs-no-dep
+package.json:
+  type: module
+  private: true
+index.js: |
+  import * as Nerv from 'nervjs';
+
+  module.exports = <div />;

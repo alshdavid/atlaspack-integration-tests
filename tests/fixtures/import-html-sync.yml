@@ -1,0 +1,22 @@
+options:
+  name: import-html-sync
+package.json:
+  type: module
+100x100.png: file://<root>/assets/100x100.png
+index.css: |
+  body {
+    background: red;
+  }
+index.js: |
+  output(require('./other.html'));
+other.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <h1>Other page</h1>
+    <img src="100x100.png" />
+  </body>
+  </html>

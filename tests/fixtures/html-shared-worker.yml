@@ -1,0 +1,22 @@
+options:
+  name: html-shared-worker
+package.json:
+  type: module
+index.html: |
+  <!doctype html>
+  <html>
+    <body>
+      <h1>Hello!</h1>
+      <script type="module" src="./index.js"></script>
+    </body>
+  </html>
+index.js: |
+  import _ from 'lodash';
+
+  output("main", _.add(1, 2));
+
+  new Worker(new URL('worker.js', import.meta.url), {type: 'module'});
+worker.js: |
+  import _ from 'lodash';
+
+  output("worker", _.add(1, 2));

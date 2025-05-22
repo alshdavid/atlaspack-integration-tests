@@ -1,0 +1,47 @@
+options:
+  name: pipeline-type-change
+package.json:
+  type: module
+yarn.lock: ""
+index.ini: INPUT
+node_modules/atlaspack-transformer-a/index.js: |
+  const {Transformer} = require('@atlaspack/plugin');
+
+  module.exports = new Transformer({
+    async transform({asset}) {
+      asset.type = 'txt';
+      asset.setCode(await asset.getCode()+"\natlaspack-transformer-a");
+      return [asset];
+    }
+  });
+node_modules/atlaspack-transformer-a/package.json: |
+  {
+    "name": "atlaspack-transformer-a",
+    "version": "0.0.0",
+    "engines": {
+      "node": ">= 10.0.0"
+    },
+    "dependencies": {
+      "@atlaspack/plugin": "^2.0.0-alpha.3.1"
+    }
+  }
+node_modules/atlaspack-transformer-b/index.js: |
+  const {Transformer} = require('@atlaspack/plugin');
+
+  module.exports = new Transformer({
+    async transform({asset}) {
+      asset.setCode(await asset.getCode()+"\natlaspack-transformer-b");
+      return [asset];
+    }
+  });
+node_modules/atlaspack-transformer-b/package.json: |
+  {
+    "name": "atlaspack-transformer-b",
+    "version": "0.0.0",
+    "engines": {
+      "node": ">= 10.0.0"
+    },
+    "dependencies": {
+      "@atlaspack/plugin": "^2.0.0-alpha.3.1"
+    }
+  }

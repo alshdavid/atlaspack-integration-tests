@@ -1,0 +1,40 @@
+options:
+  name: scss-html-import
+package.json:
+  type: module
+  name: scss-import-targets
+  private: true
+  targets:
+    target1:
+      source:
+        - ./target1.html
+      distDir: ./target1/
+    target2:
+      source:
+        - ./target2.html
+      distDir: ./target2/
+yarn.lock: ""
+fa-regular-400.ttf: file://<root>/assets/fa-regular-400.ttf
+style.scss: |
+  @font-face {
+    font-family: 'Font Awesome 6 Free';
+    src: url('fa-regular-400.ttf') format('truetype');
+  }
+target1.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+      <head>
+          <title>What's going on here</title>
+          <link href="style.scss" rel="stylesheet" type="text/css" />
+      </head>
+      <body></body>
+  </html>
+target2.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+      <head>
+          <title>What's going on here</title>
+          <link href="style.scss" rel="stylesheet" type="text/css" />
+      </head>
+      <body></body>
+  </html>

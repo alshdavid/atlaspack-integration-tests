@@ -1,0 +1,17 @@
+options:
+  name: react-refresh-inline-script
+package.json:
+  type: module
+  dependencies:
+    react: "*"
+yarn.lock: ""
+index.html: |
+  <!doctype html>
+  <script>
+    /*asdf */
+  </script>
+  <script type="module" src="index.js"></script>
+index.js: |
+  function App() {
+    return <div>test</div>;
+  }

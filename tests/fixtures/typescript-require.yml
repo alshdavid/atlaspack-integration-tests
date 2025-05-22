@@ -1,0 +1,23 @@
+options:
+  name: typescript-require
+package.json:
+  type: module
+index.ts: |-
+  const Local = require('./Local');
+
+  export function count() {
+    let local = new Local(1, 2);
+    return local.a + local.b;
+  }
+Local.ts: |-
+  class Local {
+    a: number;
+    b: number;
+
+    constructor(a: number, b: number) {
+      this.a = a;
+      this.b = b;
+    }
+  }
+
+  module.exports = Local;

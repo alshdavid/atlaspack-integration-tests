@@ -1,0 +1,15 @@
+options:
+  name: css-external
+package.json:
+  type: module
+a.css: |
+  @import 'b.css';
+  @import 'http://example.com/external.css';
+
+  .a {
+    color: green;
+  }
+b.css: |-
+  .b {
+    color: red;
+  }

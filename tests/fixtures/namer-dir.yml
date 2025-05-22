@@ -1,0 +1,11 @@
+options:
+  name: namer-dir
+package.json:
+  type: module
+  source: src/index.html
+src/index.html: |
+  <!doctype html>
+  <a href="nested/other.html">Other</a>
+src/nested/other.html: |
+  <!doctype html>
+  <p>Other</p>

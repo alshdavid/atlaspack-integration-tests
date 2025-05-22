@@ -1,0 +1,27 @@
+options:
+  name: large-bundlegroup
+package.json:
+  type: module
+yarn.lock: ""
+a.js: |
+  module.exports = require('lodash').add(1, 1);
+b.js: |
+  module.exports = require("react");
+bar.js: |
+  import c from './c';
+  import d from './d';
+baz.js: |
+  module.exports = require("react")
+c.js: |
+  module.exports = require('lodash').add(2, 2);
+d.js: |
+  module.exports = require("react");
+foo.js: |+
+  import a from './a';
+  import b from './b';
+
+index.js: |
+  import('./a.js');
+  import('./b.js');
+  import('./c.js');
+  import('./d.js');

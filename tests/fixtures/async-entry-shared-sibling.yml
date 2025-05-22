@@ -1,0 +1,21 @@
+options:
+  name: async-entry-shared-sibling
+package.json:
+  type: module
+a.js: |
+  import value from './value';
+
+  sideEffectNoop(value);
+b.js: |
+  import './a';
+  import value from './value';
+
+  export default value + 1;
+index.js: |
+  export default import('./b').then(mod => mod.default);
+other-entry.js: |
+  import('./a')
+scope-hoisting.js: |
+  output = import('./b').then(mod => mod.default);
+value.js: |
+  export default 42;

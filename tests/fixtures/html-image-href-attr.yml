@@ -1,0 +1,19 @@
+options:
+  name: html-image-href-attr
+package.json:
+  type: module
+100x100.png: file://<root>/assets/100x100.png
+index.html: |
+  <!doctype html>
+  <html>
+
+  <head>
+  </head>
+
+  <body>
+    <svg>
+      <image href="./100x100.png" />
+    </svg>
+  </body>
+
+  </html>

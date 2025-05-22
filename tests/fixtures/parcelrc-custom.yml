@@ -1,0 +1,47 @@
+options:
+  name: parcelrc-custom
+package.json:
+  type: module
+  name: atlaspack-integration.parcelrc-custom
+  version: 1.2.3
+yarn.lock: ""
+configCopy: |
+  {
+    "extends": "@atlaspack/config-default",
+    "transformers": {
+      "*.js": ["atlaspack-transformer-mock"]
+    }
+  }
+index.js: |
+  let x = () => null
+node_modules/atlaspack-transformer-do-nothing/index.js: |
+  const Transformer = require('@atlaspack/plugin').Transformer;
+
+  module.exports = new Transformer({
+    transform({asset}) {
+      return [asset];
+    }
+  })
+node_modules/atlaspack-transformer-do-nothing/package.json: |
+  {
+    "name": "atlaspack-transformer-do-nothing",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-transformer-mock/index.js: |
+  const Transformer = require('@atlaspack/plugin').Transformer;
+
+  module.exports = new Transformer({
+    transform() {
+      return [
+          {
+            type: 'js',
+            content: 'TRANSFORMED CODE',
+          },
+        ];
+    }
+  })
+node_modules/atlaspack-transformer-mock/package.json: |
+  {
+    "name": "atlaspack-transformer-mock",
+    "version": "1.2.3"
+  }

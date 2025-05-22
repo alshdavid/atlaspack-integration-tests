@@ -1,0 +1,30 @@
+options:
+  name: scss-import
+package.json:
+  type: module
+bar.scss: |
+  $bar: #f8a93b;
+
+  .bar {
+    color: $bar;
+  }
+foo.scss: |
+  $foo: #f938ab;
+
+  .foo {
+    color: $foo;
+  }
+index.js: |
+  require('./index.scss');
+
+  module.exports = function () {
+    return 2;
+  };
+index.scss: |
+  @import 'foo';
+  @import './bar.scss';
+
+  .index {
+    color: $foo;
+    background-color: $bar;
+  }

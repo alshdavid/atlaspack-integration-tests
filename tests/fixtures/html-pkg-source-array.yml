@@ -1,0 +1,19 @@
+options:
+  name: html-pkg-source-array
+package.json:
+  type: module
+  source:
+    - a.html
+    - b.html
+yarn.lock: ""
+a.html: |
+  <body>
+    <h1>HTML File a</h1>
+  </body>
+b.html: "<body>
+
+  \    <h1>HTML File b</h1>
+
+  \  </body>
+
+  \  "

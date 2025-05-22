@@ -1,0 +1,26 @@
+options:
+  name: css-import
+package.json:
+  type: module
+index.css: |
+  @import './other.css' print;
+
+  .index {
+    color: red;
+  }
+index.js: |
+  require('./index.css');
+
+  module.exports = function () {
+    return 2;
+  };
+local.css: |
+  .local {
+    color: teal;
+  }
+other.css: |
+  @import './local.css';
+
+  .other {
+    color: green;
+  }

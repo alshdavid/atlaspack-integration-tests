@@ -1,0 +1,38 @@
+options:
+  name: hash-distDir
+package.json:
+  type: module
+a/index.html: |
+  <html>
+    <head>
+      <script src="index.js"></script>
+    </head>
+  </html>
+a/index.js: |
+  console.log("test");
+a/package.json: |
+  {
+    "name": "a",
+    "app": "dist/index.html",
+    "targets": {
+      "app": {}
+    }
+  }
+a/yarn.lock: ""
+b/index.html: |
+  <html>
+    <head>
+      <script src="index.js"></script>
+    </head>
+  </html>
+b/index.js: |
+  console.log("test");
+b/package.json: |
+  {
+    "name": "a",
+    "app": "dist/index.html",
+    "targets": {
+      "app": {}
+    }
+  }
+b/yarn.lock: ""

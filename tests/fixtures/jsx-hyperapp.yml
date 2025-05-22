@@ -1,0 +1,9 @@
+options:
+  name: jsx-hyperapp
+package.json:
+  type: module
+  private: true
+  dependencies:
+    hyperapp: "*"
+index.js: |
+  module.exports = <div />;

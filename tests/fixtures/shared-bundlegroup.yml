@@ -1,0 +1,13 @@
+options:
+  name: shared-bundlegroup
+package.json:
+  type: module
+a.js: |
+  export default import('./c.js').then(mod => 'hello from a ' + mod.default);
+b.js: |
+  export default import('./c.js').then(mod => 'hello from b ' + mod.default);
+c.js: |
+  export default 'test';
+index.js: |
+  export default Promise.all([import('./a.js'), import('./b.js')])
+    .then(modules => Promise.all(modules.map(mod => mod.default)));

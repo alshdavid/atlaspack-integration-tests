@@ -1,0 +1,21 @@
+options:
+  name: typescript
+package.json:
+  type: module
+index.ts: |-
+  import { Local } from './Local';
+
+  export function count() {
+    let local = new Local(1, 2);
+    return local.a + local.b;
+  }
+Local.ts: |-
+  export class Local {
+    a: number;
+    b: number;
+
+    constructor(a: number, b: number) {
+      this.a = a;
+      this.b = b;
+    }
+  }

@@ -1,0 +1,17 @@
+options:
+  name: js-require-import-different
+package.json:
+  type: module
+  sideEffects:
+    - index.js
+addons.js: |
+  export * from "./hooks";
+hooks.js: |
+  export var HooksContext = 123;
+index.js: |
+  import { StoryStore } from './store';
+
+  output = [StoryStore, require('./addons')];
+store.js: |
+  import { HooksContext } from "./addons";
+  export var StoryStore = HooksContext;

@@ -1,0 +1,7 @@
+options:
+  name: babel-env-name
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  class Foo {}

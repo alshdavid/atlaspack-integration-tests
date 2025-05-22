@@ -1,0 +1,72 @@
+options:
+  name: config-merging
+package.json:
+  type: module
+  name: commonjs-bundle-require
+  version: 1.2.3
+  main: dist/index.js
+  engines:
+    node: "8"
+  dependencies:
+    atlaspack-transformer-string: "*"
+yarn.lock: ""
+index.js: |-
+  import text from './test.custom-ext';
+
+  export default text;
+node_modules/atlaspack-config-test1/index.json: |
+  {
+    "runtimes": ["atlaspack-runtime-nothing"]
+  }
+node_modules/atlaspack-config-test1/package.json: |
+  {
+    "main": "index.json",
+    "dependencies": {
+      "atlaspack-runtime-nothing": "*"
+    }
+  }
+node_modules/atlaspack-config-test2/index.json: |
+  {
+    "transformers": {
+      "*.custom-ext": ["atlaspack-transformer-string"]
+    }
+  }
+node_modules/atlaspack-config-test2/package.json: |
+  {
+    "main": "index.json",
+    "dependencies": {
+      "atlaspack-transformer-string": "*"
+    }
+  }
+node_modules/atlaspack-runtime-nothing/index.js: |
+  const {Runtime} = require('@atlaspack/plugin');
+
+  exports.default = new Runtime({
+    async apply({options}) {
+      return {
+        filePath: __filename,
+        code: 'console.log("runtime injected");',
+        isEntry: true
+      }
+    }
+  })
+node_modules/atlaspack-runtime-nothing/package.json: |-
+  {
+    "main": "index.js"
+  }
+node_modules/atlaspack-transformer-string/index.js: |
+  const {Transformer} = require('@atlaspack/plugin');
+
+  exports.default = new Transformer({
+    async transform({asset}) {
+      return [{
+        type: 'js',
+        content: `export default \`${await asset.getCode()}\``
+      }];
+    }
+  });
+node_modules/atlaspack-transformer-string/package.json: |-
+  {
+    "main": "index.js"
+  }
+test.custom-ext: Hello world!

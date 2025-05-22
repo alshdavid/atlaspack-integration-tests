@@ -1,0 +1,11 @@
+options:
+  name: css-invalid-import
+package.json:
+  type: module
+  private: true
+index.css: |
+  @import './thisdoesnotexist.css';
+
+  .index {
+    color: red;
+  }

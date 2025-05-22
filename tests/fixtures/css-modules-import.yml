@@ -1,0 +1,40 @@
+options:
+  name: css-modules-import
+package.json:
+  type: module
+  "@atlaspack/bundler-default":
+    minBundleSize: 0
+yarn.lock: ""
+a.module.css: |
+  .a {
+    color: red;
+  }
+
+  .foo {
+    background: green;
+  }
+b.module.css: |
+  .b {
+    color: purple;
+  }
+
+  .foo {
+    font-family: Helvetica;
+  }
+index.module.css: |
+  @import "./a.module.css";
+  @import "./b.module.css";
+
+  .foo {
+    color: red;
+  }
+page1.html: <script type="module" src="page1.js"></script>
+page1.js: |
+  import * as foo from './index.module.css';
+
+  sideEffect(['page1', foo.a]);
+page2.html: <script type="module" src="page2.js"></script>
+page2.js: |
+  import * as foo from './index.module.css';
+
+  sideEffect(['page2', foo.foo]);

@@ -1,0 +1,47 @@
+options:
+  name: runtime-deferred-excluded
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  import {index, used} from 'test/indexstar';
+
+  output = [index, used];
+node_modules/atlaspack-runtime-test/index.js: |
+  const {Runtime} = require('@atlaspack/plugin');
+  const path = require('path');
+
+  module.exports = new Runtime({
+    apply() {
+      return [{
+        filePath: path.join(__dirname, "MockRuntime.js"),
+        code: `
+          import { used } from 'test';
+
+          // make sure 'used' is not treeshaken
+          f(used);
+        `,
+        isEntry: true
+      }]
+    }
+  });
+node_modules/atlaspack-runtime-test/package.json: |
+  {
+    "name": "atlaspack-runtime-test",
+    "version": "1.0.0"
+  }
+node_modules/test/excluded.js: |
+  export default 'excluded';
+node_modules/test/index.js: |
+  export {default as used} from './used';
+  export {default as excluded} from './excluded';
+
+  export const index = 'index';
+node_modules/test/indexstar.js: |
+  export * from './index';
+node_modules/test/package.json: |
+  {
+    "sideEffects": false
+  }
+node_modules/test/used.js: |
+  export default 'used';

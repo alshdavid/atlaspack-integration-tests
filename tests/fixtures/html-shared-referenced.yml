@@ -1,0 +1,24 @@
+options:
+  name: html-shared-referenced
+package.json:
+  type: module
+  "@atlaspack/bundler-default":
+    minBundleSize: 0
+yarn.lock: ""
+async.js: |
+  import './async2.js';
+
+  import('./async2.js');
+async2.js: ""
+index1.html: |
+  <script type="module" src="index1.js"></script>
+index1.js: |
+  import './shared';
+index2.html: |
+  <script type="module" src="index2.js"></script>
+index2.js: |+
+  import './async.js';
+  import './shared.js';
+
+shared.js: |
+  import('./async.js');

@@ -1,0 +1,19 @@
+options:
+  name: reporters-success
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  export function main() {}
+test-reporter/index.js: |
+  const { Reporter } = require('@atlaspack/plugin');
+
+  module.exports = new Reporter({
+    async report({ event }) {}
+  });
+test-reporter/package.json: |
+  {
+    "name": "test-reporter",
+    "version": "1.0.0",
+    "main": "index.js"
+  }

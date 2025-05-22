@@ -1,0 +1,13 @@
+options:
+  name: global-redeclare
+package.json:
+  type: module
+  name: atlaspack-test-global-redeclare
+  private: true
+  browserslist:
+    - last 2 Chrome versions
+index.js: |
+  const global = {};
+  module.exports = function () {
+    return !!global.document;
+  };

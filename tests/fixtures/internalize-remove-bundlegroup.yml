@@ -1,0 +1,15 @@
+options:
+  name: internalize-remove-bundlegroup
+package.json:
+  type: module
+core.js: |
+  import './worker3.js';
+index.js: |
+  new Worker(new URL('./worker1.js', import.meta.url), {type: 'module'});
+worker1.js: |
+  import './worker2';
+worker2.js: |
+  import './core.js';
+  new Worker(new URL('./worker3.js', import.meta.url), {type: 'module'});
+worker3.js: |
+  import './core.js';

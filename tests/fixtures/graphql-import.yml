@@ -1,0 +1,31 @@
+options:
+  name: graphql-import
+package.json:
+  type: module
+another.graphql: |-
+  fragment AnotherUserFragment on User {
+      address
+      email
+  }
+index.js: |-
+  var local = require('./local.graphql');
+
+  module.exports = function () {
+    return local;
+  };
+local.graphql: |-
+  # import './other.graphql'
+
+  {
+    user(id: 6) {
+      ...UserFragment
+      ...AnotherUserFragment
+    }
+  }
+other.graphql: |-
+  # import './another.graphql'
+
+  fragment UserFragment on User {
+      firstName
+      lastName
+  }

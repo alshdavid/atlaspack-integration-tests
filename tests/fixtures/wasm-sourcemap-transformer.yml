@@ -1,0 +1,33 @@
+options:
+  name: wasm-sourcemap-transformer
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  console.log(new URL("index.wasm", import.meta.url))
+index.wasm: "\0asm\x01\0\0\0\x01\a\x01`\x02\x01\x03\x02\x01\0\a\a\x01\x03add\
+  \0\0
+
+  \t\x01\a\0 \x01 \0j\v"
+node_modules/atlaspack-transformer-test/index.js: |
+  const {Transformer} = require('@atlaspack/plugin');
+  const {default: SourceMap} = require('@parcel/source-map');
+
+  module.exports = new Transformer({
+    transform({asset, options}) {
+      let map = SourceMap.generateEmptyMap({
+        projectRoot: options.projectRoot,
+        sourceName: 'index.as.ts',
+        sourceContent: `export function add(a : i32, b : i32): i32 {
+    return b + a
+  }`,
+      });
+      asset.setMap(map);
+      return [asset];
+    },
+  });
+node_modules/atlaspack-transformer-test/package.json: |
+  {
+    "name": "atlaspack-transformer-test",
+    "version": "1.0.0"
+  }

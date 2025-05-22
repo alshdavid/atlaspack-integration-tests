@@ -1,0 +1,25 @@
+options:
+  name: html-inline-escape
+package.json:
+  type: module
+100x100.png: file://<root>/assets/100x100.png
+script.html: |
+  <!doctype html>
+  <script type="module">
+    import {a, b, c} from './script.js';
+    output({a, b, c});
+  </script>
+script.js: |
+  export const a = '<script></script>';
+  export const b = '<!-- test';
+  export const c = '<SCRIPT></SCRIPT>';
+style.css: |
+  div {
+    content: "</style>";
+  }
+style.html: |
+  <!doctype html>
+  <div style='content: "hi"' />
+  <style>
+    @import "style.css";
+  </style>

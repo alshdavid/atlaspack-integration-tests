@@ -1,0 +1,22 @@
+options:
+  name: jsx-automatic-tsconfig
+package.json:
+  type: module
+  private: true
+  dependencies:
+    preact: ^17
+yarn.lock: ""
+index.js: |
+  module.exports = <div />;
+node_modules/preact/jsx-dev-runtime.js: ""
+node_modules/preact/jsx-runtime.js: ""
+node_modules/preact/package.json: |
+  {
+    "name": "preact"
+  }
+tsconfig.json: |
+  {
+    "compilerOptions": {
+      "jsxImportSource": "preact"
+    }
+  }

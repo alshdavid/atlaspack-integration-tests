@@ -1,0 +1,19 @@
+options:
+  name: js-import-shadow-func-var
+package.json:
+  type: module
+index.js: |
+  import { foo } from "./other.js";
+
+  function func(foo) {}
+
+  function func2() {
+    var foo = 2;
+  }
+  const func3 = () => {
+    var foo = 3;
+  }
+
+  export default foo;
+other.js: |
+  export const foo = 123;

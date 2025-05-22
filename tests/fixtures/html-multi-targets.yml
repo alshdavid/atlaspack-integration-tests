@@ -1,0 +1,32 @@
+options:
+  name: html-multi-targets
+package.json:
+  type: module
+  name: assets-in-confluence
+  version: 0.1.0
+  private: true
+  targets:
+    main1:
+      distDir: ./dist/main1
+      source: ./src/main1/index.html
+      publicUrl: ./
+    main2:
+      distDir: ./dist/main2
+      source: ./src/main2/index.html
+      publicUrl: ./
+  "@atlaspack/bundler-default":
+    minBundleSize: 0
+yarn.lock: ""
+src/main1/index.html: |
+  <script type="module" src="index.js"></script>
+src/main1/index.js: |-
+  module.exports = async function () {
+    return import('../shared');
+  };
+src/main2/index.html: |
+  <script type="module" src="index.js"></script>
+src/main2/index.js: |-
+  module.exports = async function () {
+    return import('../shared');
+  };
+src/shared.js: export const stuff = () => 'lots and lots of stuff'

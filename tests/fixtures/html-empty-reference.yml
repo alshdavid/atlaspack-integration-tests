@@ -1,0 +1,9 @@
+options:
+  name: html-empty-reference
+package.json:
+  type: module
+index.html: |
+  <img src="" />
+  <script src=""></script>
+  <link href="" />
+  <input value="" checked data-x />

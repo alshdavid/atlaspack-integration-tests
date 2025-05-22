@@ -1,0 +1,11 @@
+options:
+  name: url-colon
+package.json:
+  type: module
+yarn.lock: ""
+absolute.html: |
+  <!doctype html>
+  <a href="/a:b:c.html">Test</a>
+relative.html: |
+  <!doctype html>
+  <a href="./a:b:c.html">Test</a>

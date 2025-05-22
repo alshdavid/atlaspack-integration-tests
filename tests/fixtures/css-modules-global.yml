@@ -1,0 +1,54 @@
+options:
+  name: css-modules-global
+package.json:
+  type: module
+a/index.css: |-
+  .foo {
+    color: red;
+  }
+a/index.js: |
+  var foo = require('./index.css');
+  require('test/index.css');
+
+  output = foo.foo;
+a/node_modules/test/index.css: |-
+  .x {
+    color: red;
+  }
+a/node_modules/test/package.json: |-
+  {
+    "name": "test"
+  }
+a/package.json: |
+  {
+    "@atlaspack/transformer-css": {
+      "cssModules": true
+    }
+  }
+a/yarn.lock: ""
+b/index.css: |-
+  .foo {
+    color: red;
+  }
+b/index.js: |
+  var foo = require('./index.css');
+  require('test/index.css');
+
+  output = foo.foo;
+b/node_modules/test/index.css: |-
+  .x {
+    color: red;
+  }
+b/node_modules/test/package.json: |-
+  {
+    "name": "test"
+  }
+b/package.json: |
+  {
+    "@atlaspack/transformer-css": {
+      "cssModules": {
+        "global": true
+      }
+    }
+  }
+b/yarn.lock: ""

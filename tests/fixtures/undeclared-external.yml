@@ -1,0 +1,15 @@
+options:
+  name: undeclared-external
+package.json:
+  type: module
+  name: undeclared-external
+  main: dist/out.js
+  browserslist: ">= 0.25%"
+  dependencies: {}
+yarn.lock: ""
+helpers.js: |
+  class Test {}
+index.js: |
+  import {add} from 'lodash';
+
+  console.log(add(2, 3));

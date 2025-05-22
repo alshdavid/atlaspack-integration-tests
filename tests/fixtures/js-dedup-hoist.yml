@@ -1,0 +1,25 @@
+options:
+  name: js-dedup-hoist
+package.json:
+  type: module
+  browserslist:
+    - last 1 Chrome version
+a.js: |
+  import hello2 from './hello2'
+
+  export default `${hello2}`
+hello1.js: |
+  const value = 'Hello'
+  export default value
+hello2.js: |
+  const value = 'Hello'
+  export default value
+index.js: |
+  import hello1 from './hello1'
+  import hello2 from './hello2'
+
+  export default function () {
+    return import('./a').then(function (a) {
+      return `${hello1} ${hello2}! ${a.default}`;
+    });
+  }

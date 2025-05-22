@@ -1,0 +1,19 @@
+options:
+  name: hmr-dynamic
+package.json:
+  type: module
+index.js: |
+  var local = import('./local');
+
+  function run() {
+    return local.then(function (l) {
+      output(l.a + l.b);
+    });
+  };
+
+  module.hot.accept();
+
+  run();
+local.js: |
+  exports.a = 1;
+  exports.b = 2;

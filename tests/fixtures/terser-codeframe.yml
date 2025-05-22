@@ -1,0 +1,8 @@
+options:
+  name: terser-codeframe
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  let ;
+  let y = 2;

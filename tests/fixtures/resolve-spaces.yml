@@ -1,0 +1,18 @@
+options:
+  name: resolve-spaces
+package.json:
+  type: module
+index.html: |
+  <!doctype html>
+  <html>
+  <body>
+      <a href="other page.html">other page</a>
+  </body>
+  </html>
+other page.html: |-
+  <!doctype html>
+  <html>
+  <body>
+    <a href="index.html">index</a>
+  </body>
+  </html>

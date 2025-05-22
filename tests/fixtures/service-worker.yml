@@ -1,0 +1,39 @@
+options:
+  name: service-worker
+package.json:
+  type: module
+a/index.js: >
+  import '../b/nested'
+
+
+  navigator.serviceWorker.register(new URL('../b/worker-outside.js',
+  import.meta.url));
+b/nested/index.js: >
+  navigator.serviceWorker.register(new URL('worker-nested.js', import.meta.url),
+  { scope: './' });
+b/nested/worker-nested.js: |
+  self.addEventListener('message', () => {});
+b/worker-outside.js: |
+  self.addEventListener('message', () => {});
+dynamic-import-index.js: >
+  navigator.serviceWorker.register(new URL('dynamic-import.js',
+  import.meta.url), {type: 'module'});
+dynamic-import.js: |
+  import('./b/worker-outside');
+error.js: >
+  navigator.serviceWorker.register(new URL('module-worker.js', import.meta.url));
+manifest-worker.js: |
+  import {manifest, version} from '@atlaspack/service-worker';
+
+  output(manifest, version);
+manifest.js: >
+  navigator.serviceWorker.register(new URL('manifest-worker.js',
+  import.meta.url), {type: 'module'});
+module-worker.js: |
+  export var foo = 2;
+module.js: >
+  navigator.serviceWorker.register(new URL('module-worker.js', import.meta.url),
+  {type: 'module'});
+scope.js: >
+  navigator.serviceWorker.register(new URL('module-worker.js', import.meta.url),
+  {scope: 'foo', type: 'module'});

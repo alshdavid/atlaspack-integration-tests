@@ -1,0 +1,29 @@
+options:
+  name: dynamic-common-large
+package.json:
+  type: module
+yarn.lock: ""
+a.js: |
+  var c = require('./common');
+
+  exports.a = 1;
+  exports.b = c;
+b.js: |-
+  var c = require('./common');
+
+  module.exports = c + 2;
+c.js: ""
+common.js: |
+  require('./c');
+
+  module.exports = require('lodash').add(1, 1);
+index.js: |
+  var c = require('./c');
+  var a = import('./a');
+  var b = import('./b');
+
+  module.exports = function () {
+    return Promise.all([a, b]).then(function ([a, b]) {
+      return a.a + a.b + b;
+    });
+  };

@@ -1,0 +1,11 @@
+options:
+  name: resolver-alternative-relative
+package.json:
+  type: module
+  name: resolver-alternative-relative-test
+  private: true
+a.js: |
+  const test = require('./test/teste.js');
+b.js: const a = require('./aa.js');
+test/test.js: |
+  const a = require('../../a.js');

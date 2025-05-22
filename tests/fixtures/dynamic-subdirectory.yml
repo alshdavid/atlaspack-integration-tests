@@ -1,0 +1,15 @@
+options:
+  name: dynamic-subdirectory
+package.json:
+  type: module
+local.js: |
+  exports.a = 1;
+  exports.b = 2;
+subdirectory/index.js: |
+  var local = import('../local');
+
+  module.exports = function () {
+    return local.then(function (l) {
+      return l.a + l.b;
+    });
+  };

@@ -1,0 +1,21 @@
+options:
+  name: image-config
+package.json:
+  type: module
+clock.png: file://<root>/assets/clock.png
+foo.png: file://<root>/assets/foo.png
+image.jpg: file://<root>/assets/image.jpg
+sharp.config.json: |
+  {
+    "jpeg": {
+      "quality": 75,
+      "chromaSubsampling": "4:4:4"
+    },
+    "webp": {
+      "quality": 80
+    },
+    "png": {
+      "palette": true
+    },
+    "quality": 90
+  }

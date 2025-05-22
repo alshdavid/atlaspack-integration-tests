@@ -1,0 +1,26 @@
+options:
+  name: postcss-modules-import-namespace-whole
+package.json:
+  type: module
+yarn.lock: ""
+global.css: |
+  body {
+    background: blue;
+  }
+index.js: |
+  import "./global.css";
+  import * as styles from "./style.module.css";
+
+  output = styles;
+style.module.css: |
+  .unused {
+    color: red;
+  }
+
+  .b-2 {
+    font-size: 12pt;
+  }
+
+  :global(.page) {
+  	border: 1px solid black;
+  }

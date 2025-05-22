@@ -1,0 +1,11 @@
+options:
+  name: babel-plugin-autoinstall
+package.json:
+  type: module
+  name: babel-plugin-autoinstall
+  devDependencies:
+    "@babel/core": ^7.22.11
+index.js: |
+  export default function () {
+    return 3;
+  }

@@ -1,0 +1,8 @@
+options:
+  name: compressors
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  import _ from 'lodash';
+  console.log(_);

@@ -1,0 +1,11 @@
+options:
+  name: packager-global-this
+package.json:
+  type: module
+index.html: |
+  <script type="module" src="./index.js"></script>
+index.js: |
+  import('./lazy').then(m => alert(m));
+  emitGlobalThis(globalThis);
+lazy.js: |
+  export const lazy = 'lazy value';

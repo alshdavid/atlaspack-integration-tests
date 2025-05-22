@@ -1,0 +1,15 @@
+options:
+  name: css-modules-style
+package.json:
+  type: module
+  private: true
+  "@atlaspack/transformer-css":
+    cssModules: true
+yarn.lock: ""
+index.html: |
+  <!DOCTYPE html>
+  <style>
+  .index {
+    color: red;
+  }
+  </style>

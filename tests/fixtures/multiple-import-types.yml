@@ -1,0 +1,27 @@
+options:
+  name: multiple-import-types
+package.json:
+  type: module
+dynamic-url.js: |
+  export const lazy = import('./other').then(({default: LazyFoo}) => LazyFoo);
+  export const url = new URL('./other', import.meta.url).toString();
+other.js: |
+  export default class Foo {}
+static-dynamic-url.js: >
+  import Foo from './other';
+
+
+  export {Foo};
+
+  export const LazyFoo = import('./other').then(({default: LazyFoo}) =>
+  LazyFoo);
+
+  export const url = new URL('./other', import.meta.url).toString();
+static-dynamic.js: >
+  import Foo from './other';
+
+
+  export {Foo};
+
+  export const LazyFoo = import('./other').then(({default: LazyFoo}) =>
+  LazyFoo);

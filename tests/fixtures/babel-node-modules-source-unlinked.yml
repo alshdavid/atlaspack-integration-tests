@@ -1,0 +1,21 @@
+options:
+  name: babel-node-modules-source-unlinked
+package.json:
+  type: module
+  name: atlaspack-test-browser-browserslist
+  browserslist:
+    - last 2 Chrome versions
+    - IE >= 11
+yarn.lock: ""
+index.js: |
+  import Foo from 'foo';
+
+  export {Foo};
+  export class Bar {}
+node_modules/foo/index.js: |
+  export default class Foo {}
+node_modules/foo/package.json: |
+  {
+    "name": "foo",
+    "source": true
+  }

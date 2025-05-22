@@ -1,0 +1,24 @@
+options:
+  name: env-disabled
+package.json:
+  type: module
+  "@atlaspack/transformer-js":
+    inlineEnvironment: false
+yarn.lock: ""
+index.js: |
+  const external = require("foo");
+
+  module.exports = function () {
+    return process.env.FOOBAR + test(process.env.FOOBAR) + test(external);
+  };
+
+  function test(str) {
+    return ':' + str;
+  }
+node_modules/foo/index.js: |
+  module.exports = process.env.FOOBAR;
+node_modules/foo/package.json: |
+  {
+    "name": "foo",
+    "version": "1.0.0"
+  }

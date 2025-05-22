@@ -1,0 +1,25 @@
+options:
+  name: ts-validation-error
+package.json:
+  type: module
+index.ts: |-
+  import { test } from './test';
+
+  export default test('a string');
+test.ts: "type Params = {
+
+  \    hello: string;
+
+  };
+
+  \ \ 
+
+  export function test(params: Params) {
+
+  \    return params.world;
+
+  }
+
+  \  "
+tsconfig.json: |
+  {}

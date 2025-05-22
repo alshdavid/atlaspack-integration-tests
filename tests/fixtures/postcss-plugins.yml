@@ -1,0 +1,21 @@
+options:
+  name: postcss-plugins
+package.json:
+  type: module
+yarn.lock: ""
+index.css: |
+  .index {
+    color: red;
+  }
+index.js: |
+  var map = require('./index.css');
+
+  module.exports = function () {
+    return map.index;
+  };
+index2.js: |
+  var map = require('./index.css');
+
+  module.exports = function () {
+    return map.index;
+  };

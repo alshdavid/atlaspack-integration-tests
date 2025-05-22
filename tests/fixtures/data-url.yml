@@ -1,0 +1,25 @@
+options:
+  name: data-url
+package.json:
+  type: module
+atlaspack.webp: file://<root>/assets/atlaspack.webp
+binary.css: |
+  .webp-img {
+    background-image: url('data-url:atlaspack.webp')
+  }
+binary.js: |
+  import webp from 'data-url:./atlaspack.webp';
+  export default webp;
+img.svg: |
+  <svg width="120" height='120' xmlns="http://www.w3.org/2000/svg">
+    <filter id="blur-_.!~*">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <circle cx="60" cy="60" r="50" fill="green" filter="url(#blur-_.!~*)" />
+  </svg>
+index.html: |
+  <img src="data-url:./img.svg" />
+text.css: |
+  .svg-img {
+    background-image: url('data-url:img.svg');
+  }

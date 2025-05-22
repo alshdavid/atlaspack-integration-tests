@@ -1,0 +1,70 @@
+options:
+  name: react-refresh-lazy-child
+package.json:
+  type: module
+  dependencies:
+    react: ^16.11.0
+    react-dom: ^16.11.0
+App.js: |
+  import React, { Suspense, lazy, useState } from "react";
+
+  const child = import("./Async");
+  const Async = lazy(() => child);
+
+  let App = () => {
+  	const [x] = useState(Math.random());
+
+  	return (
+  		<Suspense fallback={"Loading"}>
+  			{x} <Async />
+  		</Suspense>
+  	);
+  };
+
+  export default App;
+Async.1.js: |
+  import React, { useState } from "react";
+
+  let Async = () => {
+  	const [x] = useState(Math.random());
+
+  	return <div>OtherAsync:{x}</div>;
+  };
+
+  export default Async;
+Async.js: |
+  import React, { useState } from "react";
+
+  let Async = () => {
+  	const [x] = useState(Math.random());
+
+  	return <div>Async:{x}</div>;
+  };
+
+  export default Async;
+index.html: |
+  <div id="root"></div>
+  <script type="module" src="index.js"></script>
+index.js: >
+  import React, { useState } from "react";
+
+  import ReactDOM from "react-dom";
+
+  import App from "./App";
+
+  import { act } from "react-dom/test-utils";
+
+
+  let Main = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        <span>{x}</span> <App />
+      </div>
+    );
+  };
+
+
+  export default () =>
+    act(async () => {ReactDOM.render(<Main />, document.getElementById("root"));});

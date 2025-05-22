@@ -1,0 +1,18 @@
+options:
+  name: env-prior-transform
+package.json:
+  type: module
+yarn.lock: ""
+index.js: ""
+insert-env.js: >
+  module.exports = function insertEnv(babel) {
+    const exportFoo = babel.template('module.exports = process.env.NODE_ENV;', {syntacticPlaceholders: true});
+
+    return {
+      visitor: {
+        Program(path) {
+          path.node.body.push(exportFoo());
+        }
+      }
+    }
+  }

@@ -1,0 +1,20 @@
+options:
+  name: css-layer
+package.json:
+  type: module
+a.css: |
+  @import "b.css" layer(b);
+
+  .a {
+    color: red;
+  }
+b.css: |
+  @import "c.css" layer(c);
+
+  .b {
+    color: blue;
+  }
+c.css: |
+  .c {
+    color: yellow;
+  }

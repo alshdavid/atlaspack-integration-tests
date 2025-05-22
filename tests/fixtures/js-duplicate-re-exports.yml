@@ -1,0 +1,21 @@
+options:
+  name: js-duplicate-re-exports
+package.json:
+  type: module
+a.js: |
+  export { c } from './c.js';
+  export const a = "a";
+b.js: |
+  export { c } from './c.js';
+  export const b = "b";
+c.js: |
+  export function c() {
+  	return false;
+  }
+index.js: |
+  import { a, b, c } from "./utilities.js";
+
+  module.exports = {a, b, c};
+utilities.js: |
+  export * from "./a.js";
+  export * from "./b.js";

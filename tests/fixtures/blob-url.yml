@@ -1,0 +1,17 @@
+options:
+  name: blob-url
+package.json:
+  type: module
+yarn.lock: ""
+index.js: >
+  let worker = new Worker(new URL('blob-url:./worker', import.meta.url), {type:
+  'module'});
+
+  worker.postMessage('test');
+test.txt: |
+  this should appear in the bundle
+worker.js: |
+  const fs = require('fs');
+  const path = require('path');
+
+  self.postMessage(fs.readFileSync(path.join(__dirname, 'test.txt'), 'utf8'));

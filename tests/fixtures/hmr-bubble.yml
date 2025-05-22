@@ -1,0 +1,15 @@
+options:
+  name: hmr-bubble
+package.json:
+  type: module
+index.js: |
+  import {value} from "./local.js";
+  output(["index", value]);
+  module.hot.accept();
+local.js: |
+  export {value} from "./other.js";
+  import {value} from "./other.js";
+  output(["local", value]);
+other.js: |
+  export const value = 1;
+  output(["other", value]);

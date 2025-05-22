@@ -1,0 +1,45 @@
+options:
+  name: packager-loadConfig
+package.json:
+  type: module
+yarn.lock: ""
+foo.config.json: |
+  {
+    "contents": "1234"
+  }
+index.txt: |
+  module.exports = 2;
+node_modules/atlaspack-packager-config/index.js: >
+  // @flow strict-local
+
+
+  const invariant = require('assert');
+
+  const path = require('path');
+
+  const {Packager} = require('@atlaspack/plugin');
+
+  const {loadConfig} = require('@atlaspack/utils');
+
+
+  module.exports = (new Packager({
+    async loadConfig({options, config}) {
+      let result = await config.getConfigFrom(path.join(options.projectRoot, 'index'), ['foo.config.json']);
+      return result && result.contents;
+    },
+    package({bundle, config}) {
+      invariant(config);
+      return {contents: config.contents};
+    },
+  }) /*: Packager */);
+node_modules/atlaspack-packager-config/package.json: |
+  {
+    "name": "atlaspack-packager-config",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js",
+    "dependencies": {
+      "@atlaspack/plugin": "^2.0.0-beta.1",
+      "@atlaspack/utils": "^2.0.0-beta.1"
+    }
+  }

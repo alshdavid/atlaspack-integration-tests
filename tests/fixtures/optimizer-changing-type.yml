@@ -1,0 +1,25 @@
+options:
+  name: optimizer-changing-type
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  module.exports = 2;
+node_modules/atlaspack-optimizer-changing-type/ChangingTypeOptimizer.js: |
+  const {Optimizer} = require('@atlaspack/plugin');
+
+  module.exports = new Optimizer({
+    optimize({contents}) {
+      return {
+        type: 'test',
+        contents
+      };
+    }
+  });
+node_modules/atlaspack-optimizer-changing-type/package.json: |
+  {
+    "name": "atlaspack-optimizer-changing-type",
+    "version": "1.0.0",
+    "private": true,
+    "main": "ChangingTypeOptimizer.js"
+  }

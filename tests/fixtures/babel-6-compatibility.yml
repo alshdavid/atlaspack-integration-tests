@@ -1,0 +1,11 @@
+options:
+  name: babel-6-compatibility
+package.json:
+  type: module
+  name: babel-6-compatibility
+  devDependencies:
+    babel-core: ^6.26.3
+index.js: |
+  export default function () {
+    return 3;
+  }

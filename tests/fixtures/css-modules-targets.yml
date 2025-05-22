@@ -1,0 +1,18 @@
+options:
+  name: css-modules-targets
+package.json:
+  type: module
+  browserslist: IE >= 11
+yarn.lock: ""
+foo.module.css: |
+  .foo {
+    color: red;
+  }
+index.html: |
+  <script type="module" src="index.js"></script>
+index.js: |
+  import * as foo from './foo.module.css';
+
+  module.exports = function () {
+    return foo.foo;
+  };

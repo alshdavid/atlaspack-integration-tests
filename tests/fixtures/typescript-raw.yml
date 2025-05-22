@@ -1,0 +1,12 @@
+options:
+  name: typescript-raw
+package.json:
+  type: module
+index.ts: |-
+  const url = require('url:./test.txt');
+
+  export function getRaw() {
+    return url;
+  }
+test.txt: |
+  hi there

@@ -1,0 +1,13 @@
+options:
+  name: dynamic-static-prefetch
+package.json:
+  type: module
+async.js: |
+  function neverCalled() {
+    import('./prefetched', {prefetch: true});
+  }
+index.js: |
+  export default import('./async').then(() => document.head.children);
+prefetched.css: ""
+prefetched.js: |
+  import './prefetched.css';

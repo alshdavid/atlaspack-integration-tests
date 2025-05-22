@@ -1,0 +1,17 @@
+options:
+  name: html-inline-css-import
+package.json:
+  type: module
+index.html: |-
+  <!DOCTYPE html>
+  <html>
+  <body>
+    <style>
+      @import './test.css';  
+    </style>
+  </body>
+  </html>
+test.css: |-
+  h1 {
+    color: red
+  }

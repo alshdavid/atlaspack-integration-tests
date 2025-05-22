@@ -1,0 +1,24 @@
+options:
+  name: webmanifest-not-found
+package.json:
+  type: module
+index.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <link rel="manifest" href="manifest.webmanifest" />
+  </head>
+  <body>
+  </body>
+  </html>
+manifest.webmanifest: |
+  {
+    "name": "pwa-webmanifest-example",
+    "icons": [
+      {
+        "src": "icon.png",
+        "sizes": "100x100",
+        "type": "image/png"
+      }
+    ]
+  }

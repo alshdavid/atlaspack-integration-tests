@@ -1,0 +1,11 @@
+options:
+  name: jsx-react-alias
+package.json:
+  type: module
+  private: true
+  dependencies:
+    preact: "*"
+  alias:
+    react: preact/compat
+index.js: |
+  module.exports = <div />;

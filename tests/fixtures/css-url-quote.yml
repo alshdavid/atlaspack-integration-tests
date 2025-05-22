@@ -1,0 +1,16 @@
+options:
+  name: css-url-quote
+package.json:
+  type: module
+index.css: |
+  .quotes {
+    background-image: url('data:image/svg+xml;utf8,with quote " and escape \\');
+    width: 100px;
+    height: 100px;
+  }
+index.js: |
+  require('./index.css');
+
+  module.exports = function () {
+    return 2;
+  };

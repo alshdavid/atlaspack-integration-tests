@@ -1,0 +1,11 @@
+options:
+  name: pug-minify
+package.json:
+  type: module
+index.pug: |
+  doctype html
+  html
+    head
+      title Minify
+    body
+      h1 Minified

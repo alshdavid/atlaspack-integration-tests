@@ -1,0 +1,19 @@
+options:
+  name: sourcemap-inline-sources
+package.json:
+  type: module
+  name: atlaspack-sourcemap-node-integration-test
+  version: 1.0.0
+  private: true
+  node: dist/index.js
+  targets:
+    node:
+      engines:
+        node: ">= 8.0.0"
+      sourceMap:
+        inlineSources: true
+yarn.lock: ""
+index.js: |
+  export default function test() {
+    return 'test'
+  }

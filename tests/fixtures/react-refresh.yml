@@ -1,0 +1,112 @@
+options:
+  name: react-refresh
+package.json:
+  type: module
+  dependencies:
+    react: ^16.11.0
+    react-dom: ^16.11.0
+App.js: |
+  import React, { useState } from "react";
+  import ReactDOM from "react-dom";
+  import Foo from "./Foo";
+  import { act } from "react-dom/test-utils";
+
+  export const App = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        {x} <Foo />
+      </div>
+    );
+  };
+Foo.1.js: |
+  import React, { useState } from "react";
+
+  let Foo = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        OtherFunctional:
+        <span>{x}</span>
+      </div>
+    );
+  };
+
+  export default Foo;
+Foo.2-hooks.js: |
+  import React, { useState } from "react";
+
+  let Foo = () => {
+    const [x] = useState(Math.random());
+    const [y] = useState(Math.random());
+
+    return (
+      <div>
+        Hooks:{x}:{y}
+      </div>
+    );
+  };
+
+  export default Foo;
+Foo.3-class.js: |-
+  import React, { Component } from "react";
+
+  class Foo extends Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        x: Math.random()
+      };
+    }
+
+    render() {
+      return (
+        <div>
+          Class:{this.state.x}
+        </div>
+      );
+    }
+  }
+  export default Foo;
+Foo.js: |
+  import React, { useState } from "react";
+
+  let Foo = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        Functional:{x}
+      </div>
+    );
+  };
+
+  export default Foo;
+index.html: |
+  <div id="root"></div>
+  <script type="module" src="index.js"></script>
+index.js: >
+  import React, { useState } from "react";
+
+  import ReactDOM from "react-dom";
+
+  import { App } from "./App";
+
+  import { act } from "react-dom/test-utils";
+
+
+  let Main = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        <span>{x}</span> <App />
+      </div>
+    );
+  };
+
+
+  export default () =>
+    act(async () => {ReactDOM.render(<Main />, document.getElementById("root"));});

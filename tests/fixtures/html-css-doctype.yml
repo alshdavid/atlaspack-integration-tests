@@ -1,0 +1,14 @@
+options:
+  name: html-css-doctype
+package.json:
+  type: module
+index.css: |
+  body {
+    background: red;
+  }
+index.html: |
+  <!DOCTYPE html>
+  <script type="module" src="index.js"></script>
+index.js: |
+  require('./index.css');
+  alert('Hi');

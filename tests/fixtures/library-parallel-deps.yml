@@ -1,0 +1,25 @@
+options:
+  name: library-parallel-deps
+package.json:
+  type: module
+  module: dist/out.js
+yarn.lock: ""
+foo.js: |
+  module.exports = 'foo';
+index.js: |
+  import * as foo from './foo';
+
+  export default foo + ' bar';
+ParallelResolver.js: |
+  const {Resolver} = require('@atlaspack/plugin');
+
+  module.exports = new Resolver({
+    resolve({specifier}) {
+      if (specifier === './foo') {
+        return {
+          filePath: __dirname + '/foo.js',
+          priority: 'parallel'
+        };
+      }
+    }
+  });

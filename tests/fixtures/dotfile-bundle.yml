@@ -1,0 +1,8 @@
+options:
+  name: dotfile-bundle
+package.json:
+  type: module
+  main: .output.js
+yarn.lock: ""
+index.js: |
+  module.exports = 2;

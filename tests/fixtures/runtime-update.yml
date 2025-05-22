@@ -1,0 +1,29 @@
+options:
+  name: runtime-update
+package.json:
+  type: module
+yarn.lock: ""
+dynamic-runtime.js: |
+  module.exports = 'INITIAL CODE'
+node_modules/atlaspack-runtime-mock/index.js: |
+  const {Runtime} = require('@atlaspack/plugin');
+  const path = require('path');
+
+  module.exports = new Runtime({
+    apply() {
+      return [{
+        filePath: path.resolve(__dirname, '../../MockRuntime.js'),
+        code: `let x = require('./dynamic-runtime'); console.log(x);`,
+        isEntry: true
+      }]
+    }
+  });
+node_modules/atlaspack-runtime-mock/package.json: |
+  {
+    "name": "atlaspack-runtime-mock",
+    "version": "1.0.0"
+  }
+src/index.js: |
+  export default function main() {
+    console.log('hello');
+  }

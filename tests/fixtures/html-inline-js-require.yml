@@ -1,0 +1,15 @@
+options:
+  name: html-inline-js-require
+package.json:
+  type: module
+index.html: |-
+  <!DOCTYPE html>
+  <html>
+  <body>
+    <script type="module">
+      require('./test');
+    </script>
+  </body>
+  </html>
+test.js: |
+  console.log('test')

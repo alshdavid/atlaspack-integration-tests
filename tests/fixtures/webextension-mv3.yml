@@ -1,0 +1,128 @@
+options:
+  name: webextension-mv3
+package.json:
+  type: module
+yarn.lock: ""
+background.js: ""
+content-script.js: |
+  alert('File test alert');
+injected.css: |-
+  h1 {
+      font-family: "Comic Sans MS";
+  }
+manifest.json: >
+  {
+    "name": "MV3 Migration - content script example",
+    "description": "Source: https://github.com/GoogleChrome/chrome-extensions-samples",
+    "version": "0.1",
+    "manifest_version": 3,
+    "background": {
+      "service_worker": "background.js",
+      "type": "module",
+      "scripts": [ "background.js" ]
+    },
+    "permissions": [
+      "scripting",
+      "activeTab"
+    ],
+    "content_scripts": [{
+      "matches": ["https://*.google.com/*"],
+      "js": ["other-content-script.js"],
+      "world": "ISOLATED"
+    }],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "side_panel": {
+      "default_path": "side-panel.html"
+    }
+  }
+other-content-script.js: import './injected.css';
+popup.css: |
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body,
+  main {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    min-width: 20em;
+    min-height: 10em;
+  }
+  main {
+    padding: 1em .5em;
+    display: grid;
+    place-items: center;
+  }
+popup.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="popup.css">
+    <script src="popup.js" type="module"></script>
+  </head>
+  <body>
+    <main>
+      <div>
+        <button id="inject-file">Inject file</button>
+      </div>
+      <div>
+        <button id="inject-function">Inject function</button>
+      </div>
+    </main>
+  </body>
+  </html>
+popup.js: |
+  import contentScript from 'url:./content-script.js';
+  let injectFile = document.getElementById('inject-file');
+  let injectFunction = document.getElementById('inject-function');
+
+  async function getCurrentTab() {
+    let queryOptions = { active: true, currentWindow: true };
+    let [tab] = await chrome.tabs.query(queryOptions);
+    return tab;
+  }
+
+  injectFile.addEventListener('click', async () => {
+    let tab = await getCurrentTab();
+
+    chrome.scripting.executeScript({
+      target: {tabId: tab.id},
+      files: [contentScript]
+    });
+  });
+
+  function showAlert(givenName) {
+    alert(`Hello, ${givenName}`);
+  }
+
+  injectFunction.addEventListener('click', async () => {
+    let tab = await getCurrentTab();
+
+    let name = 'World';
+    chrome.scripting.executeScript({
+      target: {tabId: tab.id},
+      func: showAlert,
+      args: [name]
+    });
+  });
+side-panel.html: |-
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SidePanel</title>
+  </head>
+  <body>
+
+  </body>
+  </html>

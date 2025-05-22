@@ -1,0 +1,16 @@
+options:
+  name: js-import-initialization
+package.json:
+  type: module
+a.mjs: |
+  import { c } from "./b.mjs";
+
+  sideEffectNoop(c);
+b.mjs: |
+  export const foo = "foo";
+
+  export { c } from "./c.mjs";
+c.mjs: |
+  import { foo } from "./b.mjs";
+
+  export const c = "c:" + foo;

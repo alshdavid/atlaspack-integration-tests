@@ -1,0 +1,25 @@
+options:
+  name: node_require_browser
+
+package.json:
+  type: module
+  dependencies:
+    test-module: 'file:./node_modules/test-module'
+
+local.js: |
+  exports.b = 2;
+
+main.js: |
+  var {a} = require('test-module');
+  var {b} = require('./local');
+
+  module.exports = function () {
+    return a + b;
+  };
+
+  done(module.exports)
+
+node_modules/test-module/package.json:
+  main: index.js
+
+node_modules/test-module/index.js: exports.a = 1;

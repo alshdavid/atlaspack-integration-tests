@@ -1,0 +1,10 @@
+options:
+  name: service-worker-import-meta-url
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  navigator.serviceWorker.register(new URL("./worker.js", import.meta.url));
+missing.js: |
+  navigator.serviceWorker.register(new URL("./invalid.js", import.meta.url));
+worker.js: ""

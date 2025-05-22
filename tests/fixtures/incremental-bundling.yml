@@ -1,0 +1,137 @@
+options:
+  name: incremental-bundling
+package.json:
+  type: module
+  "@atlaspack/bundler-default":
+    minBundleSize: 0
+  sideEffects:
+    - index-multi-symbol.js
+    - index-export.js
+    - index-with-css.js
+    - index.js
+yarn.lock: ""
+a.css: |
+  html {
+    color: blue;
+  }
+a.js: |
+  export const a = 'a';
+b.js: |
+  export const b = 'b';
+c.js: |
+  export const c = 'c';
+index-export.js: |
+  import {a} from './a';
+
+  module.exports = a;
+index-multi-symbol.js: |
+  import {a, b} from './multi-symbol-util.js';
+
+  console.log('index.js', b);
+  console.log(a);
+  module.exports = {a};
+index-with-css.js: |
+  import {a} from './a';
+  import './a.css';
+
+  console.log('index.js');
+  console.log(a);
+index.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <title>Test</title>
+  </head>
+  <body>
+    <script type="module" src="./index.js"></script>
+  </body>
+  </html>
+index.js: |
+  import {a} from './a';
+
+  console.log('index.js');
+  console.log(a);
+multi-symbol-util.js: |
+  export * from "./a.js";
+  export * from "./b.js";
+  export * from "./c.js";
+node_modules/atlaspack-bundler-test/index.js: >
+  // Spying on the Bundler, it did not like the imports
+
+  let CONFIG = Symbol.for('parcel-plugin-config');
+
+
+  class Bundler {
+    constructor(opts) {
+      this[CONFIG] = opts;
+    }
+  }
+
+
+  // A very dumb bundler just for tests... (probably ßdoesn't produce working
+  code)
+
+  module.exports = new Bundler({
+    bundle({bundleGraph}) {
+      bundleGraph.traverse((node, context) => {
+        if (node.type !== 'dependency') {
+          return context;
+        }
+
+        let dependency = node.value;
+        let assets = bundleGraph.getDependencyAssets(dependency);
+        let bundleGroup = bundleGraph.createBundleGroup(dependency, dependency.target || context.target);
+
+        for (let asset of assets) {
+          let bundle = bundleGraph.createBundle({
+            entryAsset: asset,
+            isEntry: Boolean(dependency.isEntry),
+            target: bundleGroup.target,
+          });
+
+          bundleGraph.addAssetGraphToBundle(asset, bundle);
+          bundleGraph.addBundleToBundleGroup(bundle, bundleGroup);
+        }
+
+        return {
+          target: dependency.target || context.target
+        };
+      });
+    },
+    optimize() {}
+  });
+node_modules/atlaspack-bundler-test/package.json: |
+  {
+    "name": "atlaspack-bundler-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-namer-test/index.js: |
+  const {Namer} = require('@atlaspack/plugin');
+
+  module.exports = new Namer({
+    name({bundle}) {
+      return bundle.id + '.' + bundle.type;
+    }
+  });
+node_modules/atlaspack-namer-test/package.json: |
+  {
+    "name": "atlaspack-namer-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-runtime-test/index.js: |
+  const {Runtime} = require('@atlaspack/plugin');
+
+  module.exports = new Runtime({
+    apply({bundle, options}) {
+      return {
+        filePath: options.projectRoot + '/runtime.js',
+        code: 'global.runtime_test = true;',
+        isEntry: true,
+      };
+    }
+  });
+node_modules/atlaspack-runtime-test/package.json: |
+  {
+    "name": "atlaspack-runtime-test",
+    "version": "1.2.3"
+  }

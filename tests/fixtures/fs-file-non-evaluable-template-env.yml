@@ -1,0 +1,8 @@
+options:
+  name: fs-file-non-evaluable-template-env
+package.json:
+  type: module
+  browserslist: IE 11
+yarn.lock: ""
+index.js: |
+  module.exports = require('fs').readFileSync(`/${Date.now()}`)

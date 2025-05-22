@@ -1,0 +1,16 @@
+options:
+  name: async-dep-internal-external
+package.json:
+  type: module
+async.js: |
+  export default 30;
+child.js: |
+  export default import('./async').then(mod => mod.default);
+entry1.js: |
+  import a from './async';
+  import c from './child';
+
+  output = [a,c];
+entry2.js: |+
+  import c from './child';
+

@@ -1,0 +1,7 @@
+options:
+  name: pug-locals
+package.json:
+  type: module
+index.pug: |
+  h1 I Love Pug
+  p It's a #{locals.data}!

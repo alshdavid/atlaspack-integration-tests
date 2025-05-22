@@ -1,0 +1,273 @@
+options:
+  name: cache
+package.json:
+  type: module
+  name: atlaspack-cache-tests
+  version: 1.0.0
+  private: true
+yarn.lock: ""
+node_modules/atlaspack-bundler-test/index.js: >
+  const {Bundler} = require('@atlaspack/plugin');
+
+
+  // A very dumb bundler just for tests... (probably doesn't produce working
+  code)
+
+  module.exports = new Bundler({
+    bundle({bundleGraph}) {
+      bundleGraph.traverse((node, context) => {
+        if (node.type !== 'dependency') {
+          return context;
+        }
+
+        let dependency = node.value;
+        let assets = bundleGraph.getDependencyAssets(dependency);
+        let bundleGroup = bundleGraph.createBundleGroup(dependency, dependency.target || context.target);
+
+        for (let asset of assets) {
+          let bundle = bundleGraph.createBundle({
+            entryAsset: asset,
+            needsStableName: Boolean(dependency.isEntry),
+            target: bundleGroup.target,
+          });
+
+          bundleGraph.addAssetGraphToBundle(asset, bundle);
+          bundleGraph.addBundleToBundleGroup(bundle, bundleGroup);
+        }
+
+        return {
+          target: dependency.target || context.target
+        };
+      });
+    },
+    optimize() {}
+  });
+node_modules/atlaspack-bundler-test/package.json: |
+  {
+    "name": "atlaspack-bundler-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-compressor-test/index.js: |
+  const {Compressor} = require('@atlaspack/plugin');
+
+  module.exports = new Compressor({
+    compress({stream}) {
+      return {stream, type: 'abc'};
+    }
+  });
+node_modules/atlaspack-compressor-test/package.json: |
+  {
+    "name": "atlaspack-compressor-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-namer-test/index.js: |
+  const {Namer} = require('@atlaspack/plugin');
+
+  module.exports = new Namer({
+    name({bundle}) {
+      return bundle.id + '.' + bundle.type;
+    }
+  });
+node_modules/atlaspack-namer-test/package.json: |
+  {
+    "name": "atlaspack-namer-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-optimizer-test/index.js: |
+  const {Optimizer} = require('@atlaspack/plugin');
+
+  module.exports = new Optimizer({
+    async loadConfig({config}) {
+      let res = await config.getConfig(['.optimizerrc']);
+      return {
+        value: res && res.contents.value
+      };
+    },
+    optimize({config}) {
+      return {
+        contents: config.value || 'optimized'
+      }
+    }
+  });
+node_modules/atlaspack-optimizer-test/package.json: |
+  {
+    "name": "atlaspack-optimizer-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-packager-test/index.js: |
+  const {Packager} = require('@atlaspack/plugin');
+
+  module.exports = new Packager({
+    async loadConfig({config}) {
+      let res = await config.getConfig(['.packagerrc']);
+      return {
+        value: res && res.contents.value
+      };
+    },
+    package({config}) {
+      return {
+        contents: config.value || 'packaged'
+      }
+    }
+  });
+node_modules/atlaspack-packager-test/package.json: |
+  {
+    "name": "atlaspack-packager-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-resolver-test/index.js: >
+  const {Resolver} = require('@atlaspack/plugin');
+
+  const path = require('path');
+
+
+  module.exports = new Resolver({
+    async loadConfig({config}) {
+      let res = await config.getConfig(['.resolverrc']);
+      return res?.contents;
+    },
+    resolve({dependency, options, config}) {
+      let resolveFrom = dependency.resolveFrom ? path.dirname(dependency.resolveFrom) : options.projectRoot;
+      let specifier = dependency.specifier !== 'foo' ? dependency.specifier : dependency.specifier + '.js';
+      return {
+        filePath: path.resolve(resolveFrom, config?.[dependency.specifier] ?? specifier)
+      }
+    }
+  });
+node_modules/atlaspack-resolver-test/package.json: |
+  {
+    "name": "atlaspack-resolver-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-runtime-test/index.js: |
+  const {Runtime} = require('@atlaspack/plugin');
+
+  module.exports = new Runtime({
+    apply({bundle, options}) {
+      return {
+        filePath: options.projectRoot + '/runtime.js',
+        code: 'global.runtime_test = true;',
+        isEntry: true,
+      };
+    }
+  });
+node_modules/atlaspack-runtime-test/package.json: |
+  {
+    "name": "atlaspack-runtime-test",
+    "version": "1.2.3"
+  }
+node_modules/atlaspack-transformer-esm/constants.js: |
+  export const message = 'TRANSFORMED CODE';
+node_modules/atlaspack-transformer-esm/data/a.js: |
+  export const value = 'a';
+node_modules/atlaspack-transformer-esm/data/b.js: |
+  export const value = 'b';
+node_modules/atlaspack-transformer-esm/dep.cjs: |
+  exports.value = require('foo');
+node_modules/atlaspack-transformer-esm/index.js: |
+  import {Transformer} from '@atlaspack/plugin';
+  import {message} from './constants.js';
+  import {value} from './dep.cjs';
+  import path from 'path';
+
+  export default new Transformer({
+    async transform({asset}) {
+      if (asset.isSource) {
+        asset.addDependency({
+          specifier: 'foo',
+          specifierType: 'esm'
+        });
+
+        let code = await asset.getCode();
+        let match = code.match(/[ab]/);
+        let v = match ? (await import(`./data/${match[0]}.js`)).value : '';
+        asset.setCode(code + `\nconsole.log("${v}")`);
+
+        return [asset];
+      }
+
+      return [
+        {
+          type: 'js',
+          content: message + ' ' + value,
+        },
+      ];
+    }
+  });
+node_modules/atlaspack-transformer-esm/package.json: |
+  {
+    "name": "atlaspack-transformer-esm",
+    "version": "1.2.3",
+    "main": "index.js",
+    "type": "module"
+  }
+node_modules/atlaspack-transformer-mock/constants.js: |
+  exports.message = 'TRANSFORMED CODE';
+node_modules/atlaspack-transformer-mock/index.js: |
+  const Transformer = require('@atlaspack/plugin').Transformer;
+
+  module.exports = new Transformer({
+    transform({asset}) {
+      if (asset.isSource) {
+        asset.addDependency({
+          specifier: 'foo',
+          specifierType: 'esm'
+        });
+        return [asset];
+      }
+
+      const {message} = require('./constants');
+      return [
+        {
+          type: 'js',
+          content: message,
+        },
+      ];
+    }
+  });
+node_modules/atlaspack-transformer-mock/package.json: |
+  {
+    "name": "atlaspack-transformer-mock",
+    "version": "1.2.3"
+  }
+node_modules/foo/foo.js: |
+  module.exports = 2;
+node_modules/foo/package.json: |
+  {
+    "name": "foo",
+    "private": true,
+    "main": "foo.js"
+  }
+src/entries/a.js: |
+  export let a = 'a';
+src/entries/b.js: |
+  export let b = 'b';
+src/index.html: |
+  <!doctype html>
+  <html>
+    <body>
+      <script type="module" src="index.js"></script>
+    </body>
+  </html>
+src/index.js: |
+  import test from './nested/test';
+  import foo from 'foo';
+
+  class Result {
+    constructor(value) {
+      this.value = value;
+    }
+  }
+
+  module.exports = new Result(test + foo).value;
+src/nested/test.js: |
+  import foo from 'foo';
+
+  // Useless class to test babel
+  class Test {
+    constructor(value) {
+      this.value = value;
+    }
+  }
+
+  export default new Test(foo).value;

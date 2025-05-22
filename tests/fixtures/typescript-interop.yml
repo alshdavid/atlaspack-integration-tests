@@ -1,0 +1,10 @@
+options:
+  name: typescript-interop
+package.json:
+  type: module
+commonjs-module.js: |
+  module.exports = () => 'test passed'
+index.ts: |
+  import testModule from './commonjs-module'
+
+  export const test = testModule

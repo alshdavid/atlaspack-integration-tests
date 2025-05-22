@@ -1,0 +1,23 @@
+options:
+  name: posthtml-autoinstall
+package.json:
+  type: module
+  name: posthtml-autoinstall
+  private: true
+yarn.lock: ""
+index.html: |
+  <div id="test">Test</div>
+posthtml-test/index.js: |
+  module.exports = () => (tree) => {
+    tree.match({tag: 'div'}, node => {
+      node.tag = 'span';
+      return node;
+    });
+
+    return tree;
+  };
+posthtml-test/package.json: |
+  {
+    "name": "posthtml-test",
+    "private": true
+  }

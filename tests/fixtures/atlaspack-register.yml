@@ -1,0 +1,37 @@
+options:
+  name: atlaspack-register
+package.json:
+  type: module
+dispose-resolve.js: |
+  let {dispose} = require('@atlaspack/register');
+  console.log(require.resolve('~foo.js'));
+  dispose();
+  console.log(require.resolve('~foo.js'));
+dispose-transform.js: |
+  let {dispose} = require('@atlaspack/register');
+  let indexPath = require.resolve('./index');
+  require('./index');
+  dispose();
+  delete require.cache[indexPath]
+  require('./index');
+entry.js: |
+  require('@atlaspack/register');
+  require('./index');
+foo.js: |
+  console.log('foo');
+index.js: |
+  // @flow
+
+  import type {Writable} from 'stream';
+
+  function echo(...messages: Array<mixed>): void {
+    let stdout: Writable = process.stdout;
+    for (let message of messages) {
+      stdout.write(String(message))
+    }
+  }
+
+  echo(1, 2, 3);
+resolver.js: |
+  require('~foo.js');
+  console.log(require.resolve('~foo.js'));

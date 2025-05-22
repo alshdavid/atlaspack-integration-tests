@@ -1,0 +1,23 @@
+options:
+  name: js-import-namespace
+package.json:
+  type: module
+a.js: |
+  import * as n from './other';
+  module.exports = n;
+b.js: |
+  import * as n from './class';
+  module.exports = n;
+c.js: |
+  import * as n from './object.js';
+  module.exports = n;
+class.js: |
+  module.exports = class {}
+object.js: |
+  module.exports = {
+    foo: 2,
+    default: 3
+  };
+other.js: |
+  export default 1;
+  export const a = 4;

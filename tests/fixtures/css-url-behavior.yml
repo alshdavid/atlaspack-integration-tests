@@ -1,0 +1,8 @@
+options:
+  name: css-url-behavior
+package.json:
+  type: module
+index.css: |
+  .index {
+    behavior: url(#default#VML);
+  }

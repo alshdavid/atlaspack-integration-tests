@@ -1,0 +1,9 @@
+options:
+  name: js-export-default
+package.json:
+  type: module
+index.js: |
+  export other from './other';
+other.js: |
+  export default 1;
+  export const a = 4;

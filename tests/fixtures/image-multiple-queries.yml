@@ -1,0 +1,38 @@
+options:
+  name: image-multiple-queries
+package.json:
+  type: module
+index.css: |
+  .test-1 {
+    background-image: url('snow.jpg?as=webp&width=400');
+  }
+
+  .test-2 {
+    background-image: url('snow.jpg?as=jpg&width=400');
+  }
+
+  .test-3 {
+    background-image: url('snow.jpg?as=jpg&width=800');
+  }
+index.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <body>
+    <picture>
+      <source src="snow.jpg?as=webp&width=400" type="image/webp" />
+      <source src="snow.jpg?as=jpg&width=400" type="image/jpeg" />
+      <img src="snow.jpg?as=jpg&width=800" alt="snow" />
+    </picture>
+  </body>
+  </html>
+index.js: |
+  import url1 from './snow.jpg?as=webp&width=400';
+  import url2 from './snow.jpg?as=jpg&width=400';
+  import url3 from './snow.jpg?as=jpg&width=800';
+
+  module.exports = {
+    url1,
+    url2,
+    url3,
+  };
+snow.jpg: file://<root>/assets/snow.jpg

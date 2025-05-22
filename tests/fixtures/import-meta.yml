@@ -1,0 +1,10 @@
+options:
+  name: import-meta
+package.json:
+  type: module
+index.js: |
+  export default {
+    meta: import.meta,
+    url: import.meta.url,
+    equal: import.meta === import.meta
+  };

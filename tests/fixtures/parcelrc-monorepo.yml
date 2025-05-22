@@ -1,0 +1,20 @@
+options:
+  name: parcelrc-monorepo
+package.json:
+  type: module
+  private: true
+  workspaces:
+    - app
+yarn.lock: ""
+app/icon.svg: |
+  <svg></svg>
+app/index.js: |
+  import icon from "./icon.svg";
+
+  export default icon;
+app/package.json: |
+  {
+  	"name": "app",
+  	"version": "0.0.0",
+  	"private": true
+  }

@@ -1,0 +1,13 @@
+options:
+  name: typescript-config
+package.json:
+  type: module
+index.ts: |
+  /* test comment */
+  module.exports = 2;
+tsconfig.json: |
+  {
+    "compilerOptions": {
+      "removeComments": true
+    }
+  }

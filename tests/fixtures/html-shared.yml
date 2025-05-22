@@ -1,0 +1,26 @@
+options:
+  name: html-shared
+package.json:
+  type: module
+iframe.html: |
+  <!doctype html>
+  <html>
+    <body>
+      <script type="module" src="iframe.js"></script>
+    </body>
+  </html>
+iframe.js: |
+  import _ from 'lodash';
+  console.log('iframe', _);
+index.html: |
+  <!doctype html>
+  <html>
+    <body>
+      <h1>Hello!</h1>
+      <iframe src="iframe.html"></iframe>
+      <script type="module" src="./index.js"></script>
+    </body>
+  </html>
+index.js: |
+  import _ from 'lodash';
+  console.log('index', _);

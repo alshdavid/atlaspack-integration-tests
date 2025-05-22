@@ -1,0 +1,7 @@
+options:
+  name: js-export-destructuring
+package.json:
+  type: module
+index.js: |
+  export const {foo} = {foo: 1};
+  export const [bar] = [2];

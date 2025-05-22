@@ -1,0 +1,33 @@
+options:
+  name: css-module-css-siblings
+package.json:
+  type: module
+yarn.lock: ""
+a.module.css: |-
+  .myClass {
+  	color: blue;
+  }
+b.module.css: |-
+  .myOtherClass {
+  	color: red;
+  }
+global.css: |-
+  body {
+  	font-size: 10px;
+  }
+index.html: |-
+  <!DOCTYPE html>
+  <html>
+  	<head>
+  		<script type="module" src="./main.js"></script>
+  		<link rel="stylesheet" href="./global.css" />
+  	</head>
+  	<body></body>
+  </html>
+main.js: |
+  // Adopted from https://github.com/nartallax/parcel-css-bug
+  // To address https://github.com/parcel-bundler/parcel/issues/8716
+  import * as aCss from "./a.module.css"
+  import * as bCss from "./b.module.css"
+
+  sideEffect(['mainJs', aCss.myClass, bCss.myOtherClass]);

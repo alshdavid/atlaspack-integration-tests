@@ -1,0 +1,33 @@
+options:
+  name: sourcemap-css-existing
+package.json:
+  type: module
+style.css: |
+  @import "./test/library.css";
+
+  main {
+  	display: none;
+  }
+test/library.css: >-
+  body{font:100% Helvetica,sans-serif;color:#333}body
+  div{background-color:red;width:100px;height:100px}
+
+  /*# sourceMappingURL=library.css.map*/
+test/library.css.map: '{"version":3,"sources":["library.scss"],"names":[],"mappings":"AAGA,KACE,+BACA,WAEA,SACC,qBACA,YACA","file":"library.css.map","sourceRoot":".","sourcesContent":["$font-stack:    Helvetica,
+  sans-serif;\n$primary-color: #333;\n\nbody {\n  font: 100%
+  $font-stack;\n  color: $primary-color;\n\n  div {\n  \tbackground-color:
+  red;\n  \twidth: 100px;\n  \theight: 100px;\n  }\n}"]}'
+test/library.raw.scss: |-
+  $font-stack:    Helvetica, sans-serif;
+  $primary-color: #333;
+
+  body {
+    font: 100% $font-stack;
+    color: $primary-color;
+
+    div {
+    	background-color: red;
+    	width: 100px;
+    	height: 100px;
+    }
+  }

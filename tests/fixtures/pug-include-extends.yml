@@ -1,0 +1,19 @@
+options:
+  name: pug-include-extends
+package.json:
+  type: module
+absolute/nested.pug: |
+  p And for nested.
+base.pug: |
+  doctype html
+  html
+    body
+      block content
+index.pug: |
+  extends ./base.pug
+
+  block content
+    include other.pug
+    include /absolute/nested.pug
+other.pug: |
+  h1 Yep, it's working!

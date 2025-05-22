@@ -1,0 +1,43 @@
+options:
+  name: target-overwrite-source
+package.json:
+  type: module
+app/package.json: |
+  {
+    "app": "src/index.html",
+    "source": "src/index.html",
+    "targets": {
+      "app": {
+        "distDir": "src/"
+      }
+    }
+  }
+app/src/file.js: |
+  console.log("Atlaspack might overwrite index.html");
+app/src/index.html: |
+  <html>
+      <body>
+          <script src="file.js" type="text/javascript"></script>
+      </body>
+  </html>
+browser/index.js: |
+  console.log('I hope Atlaspack does not overwrite me.');
+browser/package.json: |
+  {
+      "browser": "index.js",
+      "source": "index.js"
+  }
+main/index.js: |
+  console.log('I hope Atlaspack does not overwrite me.');
+main/package.json: |
+  {
+      "main": "index.js",
+      "source": "index.js"
+  }
+module/index.js: |
+  console.log('I hope Atlaspack does not overwrite me.');
+module/package.json: |
+  {
+      "module": "index.js",
+      "source": "index.js"
+  }

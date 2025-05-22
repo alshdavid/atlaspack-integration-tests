@@ -1,0 +1,17 @@
+options:
+  name: postcss-config-package
+package.json:
+  type: module
+  name: postcss-config-package
+  postcss:
+    plugins:
+      postcss-custom-properties: {}
+yarn.lock: ""
+style.css: |
+  :root {
+    --varColor: red;
+  }
+
+  body {
+    background-color: var(--varColor);
+  }

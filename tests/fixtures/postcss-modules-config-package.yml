@@ -1,0 +1,31 @@
+options:
+  name: postcss-modules-config-package
+package.json:
+  type: module
+  postcss:
+    modules: true
+    plugins:
+      autoprefixer:
+        grid: true
+yarn.lock: ""
+foo.css: |
+  .foo {
+    color: #fff;
+  }
+foo.js: |
+  const map = require('./foo.css');
+
+  module.exports = {
+    foo: map.foo,
+  };
+index.css: |
+  body {
+    background: blue;
+  }
+index.js: |
+  require('./index.css');
+  var foo = require('./foo');
+
+  module.exports = function () {
+    return foo.foo;
+  };

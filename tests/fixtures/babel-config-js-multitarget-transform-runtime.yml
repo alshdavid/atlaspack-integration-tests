@@ -1,0 +1,25 @@
+options:
+  name: babel-config-js-multitarget-transform-runtime
+package.json:
+  type: module
+  name: some-project-with-babel
+  version: 1.0.0
+  main: dist/main.js
+  module: dist/module.js
+  dependencies:
+    "@atlaspack/babel-plugin-tranform-runtime": ^2.0.0
+    "@babel/plugin-transform-object-rest-spread": ^7.22.11
+    "@babel/plugin-transform-runtime": ^7.22.10
+    "@babel/runtime": ^7.22.11
+yarn.lock: ""
+babel.config.js: >
+  module.exports = {
+    "presets": ["@atlaspack/babel-preset-env"],
+    "plugins": ["@babel/plugin-transform-object-rest-spread", ["@atlaspack/babel-plugin-transform-runtime", {"version": "^7.7.4"}]]
+  }
+src/index.js: |
+  
+  export function Bar(x) {
+    let a = {b: 6, ...x};
+    return a;
+  }

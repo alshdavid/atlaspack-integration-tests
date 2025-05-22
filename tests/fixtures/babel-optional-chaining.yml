@@ -1,0 +1,9 @@
+options:
+  name: babel-optional-chaining
+package.json:
+  type: module
+  browserslist: IE 11
+yarn.lock: ""
+index.js: |
+  let a, x;
+  export default [a?.b, x?.()];

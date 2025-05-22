@@ -1,0 +1,14 @@
+options:
+  name: sourcemap-less
+package.json:
+  type: module
+  name: atlaspack-sourcemap-integration-test
+  version: 1.0.0
+  private: true
+yarn.lock: ""
+style.less: |
+  @value: 100px * 2;
+
+  div {
+    width: @value;
+  }

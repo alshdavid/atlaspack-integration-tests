@@ -1,0 +1,16 @@
+options:
+  name: babel-browserslist-multiple-env-as-string
+package.json:
+  type: module
+  name: atlaspack-test-browser-browserslist
+  browserslist:
+    test: chrome 68
+    production: last 2 Chrome versions, IE >= 11
+index.js: |
+  const a = {
+    prop1: '1',
+    prop2: '2',
+    prop3: '3'
+  };
+
+  const {prop1, prop2, prop3} = a;

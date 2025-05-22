@@ -1,0 +1,27 @@
+options:
+  name: hmr-dispose
+package.json:
+  type: module
+index.js: |
+  import {value} from "./local.js";
+  output(["eval:index", value, module.hot.data]);
+  module.hot.accept();
+  module.hot.dispose((data) => {
+    output(["dispose:index", value]);
+    data.value = value;
+  })
+local.js: |
+  export {value} from "./other.js";
+  import {value} from "./other.js";
+  output(["eval:local", value, module.hot.data]);
+  module.hot.dispose((data) => {
+    output(["dispose:local", value]);
+    data.value = value;
+  })
+other.js: |
+  export const value = 1;
+  output(["eval:other", value, module.hot.data]);
+  module.hot.dispose((data) => {
+    output(["dispose:other", value]);
+    data.value = value;
+  })

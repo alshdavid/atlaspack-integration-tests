@@ -1,0 +1,20 @@
+options:
+  name: postcss-modules-cjs
+package.json:
+  type: module
+yarn.lock: ""
+foo.module.css: |
+  .foo {
+    color: red;
+  }
+index.css: |
+  body {
+    background: blue;
+  }
+index.js: |
+  require('./index.css');
+  var map = require('./foo.module.css');
+
+  module.exports = function () {
+    return map.foo;
+  };

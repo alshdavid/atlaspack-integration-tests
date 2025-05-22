@@ -1,0 +1,8 @@
+options:
+  name: resolver-alternative-module
+package.json:
+  type: module
+  name: resolver-alternative-module-test
+  private: true
+yarn.lock: ""
+index.js: const babel = require('@baebal/core');

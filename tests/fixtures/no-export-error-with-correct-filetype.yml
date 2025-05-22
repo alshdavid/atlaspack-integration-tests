@@ -1,0 +1,17 @@
+options:
+  name: no-export-error-with-correct-filetype
+package.json:
+  type: module
+  source: src/App.jsx
+src/App.jsx: |
+  import React from "react";
+  import { render } from "react-dom";
+
+  import * as styles from "./app.module.css"
+
+  const App = function() {
+      return <div className={styles.notExisting}></div>
+  }
+
+  render(<App/>, document.getElementById("app"))
+src/app.module.css: ""

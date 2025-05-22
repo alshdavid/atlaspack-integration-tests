@@ -1,0 +1,19 @@
+options:
+  name: shared-sibling-worker-css
+package.json:
+  type: module
+a.js: |
+  export default 123;
+index.html: |
+  <script type="module" src="./index.js"></script>
+index.js: |
+  import "./a.js";
+  import "./style.css";
+
+  new Worker(new URL("./worker", import.meta.url), {type: 'module'});
+style.css: |
+  body {
+  	color: red;
+  }
+worker.js: |
+  import "./a.js";

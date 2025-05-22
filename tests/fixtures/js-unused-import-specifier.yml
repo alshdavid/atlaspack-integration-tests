@@ -1,0 +1,10 @@
+options:
+  name: js-unused-import-specifier
+package.json:
+  type: module
+a.js: |
+  output = used;
+
+  import {used, unused} from "./b.js";
+b.js: |
+  export const used = 123;

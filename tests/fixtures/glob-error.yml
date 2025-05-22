@@ -1,0 +1,11 @@
+options:
+  name: glob-error
+package.json:
+  type: module
+yarn.lock: ""
+index.css: |
+  .index {
+    background: url(images/*.jpg);
+  }
+index.html: |
+  <script src="foo/*.js"></script>

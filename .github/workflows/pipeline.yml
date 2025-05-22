@@ -1,0 +1,20 @@
+name: Release
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-24.04
+    steps:
+      - { uses: actions/checkout@v4, with: { submodules: true } }
+      - run: source ./.github/install-scripts/nodejs.bash
+      - run: yarn install
+      - run: yarn run test

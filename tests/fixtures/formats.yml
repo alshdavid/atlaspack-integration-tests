@@ -1,0 +1,1376 @@
+options:
+  name: formats
+package.json:
+  type: module
+cjs-type-module/index.js: |
+  import {noop} from 'lodash';
+
+  noop();
+cjs-type-module/package.json: |
+  {
+    "name": "cjs-type-module",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.cjs",
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+cjs-type-module/yarn.lock: ""
+commonjs-async/async.js: |
+  export const foo = 2;
+commonjs-async/index.js: |
+  module.exports = import('./async').then(a => a.foo + 2);
+commonjs-async/package.json: |
+  {
+    "name": "commonjs-async",
+    "private": true,
+    "main": "dist/index.js",
+    "targets": {
+      "main": {
+        "context": "node"
+      }
+    }
+  }
+commonjs-async/yarn.lock: ""
+commonjs-destructuring-browsers/multiple.js: |
+  import {add, subtract} from 'lodash';
+
+  export const bar = subtract(add(1, 2), 1);
+commonjs-destructuring-browsers/package.json: |
+  {
+    "name": "commonjs-destructuring-browsers",
+    "private": true,
+    "browser": "dist/index.js",
+    "browserslist": [">= 0.25%"],
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+commonjs-destructuring-browsers/single.js: |
+  import {add} from 'lodash';
+
+  export const bar = add(1, 2);
+commonjs-destructuring-browsers/yarn.lock: ""
+commonjs-destructuring-node/multiple.js: |
+  import {add, subtract} from 'lodash';
+
+  export const bar = subtract(add(1, 2), 1);
+commonjs-destructuring-node/package.json: |
+  {
+    "name": "commonjs-destructuring-node",
+    "private": true,
+    "main": "dist/index.js",
+    "engines": {
+      "node": ">= 4.x"
+    },
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+commonjs-destructuring-node/single-same.js: |
+  import { assign as a } from "lodash/fp";
+  import { assign as b } from "lodash";
+
+  export const bar = a !== b;
+commonjs-destructuring-node/single.js: |
+  import {add} from 'lodash';
+
+  export const bar = add(1, 2);
+commonjs-destructuring-node/yarn.lock: ""
+commonjs-dynamic/index.js: |
+  Object.assign(exports, require('./other'));
+commonjs-dynamic/other.js: |
+  function test() {
+    return 2;
+  }
+
+  exports.test = test;
+commonjs-dynamic/package.json: |
+  {
+    "name": "commonjs-dynamic",
+    "private": true,
+    "main": "dist/index.js",
+    "sideEffects": false
+  }
+commonjs-dynamic/yarn.lock: ""
+commonjs-entry-re-export/a.js: |
+  export * from "./b.js";
+commonjs-entry-re-export/b.js: |
+  exports.foo = "foo";
+commonjs-entry-re-export/package.json: |
+  {
+    "name": "commonjs-entry-re-export",
+    "private": true,
+    "main": "dist/index.js"
+  }
+commonjs-entry-re-export/yarn.lock: ""
+commonjs-esm-entry-re-export/a.js: |
+  export * from "./b.js";
+commonjs-esm-entry-re-export/b.js: |
+  exports.default = "default";
+commonjs-esm-entry-re-export/package.json: |
+  {
+    "name": "commonjs-entry-re-export",
+    "private": true,
+    "module": "dist/index.js"
+  }
+commonjs-esm-entry-re-export/yarn.lock: ""
+commonjs-esm/index.js: |
+  const _ = require('lodash');
+
+  module.exports = function (a, b) {
+    return _.add(a, b);
+  };
+commonjs-esm/package.json: |
+  {
+    "name": "commonjs-esm",
+    "private": true,
+    "module": "dist/index.js",
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+commonjs-esm/re-assign.js: |
+  for (let v of ["a", "b", "c"]) {
+  	module.exports[v] = v;
+  }
+
+  module.exports = "xyz";
+commonjs-esm/require-resolve.js: |
+  const lodash = require.resolve("lodash");
+
+  module.exports = function f() {
+      return lodash;
+  }
+commonjs-esm/universal-library.js: |
+  !(function (name, definition) {
+    if (typeof module != "undefined") {
+      module.exports = definition();
+    } else if (typeof define == "function" && typeof define.amd == "object") {
+      define(definition);
+    } else {
+      this[name] = definition();
+    }
+  })("some-pkg-name", function () {
+    return { a: 2 };
+  });
+commonjs-esm/yarn.lock: ""
+commonjs-external/default-new.js: |
+  import Foo from "test";
+
+  new Foo();
+commonjs-external/default.js: |
+  import _ from 'lodash';
+
+  export const bar = _.add(1, 2);
+commonjs-external/multiple.js: |
+  import _, {add} from 'lodash';
+  import * as lodash from 'lodash';
+
+  let _add = 'add';
+  export const bar = _.add(add(1, 2), lodash[_add](1, 2));
+commonjs-external/named-same.js: |
+  import { assign as a } from "lodash/fp";
+  import { assign as b } from "lodash";
+
+  export const bar = a !== b;
+commonjs-external/named.js: |
+  import {add} from 'lodash';
+
+  export const bar = add(1, 2);
+commonjs-external/namespace.js: |
+  import * as _ from 'lodash';
+
+  const add = 'add';
+  export const bar = _[add](1, 2);
+commonjs-external/node_modules/test/index.js: |
+  function Foo(v) {
+      if (!(this instanceof Foo)) {
+          throw new Error("Called without new");
+      }
+  }
+
+  module.exports = Foo;
+commonjs-external/node_modules/test/package.json: |
+  {
+    "name": "test",
+    "version": "0.0.0"
+  }
+commonjs-external/package.json: |
+  {
+    "name": "commonjs-external",
+    "private": true,
+    "main": "dist/index.js",
+    "engines": {
+      "node": ">= 10.x"
+    },
+    "dependencies": {
+      "lodash": "*",
+      "test": "*"
+    }
+  }
+commonjs-external/require.js: |
+  var _ = require('lodash');
+
+  exports.bar = _.add(1, 2);
+commonjs-external/yarn.lock: ""
+commonjs-helpers/index.js: |
+  class X {
+    x = new Map()
+  }
+
+  output(new X());
+commonjs-helpers/package.json: |
+  {
+    "main": "dist/main.js",
+    "browserslist": "Chrome 70",
+    "dependencies": {
+      "@swc/helpers": "^0.5.15"
+    }
+  }
+commonjs-helpers/yarn.lock: ""
+commonjs-live-externals/a.js: |
+  const external = require('external');
+
+  output(external.foo);
+  external.setFoo(2);
+  output(external.foo);
+commonjs-live-externals/node_modules/external/index.js: |
+  exports.foo = 2;
+  exports.setFoo = f => {
+    exports.foo = f
+  };
+commonjs-live-externals/package.json: |
+  {
+    "main": "dist/test.js",
+    "targets": {
+    	"main": {
+        "includeNodeModules": false
+      }
+    },
+    "dependencies": {
+      "external": "*"
+    }
+  }
+commonjs-live-externals/yarn.lock: ""
+commonjs-require/index.js: |
+  const _ = require('lodash');
+
+  module.exports = function (a, b) {
+    return _.add(a, b);
+  };
+commonjs-require/package.json: |
+  {
+    "name": "commonjs-require",
+    "private": true,
+    "main": "dist/index.js",
+    "targets": {
+      "main": {
+        "context": "node"
+      }
+    },
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+commonjs-require/yarn.lock: ""
+commonjs-siblings/a.css: |
+  .foo {
+    color: red;
+  }
+commonjs-siblings/a.js: |
+  import './a.css';
+
+  exports.foo = 2;
+commonjs-siblings/package.json: |
+  {
+    "name": "esm-siblings",
+    "private": true,
+    "main": "dist/index.js"
+  }
+commonjs-siblings/yarn.lock: ""
+commonjs-sideeffects/index.js: |
+  export * from './middle';
+commonjs-sideeffects/middle.js: export * from './other';
+commonjs-sideeffects/missing-export.js: |
+  export { a as x } from "./other.js";
+commonjs-sideeffects/other.js: |
+  export function test() {
+    return 2;
+  }
+commonjs-sideeffects/package.json: |
+  {
+    "name": "commonjs-sideeffects",
+    "private": true,
+    "main": "dist/index.js",
+    "sideEffects": false
+  }
+commonjs-sideeffects/yarn.lock: ""
+commonjs-split-reexport-default/async1.js: |
+  import { lorem } from "./shared";
+
+  export default lorem;
+commonjs-split-reexport-default/async2.js: |
+  import { lorem } from "./shared";
+
+  export default lorem;
+commonjs-split-reexport-default/index.js: |
+  module.exports = Promise.all([import('./async1'), import('./async2')]).then(
+    ([a, b]) => a.default.length + b.default.length,
+  );
+commonjs-split-reexport-default/package.json: |
+  {
+    "name": "commonjs-split-reexport-default",
+    "private": true,
+    "engines": {
+      "node": ">= 10"
+    }
+  }
+commonjs-split-reexport-default/shared.js: >
+  export const lorem = `
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+  voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+  kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+  ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et
+  accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit
+  augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat.
+
+
+  Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit
+  lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure
+  dolor in hendrerit in vulputate velit esse molestie consequat, vel illum
+  dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio
+  dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+  feugait nulla facilisi.
+
+
+  Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet
+  doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
+  nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+  commodo consequat.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis.
+
+
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+  amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore
+  dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore
+  Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut
+  vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+  consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat.
+
+
+  Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+  justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+  sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+  magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+  dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
+  Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
+  elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+  aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
+  et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.
+
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+  voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+  kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+  ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et
+  accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit
+  augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat.
+
+
+  Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit
+  lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure
+  dolor in hendrerit in vulputate velit esse molestie consequat, vel illum
+  dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio
+  dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+  feugait nulla facilisi.
+
+
+  Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet
+  doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
+  nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+  commodo consequat.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis.
+
+
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+  amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore
+  dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore
+  Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut
+  vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+  consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat.
+
+
+  Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+  justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+  sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+  magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+  dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
+  Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
+  elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+  aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
+  et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.
+
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+  voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+  kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+  ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et
+  accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit
+  augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat.
+
+
+  Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit
+  lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure
+  dolor in hendrerit in vulputate velit esse molestie consequat, vel illum
+  dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio
+  dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+  feugait nulla facilisi.
+
+
+  Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet
+  doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
+  nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+  commodo consequat.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis.
+
+
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+  amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore
+  dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore
+  Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut
+  vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+  consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat.
+
+
+  Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+  justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+  sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+  magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+  dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
+  Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
+  elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+  aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
+  et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.
+
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+  voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+  kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+  ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et
+  accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit
+  augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat.
+
+
+  Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit
+  lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure
+  dolor in hendrerit in vulputate velit esse molestie consequat, vel illum
+  dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio
+  dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+  feugait nulla facilisi.
+
+
+  Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet
+  doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
+  nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+  commodo consequat.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis.
+
+
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+  amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore
+  dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore
+  Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut
+  vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+  consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat.
+
+
+  Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+  justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+  sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+  magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+  dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
+  Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
+  elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+  aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
+  et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.
+
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+  voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+  kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+  ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et
+  accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit
+  augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat.
+
+
+  Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit
+  lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure
+  dolor in hendrerit in vulputate velit esse molestie consequat, vel illum
+  dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio
+  dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te
+  feugait nulla facilisi.
+
+
+  Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet
+  doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet,
+  consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
+  laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis
+  nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+  commodo consequat.
+
+
+  Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie
+  consequat, vel illum dolore eu feugiat nulla facilisis.
+
+
+  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+  amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore
+  dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore
+  Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut
+  vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+  consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat.
+
+
+  Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+  et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+  justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+  sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
+  sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+  magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+  dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
+  Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing
+  elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+  aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
+  et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.
+
+
+  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+  eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
+  voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
+  kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem
+  ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
+  tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At
+  vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+  gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+  dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+  invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+  eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
+  sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+  `;
+commonjs-split-reexport-default/yarn.lock: ""
+commonjs-split/async1.js: |
+  import _ from 'lodash';
+  import react from 'react';
+
+  console.log('async1');
+  console.log(_);
+  console.log(react);
+commonjs-split/async2.js: |
+  import _ from 'lodash';
+  import react from 'react';
+
+  console.log('async2');
+  console.log(_);
+  console.log(react);
+commonjs-split/index.js: |
+  import('./async1');
+  import('./async2');
+commonjs-split/package.json: |
+  {
+    "name": "commonjs-split",
+    "private": true,
+    "main": "dist/index.js",
+    "targets": {
+      "main": {
+        "includeNodeModules": true
+      }
+    }
+  }
+commonjs-split/yarn.lock: ""
+commonjs-wrap-codesplit/a.js: |
+  if (Date.now() < 0) {
+  	let x = require("./c.js");
+  }
+
+  module.exports = import("./b.js");
+commonjs-wrap-codesplit/b.js: |
+  const x = require("./c.js");
+
+  module.exports = x;
+commonjs-wrap-codesplit/c.js: |
+  module.exports = 2;
+commonjs-wrap-codesplit/package.json: |-
+  {
+    "name": "commonjs-split",
+    "private": true,
+    "main": "dist/index.js",
+    "engines": {
+      "node": ">=8"
+    }
+  }
+commonjs-wrap-codesplit/yarn.lock: ""
+commonjs/b.js: |
+  exports.foo = 2;
+commonjs/exports.js: |
+  var b = require('./b');
+
+  exports.bar = b.foo + 3;
+  exports.foo = b.foo;
+commonjs/module-exports.js: |
+  var b = require('./b');
+
+  module.exports = b.foo + 3;
+commonjs/package.json: |
+  {
+    "name": "commonjs",
+    "private": true,
+    "main": "dist/index.js"
+  }
+commonjs/yarn.lock: ""
+conflict-global/index.js: |
+  const Foo = 2;
+  foo([...(new Map([['a', 10]]))]);
+  export { Foo as Map };
+conflict-global/package.json: |
+  {
+    "name": "conflict-global",
+    "private": true,
+    "module": "dist/esm.js",
+    "main": "dist/cjs.js"
+  }
+conflict-global/yarn.lock: ""
+esm-async-chained-reexport/index.js: >
+  import { createAndFireEvent } from "./library/b.js";
+
+  var createAndFireEventOnAtlaskit = createAndFireEvent("index");
+
+  output = import("./library/a.js")
+      .then((m) => m.c.then(c => [createAndFireEventOnAtlaskit(), m.default(), c.c, c.createAndFireEvent("c")()]));
+esm-async-chained-reexport/library/a.js: |
+  import { createAndFireEvent } from "./b.js";
+  var createAndFireEventOnAtlaskit = createAndFireEvent("a");
+  export default () => createAndFireEventOnAtlaskit();
+  export const a = 1;
+  export const c = import("./c.js");
+esm-async-chained-reexport/library/b.js: |
+  export { default as createAndFireEvent } from './createAndFireEvent.js';
+  export const b = 1;
+esm-async-chained-reexport/library/c.js: |
+  export { createAndFireEvent } from "./b.js";
+  export const c = 32;
+esm-async-chained-reexport/library/createAndFireEvent.js: |
+  export default function (name) {
+  	return () => name;
+  }
+esm-async-chained-reexport/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+esm-async-chained-reexport/package.json: |
+  {
+    "name": "esm-async-chained-reexport",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm-async-chained-reexport/yarn.lock: ""
+esm-async-chained-reexport2/index.js: >
+  import { createAndFireEvent } from "./library/b.js";
+
+  var createAndFireEventOnAtlaskit = createAndFireEvent("index");
+
+
+  export default import("./library/a.js").then((m) =>
+  [createAndFireEventOnAtlaskit(), m.default(), m.a]);
+esm-async-chained-reexport2/library/a.js: |-
+  import { createAndFireEvent } from "./b.js";
+  var createAndFireEventOnAtlaskit = createAndFireEvent("a");
+  export default () => createAndFireEventOnAtlaskit();
+  export const a = 1;
+esm-async-chained-reexport2/library/b.js: |
+  export { default as createAndFireEvent } from './createAndFireEvent';
+  export const b = 1;
+esm-async-chained-reexport2/library/createAndFireEvent.js: |
+  export default function (name) {
+  	return () => name;
+  }
+esm-async-chained-reexport2/library/package.json: |-
+  {
+  	"sideEffects": false
+  }
+esm-async-chained-reexport2/package.json: |
+  {
+    "name": "esm-async-chained-reexport",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm-async-chained-reexport2/yarn.lock: ""
+esm-async/async.js: |
+  export const foo = 2;
+esm-async/index.js: |
+  export default import('./async').then(a => a.foo + 2);
+esm-async/package.json: |
+  {
+    "name": "commonjs-async",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm-async/yarn.lock: ""
+esm-browser-css/async.css: |
+  .foo {
+    color: blue;
+  }
+esm-browser-css/async.js: |
+  import './async.css';
+  export const foo = 2;
+esm-browser-css/index.css: |
+  .foo {
+    color: red;
+  }
+esm-browser-css/index.html: |
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>HTML Example</title>
+      <script type="module" src="./index.js"></script>
+    </head>
+    <body>
+      <h1>Hello world</h1>
+    </body>
+  </html>
+esm-browser-css/index.js: |
+  import './index.css';
+  output = import('./async').then(a => a.foo + 2);
+esm-browser-css/package.json: |
+  {
+    "name": "esm-browser",
+    "private": true
+  }
+esm-browser-css/yarn.lock: ""
+esm-browser-split-bundle/async1.js: |
+  import _ from 'lodash';
+  import react from 'react';
+
+  console.log('async1');
+  console.log(_);
+  console.log(react);
+esm-browser-split-bundle/async2.js: |
+  import _ from 'lodash';
+  import react from 'react';
+
+  console.log('async2');
+  console.log(_);
+  console.log(react);
+esm-browser-split-bundle/index.html: |
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>HTML Example</title>
+      <script type="module" src="./index.js"></script>
+    </head>
+    <body>
+      <h1>Hello world</h1>
+    </body>
+  </html>
+esm-browser-split-bundle/index.js: |
+  import('./async1');
+  import('./async2');
+esm-browser-split-bundle/package.json: |
+  {
+    "name": "esm-browser",
+    "private": true
+  }
+esm-browser-split-bundle/yarn.lock: ""
+esm-browser/async.js: |
+  export const foo = 2;
+esm-browser/index.html: |
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <title>HTML Example</title>
+      <script type="module" src="./index.js"></script>
+    </head>
+    <body>
+      <h1>Hello world</h1>
+    </body>
+  </html>
+esm-browser/index.js: |
+  output = import('./async').then(a => a.foo + 2);
+esm-browser/package.json: |
+  {
+    "name": "esm-browser",
+    "private": true
+  }
+esm-browser/yarn.lock: ""
+esm-bundle-import-reexport/i18n/index.js: |
+  export { default as T } from "./T.js";
+esm-bundle-import-reexport/i18n/T.js: |
+  export default function T(children) {
+  	return `!!!${children}!!!`;
+  }
+esm-bundle-import-reexport/index.js: |
+  import {T} from './i18n/index.js';
+
+  const version = import('./version.js');
+
+  export default version.then((v) => [T('index'), 'Diagram' + v.default()]);
+esm-bundle-import-reexport/package.json: |
+  {
+    "name": "esm-bundle-import-reexport",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm-bundle-import-reexport/version.js: |
+  import {T} from "./i18n/index.js";
+
+  export default function() {
+  	return "Version: " + T("some name");
+  }
+esm-bundle-import-reexport/yarn.lock: ""
+esm-cjs/a.js: |
+  exports.test = true;
+  exports['foo-bar'] = true;
+esm-cjs/package.json: |
+  {
+    "module": "dist/test.js"
+  }
+esm-cjs/yarn.lock: ""
+esm-commonjs-isLibrary-false/other.js: |
+  export const foo = 1;
+esm-commonjs-isLibrary-false/package.json: |
+  {
+    "targets": {
+      "default": {
+        "outputFormat": "commonjs"
+      }
+    },
+    "sideEffects": [
+      "skipped.js"
+    ]
+  }
+esm-commonjs-isLibrary-false/skipped.js: |
+  export {foo} from "./other.js";
+esm-commonjs-isLibrary-false/yarn.lock: ""
+esm-commonjs/a.js: |
+  import {foo} from './b';
+
+  export const bar = foo + 3;
+  export default 4;
+esm-commonjs/b.js: |
+  export const foo = 2;
+esm-commonjs/multiple-times.js: |
+  export const test = 1, foo = 2;
+  export default test;
+  export { test as other };
+esm-commonjs/package.json: |
+  {
+    "name": "esm-commonjs",
+    "private": true,
+    "main": "dist/index.js"
+  }
+esm-commonjs/re-export-namespace-as.js: |
+  export * as ns from './a';
+esm-commonjs/re-export-rename.js: |
+  export {foo as default} from './b';
+esm-commonjs/yarn.lock: ""
+esm-conflict/a.js: |
+  import {foo as bar} from 'foo';
+
+  export const foo = bar + 3;
+esm-conflict/package.json: |
+  {
+    "name": "esm-conflict",
+    "private": true,
+    "module": "dist/index.js",
+    "dependencies": {
+      "foo": "*"
+    }
+  }
+esm-conflict/yarn.lock: ""
+esm-export-shadow/a.mjs: |
+  function fibonacci(fib) {
+    if (fib <= 1) return 1;
+    return fibonacci(fib - 1) + fibonacci(fib - 2);
+  }
+
+  export {fibonacci as fib};
+esm-export-shadow/package.json: |
+  {
+    "module": "dist/module.js",
+    "targets": {
+      "module": {
+        "includeNodeModules": false
+      }
+    }
+  }
+esm-export-shadow/yarn.lock: ""
+esm-external/child.js: |
+  export {add} from 'lodash';
+esm-external/default.js: |
+  import _ from 'lodash';
+
+  export const bar = _.add(1, 2);
+esm-external/export.js: |
+  import {add} from 'lodash';
+
+  export {add};
+esm-external/multiple.js: |
+  import _, {add} from 'lodash';
+  import * as lodash from 'lodash';
+
+  export const bar = _.add(add(1, 2), lodash['ad'+'d'](1, 2));
+esm-external/named-same.js: |
+  import { assign as a } from "lodash/fp";
+  import { assign as b } from "lodash";
+
+  export const bar = a !== b;
+esm-external/named.js: |
+  import {add} from 'lodash';
+
+  export const bar = add(1, 2);
+esm-external/namespace.js: |
+  import * as _ from 'lodash';
+
+  export const bar = _['ad'+'d'](1, 2);
+esm-external/package.json: |
+  {
+    "name": "esm-external",
+    "private": true,
+    "module": "dist/index.js",
+    "sideEffects": false,
+    "engines": {
+      "node": ">= 10.x"
+    },
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+esm-external/re-export-child.js: |
+  export {add} from './child';
+esm-external/re-export.js: |
+  export {add} from 'lodash';
+esm-external/yarn.lock: ""
+esm-filename-import/index.js: |
+  import path from "path";
+
+  export const foo = __filename;
+esm-filename-import/package.json: |
+  {
+    "name": "esm-filename-import",
+    "private": true,
+    "main": "dist/index.js",
+    "engines": {
+      "node": ">=10"
+    }
+  }
+esm-filename-import/yarn.lock: ""
+esm-import-shadow/a.mjs: |
+  import * as React from 'b';
+
+  const Context = React.createContext('Hello');
+
+  export function createContext() {
+    function useContext() {
+      const context = React.useContext(Context);
+      return context + ' World';
+    }
+    return [useContext];
+  }
+esm-import-shadow/node_modules/b/index.mjs: |
+  export function createContext(v) {
+    return v;
+  }
+
+  export function useContext(v) {
+    return v;
+  }
+esm-import-shadow/package.json: |
+  {
+    "module": "dist/a.js",
+    "targets": {
+      "module": {
+        "includeNodeModules": false
+      }
+    },
+    "dependencies": {
+      "b": "*"
+    }
+  }
+esm-import-shadow/yarn.lock: ""
+esm-interop-cross-bundle/a.js: |
+  import x from "./c.js";
+
+  export default import("./b.js").then((v) => [v.default, x]);
+esm-interop-cross-bundle/b.js: |
+  import x from "./c.js";
+
+  export default x;
+esm-interop-cross-bundle/c.js: |
+  "use strict";
+  Object.defineProperty(exports, "__esModule", {
+  	value: true,
+  });
+
+  exports.default = 123;
+esm-interop-cross-bundle/package.json: |
+  {
+    "name": "esm-interop-cross-bundle",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm-interop-cross-bundle/yarn.lock: ""
+esm-isLibrary-false/other.js: |
+  export const foo = 1;
+esm-isLibrary-false/package.json: |
+  {
+    "targets": {
+      "default": {
+        "outputFormat": "esmodule"
+      }
+    },
+    "sideEffects": [
+      "skipped.js"
+    ]
+  }
+esm-isLibrary-false/skipped.js: |
+  export {foo} from "./other.js";
+esm-isLibrary-false/yarn.lock: ""
+esm-mjs/index.js: |
+  import {noop} from 'lodash';
+
+  noop();
+esm-mjs/package.json: |
+  {
+    "name": "esm-mjs",
+    "private": true,
+    "main": "dist/index.mjs",
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+esm-mjs/yarn.lock: ""
+esm-siblings/a.css: |
+  .foo {
+    color: red;
+  }
+esm-siblings/a.js: |
+  import './a.css';
+
+  export const foo = 2;
+esm-siblings/package.json: |
+  {
+    "name": "esm-siblings",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm-siblings/yarn.lock: ""
+esm-sideeffects/b.js: |
+  export const foo = 2;
+esm-sideeffects/missing-export.js: |
+  export { a as x } from "./b.js";
+esm-sideeffects/package.json: |
+  {
+    "name": "esm-sideffects",
+    "private": true,
+    "module": "dist/index.js",
+    "sideEffects": false
+  }
+esm-sideeffects/yarn.lock: ""
+esm-split-worker/async.js: |
+  import { add } from "lodash";
+
+  export default `async-${add(1, 2)}`;
+esm-split-worker/index.html: |
+  <script type="module" src="./index.js"></script>
+esm-split-worker/index.js: |
+  new Worker(new URL("./main-worker", import.meta.url), {type: "module"});
+esm-split-worker/main-worker.js: |
+  import a from "./sync.js";
+  console.log(a);
+
+  import("./async").then(v => console.log(v.default));
+esm-split-worker/sync.js: |
+  import { add } from "lodash";
+
+  export default `sync-${add(1, 2)}`;
+esm-split/async1.js: |
+  import _ from 'lodash';
+  import react from 'react';
+
+  export default ['async1', _, react];
+esm-split/async2.js: |
+  import _ from 'lodash';
+  import react from 'react';
+
+  export default ['async2', _, react];
+esm-split/index.js: |
+  export default Promise.all([import('./async1'), import('./async2')]).then(
+  	([{default: [a, b, c]}, {default: [x, y, z]}]) =>
+  		a === 'async1' && x === 'async2' && b === y && c === z,
+  );
+esm-split/package.json: |
+  {
+    "name": "commonjs-split",
+    "private": true,
+    "module": "dist/index.js",
+    "targets": {
+      "module": {
+        "includeNodeModules": true
+      }
+    }
+  }
+esm-split/yarn.lock: ""
+esm-type-module/index.js: |
+  import {noop} from 'lodash';
+
+  noop();
+esm-type-module/package.json: |
+  {
+    "name": "esm-type-module",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "dependencies": {
+      "lodash": "*"
+    }
+  }
+esm-type-module/yarn.lock: ""
+esm-wrap-codesplit/a.js: |
+  if (Date.now() < 0) {
+  	let x = require("./c.js");
+  }
+
+  export default import("./b.js");
+esm-wrap-codesplit/b.js: |
+  const x = require("./c.js");
+
+  module.exports = x;
+esm-wrap-codesplit/c.js: |
+  module.exports = 2;
+esm-wrap-codesplit/package.json: |
+  {
+    "name": "esm",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm-wrap-codesplit/yarn.lock: ""
+esm/b.js: |
+  export const foo = 2;
+esm/default-function.js: |
+  import {foo} from './b';
+
+  export default function test() {
+    return foo;
+  };
+esm/default-value.js: |
+  import {foo} from './b';
+
+  export default foo + 2;
+esm/missing-export.js: |
+  export { a as x } from "./b.js";
+esm/multiple-times.js: |
+  export const test = 1, foo = 2;
+  export default test;
+  export { test as other };
+esm/multiple.js: |
+  var a = 2, b = 3, c = a + b;
+  export {a, c};
+  export default b;
+esm/named.js: |
+  import {foo} from './b';
+
+  export const bar = foo + 3;
+  export {foo};
+esm/package.json: |
+  {
+    "name": "esm",
+    "private": true,
+    "module": "dist/index.js"
+  }
+esm/re-export-namespace-as.js: |
+  export * as ns from './multiple';
+esm/re-export-rename.js: |
+  export {default as foo} from './default-value';
+esm/re-export.js: |
+  export * from './multiple';
+esm/yarn.lock: ""
+global-external/index.js: |
+  import { add } from "lodash";
+
+  output = add(1, 2);
+global-external/package.json: |
+  {
+      "targets": {
+          "default": {
+              "includeNodeModules": false
+          }
+      }
+  }
+global-external/yarn.lock: ""
+global-split-worker-async/async.js: |
+  import { add } from "lodash";
+
+  export default `async-${add(1, 2)}`;
+global-split-worker-async/index.html: |
+  <script type="module" src="./index.js"></script>
+global-split-worker-async/index.js: |
+  new Worker(new URL("./main-worker", import.meta.url), {type: 'module'});
+global-split-worker-async/main-worker.js: |
+  import a from "./sync.js";
+
+  import("./async").then(v => {
+      output(a + v.default);
+  });
+global-split-worker-async/sync.js: |
+  import { add } from "lodash";
+
+  export default `sync-${add(1, 2)}`;
+global-split-worker/index.html: |
+  <script type="module" src="./index.js"></script>
+global-split-worker/index.js: |
+  import {add} from "lodash";
+
+  output = add(1, 2);
+
+  new Worker(new URL("./worker", import.meta.url), {type: 'module'});
+global-split-worker/package.json: |
+  {}
+global-split-worker/worker.js: |
+  import {add} from "lodash";
+
+  output = add(10, 20);
+global-split-worker/yarn.lock: ""

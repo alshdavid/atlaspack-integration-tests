@@ -1,0 +1,51 @@
+options:
+  name: js-import-this
+package.json:
+  type: module
+index.js: >
+  import returnThisDefault, { returnThis } from "./other.js";
+
+  import * as other from "./other.js";
+
+
+  import returnThisWrappedDefault, { returnThis as returnThisWrapped } from
+  "./other-wrapped.js";
+
+  import * as otherWrapped from "./other-wrapped.js";
+
+
+  let result = {
+    unwrappedNamed: returnThis(),
+    unwrappedDefault: returnThisDefault(),
+    unwrappedNamespace: other.returnThis(),
+    wrappedNamed: returnThisWrapped(),
+    wrappedDefault: returnThisWrappedDefault(),
+    wrappedNamespace: otherWrapped.returnThis(),
+  };
+
+
+  output = result;
+
+  export default result;
+other-wrapped.js: |
+  import * as ns from "./other-wrapped.js";
+
+  let y = typeof module !== "undefined" ? module : {};
+
+  export function returnThis() {
+    if (y != null) {
+      return [this === undefined, this === ns];
+    } else {
+      throw new Error();
+    }
+  }
+
+  export default returnThis;
+other.js: |
+  import * as ns from "./other.js";
+
+  export function returnThis() {
+    return [this === undefined, this === ns];
+  }
+
+  export default returnThis;

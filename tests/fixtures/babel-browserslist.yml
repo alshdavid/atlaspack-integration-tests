@@ -1,0 +1,16 @@
+options:
+  name: babel-browserslist
+package.json:
+  type: module
+  name: atlaspack-test-browser-browserslist
+  browserslist:
+    - last 2 Chrome versions
+    - IE >= 11
+yarn.lock: ""
+foo.js: |
+  export default class Foo {}
+index.js: |
+  import Foo from './foo';
+
+  export {Foo};
+  export class Bar {}

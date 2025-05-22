@@ -1,0 +1,6 @@
+options:
+  name: resolve-empty-specifier
+package.json:
+  type: module
+index.js: |
+  import "";

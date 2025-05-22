@@ -1,0 +1,14 @@
+options:
+  name: env-unused-require
+package.json:
+  type: module
+index.js: |
+  module.exports = function () {
+    if(process.env.ABC === 'a') {
+      return require("./unused.js");
+    } else {
+      return "ok";
+    }
+  };
+unused.js: |
+  module.exports = "unused";

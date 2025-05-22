@@ -1,0 +1,11 @@
+options:
+  name: same-contents-different-filepaths
+package.json:
+  type: module
+index.js: |
+  import('./path1/a');
+  import('./path2/a');
+path1/a.js: |
+  console.log('test');
+path2/a.js: |
+  console.log('test');

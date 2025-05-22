@@ -1,0 +1,15 @@
+options:
+  name: sass
+package.json:
+  type: module
+index.js: |
+  require('./index.sass');
+
+  module.exports = function () {
+    return 2;
+  };
+index.sass: |
+  $base: #f938ab
+
+  .index
+    color: $base

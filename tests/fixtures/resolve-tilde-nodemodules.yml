@@ -1,0 +1,23 @@
+options:
+  name: resolve-tilde-nodemodules
+package.json:
+  type: module
+  private: true
+index.js: |
+  import x from "library";
+
+  export default x;
+node_modules/library/other.js: |
+  export default 1234;
+node_modules/library/package.json: |
+  {
+    "name": "library",
+    "main": "src/index.js",
+    "private": true
+  }
+node_modules/library/src/index.js: |
+  import x from "~/other.js";
+
+  export default x;
+pnpm-lock.yaml: |
+  # To create a fake projectRoot

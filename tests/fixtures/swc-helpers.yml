@@ -1,0 +1,9 @@
+options:
+  name: swc-helpers
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  (async () => {
+  	console.log(await Promise.resolve(1));
+  })();

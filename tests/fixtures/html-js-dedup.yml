@@ -1,0 +1,18 @@
+options:
+  name: html-js-dedup
+package.json:
+  type: module
+component-1.js: |
+  import obj from './obj.js';
+  obj.count++;
+  output('component-1', obj.count);
+component-2.js: |
+  import obj from './obj.js';
+  obj.count++;
+  output('component-2', obj.count);
+index.html: |
+  <!DOCTYPE html>
+  <script type="module" src="component-1.js"></script>
+  <script type="module" src="component-2.js"></script>
+obj.js: |
+  export default { count: 0 };

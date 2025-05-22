@@ -1,0 +1,19 @@
+options:
+  name: postcss-import
+package.json:
+  type: module
+yarn.lock: ""
+config.css: |
+  :root {
+    --varColor: red;
+  }
+nested/index.css: |
+  body {
+    background-color: var(--varColor);
+  }
+style.css: |
+  @import "./config.css";
+
+  body {
+    background-color: var(--varColor);
+  }

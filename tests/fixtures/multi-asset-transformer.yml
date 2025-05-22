@@ -1,0 +1,22 @@
+options:
+  name: multi-asset-transformer
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  output = x;
+node_modules/atlaspack-transformer-test/index.js: >
+  const {Transformer} = require('@atlaspack/plugin');
+
+
+  module.exports = new Transformer({
+    async transform({asset}) {
+      asset.setCode(`import {x} from "x";\n${await asset.getCode()}`);
+      return [asset, {type: 'js', content: 'export var x = 2;', uniqueKey: 'x'}];
+    },
+  });
+node_modules/atlaspack-transformer-test/package.json: |
+  {
+    "name": "atlaspack-transformer-test",
+    "version": "1.0.0"
+  }

@@ -1,0 +1,20 @@
+options:
+  name: html-no-js
+package.json:
+  type: module
+yarn.lock: ""
+index.html: |
+  <!doctype html>
+  <html>
+  <body>
+  <p>Some paragraph.</p>
+  </body>
+  </html>
+no-body-or-html.html: |
+  <!doctype html>
+  <p>Some paragraph.</p>
+no-body.html: |
+  <!doctype html>
+  <html>
+  <p>Some paragraph.</p>
+  </html>

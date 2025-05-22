@@ -1,0 +1,9 @@
+options:
+  name: same-dependency-multiple-times
+package.json:
+  type: module
+a1.js: |-
+  import './a2';
+  import('./b');
+a2.js: import('./b');
+b.js: ""

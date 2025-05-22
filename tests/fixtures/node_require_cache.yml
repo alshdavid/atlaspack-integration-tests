@@ -1,0 +1,6 @@
+options:
+  name: node_require_cache
+package.json:
+  type: module
+main.js: |
+  Object.keys(require.cache);

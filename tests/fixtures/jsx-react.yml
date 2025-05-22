@@ -1,0 +1,20 @@
+options:
+  name: jsx-react
+package.json:
+  type: module
+  private: true
+  dependencies:
+    react: "*"
+index.js: |
+  module.exports = <div />;
+pure-comment.js: |
+  import React from 'react';
+
+  export function Foo() {
+    return (
+      // @ts-ignore - another long comment
+      <div>
+        <span />
+      </div>
+    );
+  }

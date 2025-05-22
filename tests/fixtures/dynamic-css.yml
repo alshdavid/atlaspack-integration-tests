@@ -1,0 +1,26 @@
+options:
+  name: dynamic-css
+package.json:
+  type: module
+index.css: |
+  .index {
+    color: red;
+  }
+index.js: |
+  var local = import('./local');
+  require('./index.css');
+
+  module.exports = function () {
+    return local.then(function (l) {
+      return l.a + l.b;
+    });
+  };
+local.css: |
+  .local {
+    color: green;
+  }
+local.js: |
+  require('./local.css');
+
+  exports.a = 1;
+  exports.b = 2;

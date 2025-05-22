@@ -1,0 +1,35 @@
+options:
+  name: css-modules-keyframes
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  var foo = require('./index.module.css');
+
+  module.exports = function () {
+    return foo.foo;
+  };
+index.module.css: |
+  .foo {
+    animation: test 200ms;
+  }
+
+  @keyframes test {
+    from {
+      color: red;
+    }
+
+    to {
+      color: green;
+    }
+  }
+
+  @keyframes unused {
+    from {
+      color: green;
+    }
+
+    to {
+      color: blue;
+    }
+  }

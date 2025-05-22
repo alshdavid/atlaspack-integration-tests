@@ -1,0 +1,10 @@
+options:
+  name: optional-dep
+package.json:
+  type: module
+index.js: |
+  try {
+    require('optional-dep');
+  } catch (err) {
+    module.exports = err;
+  }

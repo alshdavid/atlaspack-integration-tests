@@ -1,0 +1,12 @@
+options:
+  name: eslint-parse-error
+package.json:
+  type: module
+index.js: |
+  module.exports = function hello() {
+    console.log('Say hello world...');
+
+    let hey = '';
+
+    return 'hello';
+  };

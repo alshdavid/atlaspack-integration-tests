@@ -1,0 +1,11 @@
+options:
+  name: env-nodeenv
+package.json:
+  type: module
+  "@atlaspack/transformer-js":
+    inlineEnvironment: false
+yarn.lock: ""
+index.js: |
+  module.exports = function () {
+    return process.env.NODE_ENV + ":" + process.env.FOO;
+  };

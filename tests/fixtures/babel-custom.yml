@@ -1,0 +1,39 @@
+options:
+  name: babel-custom
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  class Test {
+    classProperty = 2;
+    #privateProperty;
+
+    constructor(text) {
+      this.#privateProperty = text;
+    }
+
+    get() {
+      return this.#privateProperty;
+    }
+  }
+
+  export default new Test('REPLACE_ME').get();
+node_modules/babel-plugin-dummy/index.js: |
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'REPLACE_ME') {
+            path.node.value = opts.text;
+          }
+        }
+      }
+    };
+  };
+node_modules/babel-plugin-dummy/package.json: |
+  {
+    "name": "babel-plugin-dummy",
+    "version": "1.0.0"
+  }

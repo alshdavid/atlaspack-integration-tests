@@ -1,0 +1,28 @@
+options:
+  name: image
+package.json:
+  type: module
+banana.jpg: file://<root>/assets/banana.jpg
+clock.png: file://<root>/assets/clock.png
+foo.png: file://<root>/assets/foo.png
+image.jpg: file://<root>/assets/image.jpg
+reformat-all.html: |
+  ​<picture>
+    <source srcset="foo.png?as=avif" type="image/avif">
+    <source srcset="foo.png?as=jpg" type="image/jpeg">
+    <source srcset="foo.png?as=png" type="image/png">
+    <source srcset="foo.png?as=tiff" type="image/tiff">
+    <source srcset="foo.png?as=webp" type="image/webp">
+  </picture>
+reformat.css: |
+  .test {
+    background-image: url('image.jpg?as=webp');
+  }
+reformat.html: |
+  <img src="image.jpg?as=webp" alt="test image" />
+reformat.js: |
+  import url from './image.jpg?as=webp';
+
+  module.exports = url;
+resized.js: |
+  module.exports = new URL('image.jpg?width=600', import.meta.url).toString();

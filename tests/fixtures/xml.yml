@@ -1,0 +1,115 @@
+options:
+  name: xml
+package.json:
+  type: module
+100x100.png: file://<root>/assets/100x100.png
+atom-namespace.xml: |
+  <?xml version="1.0" encoding="utf-8"?>
+  <?xml-stylesheet type="text/xsl" href="atom.xsl"?>
+  <atom:feed xmlns:atom="http://www.w3.org/2005/Atom">
+  	<atom:title>Example Feed</atom:title>
+  	<atom:subtitle>A subtitle.</atom:subtitle>
+  	<atom:link href="http://example.org/feed/" rel="self" />
+  	<atom:link href="http://example.org/" />
+  	<atom:id>urn:uuid:60a76c80-d399-11d9-b91C-0003939e0af6</atom:id>
+  	<atom:updated>2003-12-13T18:30:02Z</atom:updated>
+  	<atom:entry>
+  		<atom:title>Atom-Powered Robots Run Amok</atom:title>
+  		<atom:link href="post.html" />
+  		<atom:link rel="edit" href="http://example.org/2003/12/13/atom03/edit"/>
+  		<atom:id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</atom:id>
+  		<atom:updated>2003-12-13T18:30:02Z</atom:updated>
+  		<atom:summary>Some text.</atom:summary>
+  		<atom:content type="xhtml">
+  			<div xmlns="http://www.w3.org/1999/xhtml">
+  				<p>This is the entry content.</p>
+          <img src="100x100.png" />
+  			</div>
+  		</atom:content>
+  		<atom:author>
+  			<atom:name>John Doe</atom:name>
+  			<atom:email>johndoe@example.com</atom:email>
+  		</atom:author>
+  	</atom:entry>
+  </atom:feed>
+atom.xml: |
+  <?xml version="1.0" encoding="utf-8"?>
+  <?xml-stylesheet type="text/xsl" href="atom.xsl"?>
+  <feed xmlns="http://www.w3.org/2005/Atom">
+  	<title>Example Feed</title>
+  	<subtitle>A subtitle.</subtitle>
+  	<link href="http://example.org/feed/" rel="self" />
+  	<link href="http://example.org/" />
+  	<id>urn:uuid:60a76c80-d399-11d9-b91C-0003939e0af6</id>
+  	<updated>2003-12-13T18:30:02Z</updated>
+  	<entry>
+  		<title>Atom-Powered Robots Run Amok</title>
+  		<link href="post.html" />
+  		<link rel="edit" href="http://example.org/2003/12/13/atom03/edit"/>
+  		<id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
+  		<updated>2003-12-13T18:30:02Z</updated>
+  		<summary>Some text.</summary>
+  		<content type="xhtml">
+  			<div xmlns="http://www.w3.org/1999/xhtml">
+  				<p>This is the entry content.</p>
+          <img src="100x100.png" />
+  			</div>
+  		</content>
+  		<author>
+  			<name>John Doe</name>
+  			<email>johndoe@example.com</email>
+  		</author>
+  	</entry>
+  </feed>
+atom.xsl: >
+  <?xml version="1.0" encoding="utf-8"?>
+
+  <xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:atom="http://www.w3.org/2005/Atom">
+    <xsl:output method="html" />
+    <xsl:template match="/">
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <title><xsl:value-of select="/atom:feed/atom:title" /></title>
+        </head>
+        <body>
+          <ul>
+            <xsl:for-each select="/atom:feed/atom:entry">
+              <li>
+                <a>
+                  <xsl:attribute name="href"><xsl:value-of select="atom:link/@href" /></xsl:attribute>
+                  <xsl:value-of select="atom:title" />
+                </a>
+              </li>
+            </xsl:for-each>
+          </ul>
+        </body>
+      </html>
+    </xsl:template>
+  </xsl:stylesheet>
+post.html: |
+  <!doctype html>
+  <h1>This is the post</h1>
+rss.xml: >
+  <?xml version="1.0" encoding="UTF-8" ?>
+
+  <rss version="2.0">
+    <channel>
+      <title>RSS Title</title>
+      <description>This is an example of an RSS feed</description>
+      <link>http://www.example.com/main.html</link>
+      <copyright>2020 Example.com All rights reserved</copyright>
+      <lastBuildDate>Mon, 06 Sep 2010 00:01:00 +0000</lastBuildDate>
+      <pubDate>Sun, 06 Sep 2009 16:20:00 +0000</pubDate>
+      <ttl>1800</ttl>
+
+      <item>
+        <title>Example entry</title>
+        <description>Here is some text containing an interesting description. &lt;img src="100x100.png" /&gt;</description>
+        <link>post.html</link>
+        <guid isPermaLink="false">7bd204c6-1655-4c27-aeee-53f933c5395f</guid>
+        <pubDate>Sun, 06 Sep 2009 16:20:00 +0000</pubDate>
+      </item>
+    </channel>
+  </rss>

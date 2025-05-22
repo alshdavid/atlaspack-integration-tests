@@ -1,0 +1,16 @@
+options:
+  name: scss-postcss
+package.json:
+  type: module
+index.js: |
+  var map = require('./index.module.scss');
+
+  module.exports = function () {
+    return map.index;
+  };
+index.module.scss: |
+  $base: #f938ab;
+
+  .index {
+    color: $base;
+  }

@@ -1,0 +1,17 @@
+options:
+  name: jsx-pragma-tsconfig
+package.json:
+  type: module
+  private: true
+  dependencies:
+    preact: "*"
+yarn.lock: ""
+index.js: |
+  module.exports = <><div /></>;
+tsconfig.json: |
+  {
+    "compilerOptions": {
+      "jsxFactory": "JSX",
+      "jsxFragmentFactory": "JSXFragment"
+    }
+  }

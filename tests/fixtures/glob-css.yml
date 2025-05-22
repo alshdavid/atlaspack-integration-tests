@@ -1,0 +1,27 @@
+options:
+  name: glob-css
+package.json:
+  type: module
+yarn.lock: ""
+dir/local.css: |
+  .local {
+    color: teal;
+  }
+dir/other.css: |
+  @import './local.css';
+
+  .other {
+    color: green;
+  }
+index.css: |
+  @import './dir/*.css';
+
+  .index {
+    color: red;
+  }
+index.js: |
+  require('./index.css');
+
+  module.exports = function () {
+    return 2;
+  };

@@ -1,0 +1,9 @@
+options:
+  name: image-exif
+package.json:
+  type: module
+resized.js: |
+  import url from './right.jpg?width=240';
+
+  module.exports = url;
+right.jpg: file://<root>/assets/right.jpg

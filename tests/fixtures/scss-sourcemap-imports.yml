@@ -1,0 +1,11 @@
+options:
+  name: scss-sourcemap-imports
+package.json:
+  type: module
+style.scss: |
+  @import './with_url'
+with_url.scss: |
+  body {
+    background-color: #999;
+    background: url('data:image/png;base64,iii') center no-repeat;
+  }

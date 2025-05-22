@@ -1,0 +1,21 @@
+options:
+  name: sass-exports
+package.json:
+  type: module
+  private: true
+  "@atlaspack/resolver-default":
+    packageExports: true
+yarn.lock: ""
+index.sass: '@import "library"'
+node_modules/library/lib.js: ""
+node_modules/library/package.json: |-
+  {
+      "private": true,
+      "exports": {
+          "sass": "./style.sass",
+          "default": "./lib.js"
+      }
+  }
+node_modules/library/style.sass: |-
+  .external
+      color: red

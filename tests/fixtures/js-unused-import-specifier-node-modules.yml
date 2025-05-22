@@ -1,0 +1,14 @@
+options:
+  name: js-unused-import-specifier-node-modules
+package.json:
+  type: module
+a.js: |
+  import a from "library";
+
+  output = a;
+node_modules/library/index.js: |
+  export default used + 1;
+
+  import {used, unused} from "./other.js";
+node_modules/library/other.js: |
+  export const used = 122;

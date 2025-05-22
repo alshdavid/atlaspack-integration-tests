@@ -1,0 +1,16 @@
+options:
+  name: scss
+package.json:
+  type: module
+index.js: |
+  require('./index.scss');
+
+  module.exports = function () {
+    return 2;
+  };
+index.scss: |
+  $base: #f938ab;
+
+  .index {
+    color: $base;
+  }

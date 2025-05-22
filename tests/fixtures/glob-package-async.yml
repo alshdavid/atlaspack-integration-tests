@@ -1,0 +1,30 @@
+options:
+  name: glob-package-async
+package.json:
+  type: module
+yarn.lock: ""
+index.js: >-
+  const scoped = import('@scope/pkg/foo/*.js');
+
+  const unscoped = import('pkg/bar/*.js');
+
+
+  module.exports = async function () {
+      return await scoped.a() + await scoped.b() + await unscoped.x() + await unscoped.y();
+  }
+node_modules/@scope/pkg/foo/a.js: module.exports = 1;
+node_modules/@scope/pkg/foo/b.js: module.exports = 2;
+node_modules/@scope/pkg/index.js: ""
+node_modules/@scope/pkg/package.json: |-
+  {
+      "name": "@scope/pkg",
+      "module": "index.js"
+  }
+node_modules/pkg/bar/x.js: module.exports = 3;
+node_modules/pkg/bar/y.js: module.exports = 4;
+node_modules/pkg/index.js: ""
+node_modules/pkg/package.json: |-
+  {
+      "name": "pkg",
+      "module": "index.js"
+  }

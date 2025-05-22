@@ -1,0 +1,25 @@
+options:
+  name: postcss-js-config-7
+package.json:
+  type: module
+yarn.lock: ""
+postcss.config.js: |
+  const postcssCustomProperties = require('postcss-custom-properties');
+
+  module.exports = {
+    plugins: [
+      postcssCustomProperties({
+        importFrom: [
+          {
+            customProperties: {
+              '--color': 'red'
+            }
+          }
+        ]
+      })
+    ]
+  }
+style.css: |
+  body {
+    background-color: var(--color);
+  }

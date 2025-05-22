@@ -1,0 +1,6 @@
+options:
+  name: env-computed-string
+package.json:
+  type: module
+index.js: |
+  module.exports = process.env["ABC"];

@@ -1,0 +1,21 @@
+options:
+  name: multi-entry
+package.json:
+  type: module
+one.html: |
+  <!doctype html>
+  <html>
+  <body>
+    <h1>One</h1>
+    <script src="shared.js"></script>
+  </body>
+  </html>
+shared.js: ""
+two.html: |
+  <!doctype html>
+  <html>
+  <body>
+    <h1>Two</h1>
+    <script src="shared.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,17 @@
+options:
+  name: typescript-import-type-reexport
+package.json:
+  type: module
+bar.ts: |
+  import type { Foo } from "./foo";
+  export { Foo } from "./foo";
+
+  export function func(f: Foo) {}
+foo.ts: |
+  export enum Foo {
+    Bar = 123,
+  }
+index.ts: |
+  import { Foo } from "./bar";
+
+  export const Bar = Foo.Bar;

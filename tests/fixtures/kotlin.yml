@@ -1,0 +1,13 @@
+options:
+  name: kotlin
+package.json:
+  type: module
+index.js: |
+  var test = require('./test.kt');
+
+  module.exports = test.sum(2, 3);
+test.kt: |
+  @JsName("sum")
+  fun sum(a: Int, b: Int): Int {
+    return a + b
+  }

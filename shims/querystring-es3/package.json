@@ -1,0 +1,6 @@
+{
+  "name": "querystring-es3",
+  "version": "0.0.1-shim",
+  "type": "module",
+  "main": "./index.js"
+}

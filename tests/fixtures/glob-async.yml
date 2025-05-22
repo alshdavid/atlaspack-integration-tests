@@ -1,0 +1,15 @@
+options:
+  name: glob-async
+package.json:
+  type: module
+yarn.lock: ""
+dir/a.js: |
+  module.exports = 1;
+dir/b.js: |
+  module.exports = 2;
+index.js: |
+  var vars = import('./dir/*.js');
+
+  module.exports = async function () {
+    return await vars.a() + await vars.b();
+  };

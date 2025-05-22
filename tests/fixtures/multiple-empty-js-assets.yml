@@ -1,0 +1,11 @@
+options:
+  name: multiple-empty-js-assets
+package.json:
+  type: module
+a.js: ""
+b.js: ""
+index.js: |
+  import "./a.js";
+  import "./b.js";
+
+  export default "foo";

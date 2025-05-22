@@ -1,0 +1,33 @@
+options:
+  name: css-modules-merging-siblings
+package.json:
+  type: module
+index.css: |
+  body {}
+index.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>Placeholder</title>
+      <link rel="stylesheet" href="index.css" />
+    </head>
+    <body>
+      <div id="app"></div>
+      <script type="module" src="index.tsx"></script>
+    </body>
+  </html>
+index.tsx: |
+  // Adopted from reproduction here
+  // https://github.com/parcel-bundler/parcel/issues/8716
+  import * as styles from "./outer.module.css";
+
+  sideEffect(['mainJs', styles.container]);
+inner.module.css: |
+  .-expand {
+    color: red;
+  }
+outer.module.css: |
+  .container {
+    composes: -expand from "./inner.module.css";
+  }

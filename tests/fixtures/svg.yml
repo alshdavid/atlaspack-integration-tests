@@ -1,0 +1,62 @@
+options:
+  name: svg
+package.json:
+  type: module
+circle.svg: >
+  <svg viewBox="0 0 30 10" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- This is a comment -->
+    <circle id="circle" cx="5" cy="5" r="4" stroke="blue"/>
+    <a href="other1.html">
+      <use href="#circle" x="10" fill="blue"/>
+    </a>
+    <use xlink:href="square.svg#square" x="20" fill="white" stroke="red"/>
+    <circle cx="5" cy="5" r="4" fill="url(gradient.svg#myGradient)" />
+    <text>
+      <textPath href="path.svg#MyPath">
+        Quick brown fox jumps over the lazy dog.
+      </textPath>
+    </text>
+    <script xlink:href="script.js" />
+    <script type="module" href="module.js" />
+  </svg>
+gradient.svg: |
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="myGradient">
+        <stop offset="10%" stop-color="gold" />
+        <stop offset="95%" stop-color="red" />
+      </radialGradient>
+    </defs>
+  </svg>
+module.js: |
+  import './style.css';
+  import './script';
+  console.log('module');
+other1.html: |
+  <!DOCTYPE html>
+  <title>Other page 1</title>
+other2.html: |
+  <!DOCTYPE html>
+  <title>Other page 2</title>
+path.svg: >
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <path id="MyPath" fill="none" stroke="red"
+          d="M10,90 Q90,90 90,45 Q90,10 50,10 Q10,10 10,40 Q10,70 45,70 Q70,70 75,50" />
+    </defs>
+  </svg>
+script.js: |
+  console.log('script');
+square.svg: >
+  <svg viewBox="0 0 30 10" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+    <rect id="square" height="10" width="10" stroke="blue"/>
+    <a xlink:href="other2.html">
+      <use href="#square" x="20" fill="white" stroke="red"/>
+    </a>
+  </svg>
+style.css: |
+  circle {
+    fill: red;
+  }

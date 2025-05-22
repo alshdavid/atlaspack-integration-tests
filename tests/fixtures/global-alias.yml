@@ -1,0 +1,12 @@
+options:
+  name: global-alias
+package.json:
+  type: module
+  main: dist/index.js
+  alias:
+    react:
+      global: React
+index.js: |-
+  import React from 'react';
+
+  module.exports = React.createElement('div');

@@ -1,0 +1,11 @@
+options:
+  name: terser-config
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |-
+  // This is a comment
+  module.exports = function () {
+      console.log('Hello world');
+      return 1 + 1;
+  };

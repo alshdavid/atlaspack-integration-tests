@@ -1,0 +1,9 @@
+options:
+  name: jsx-preact-no-dep
+package.json:
+  type: module
+  private: true
+index.js: |
+  const Preact = require('preact');
+
+  module.exports = <div />;

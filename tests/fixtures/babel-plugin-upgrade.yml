@@ -1,0 +1,29 @@
+options:
+  name: babel-plugin-upgrade
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  module.exports = function() {
+    return "REPLACE_ME";
+  }
+node_modules/babel-plugin-dummy/index.js: |
+  const message = require('./message')
+
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'REPLACE_ME') {
+            path.node.value = message;
+          }
+        }
+      }
+    };
+  };
+node_modules/babel-plugin-dummy/message.js: |
+  module.exports = "hello there";
+node_modules/babel-plugin-dummy/package.json: |
+  {"name":"babel-plugin-dummy","version":"1.0.0"}

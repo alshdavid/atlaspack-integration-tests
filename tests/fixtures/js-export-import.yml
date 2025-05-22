@@ -1,0 +1,9 @@
+options:
+  name: js-export-import
+package.json:
+  type: module
+index.js: |
+  import other from './other';
+  export {other};
+other.js: |
+  export default 2;

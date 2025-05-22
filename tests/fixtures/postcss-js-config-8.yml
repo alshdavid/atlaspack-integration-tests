@@ -1,0 +1,17 @@
+options:
+  name: postcss-js-config-8
+package.json:
+  type: module
+yarn.lock: ""
+postcss.config.js: |
+  const postcssImport = require('postcss-import');
+
+  module.exports = {
+    plugins: [
+      postcssImport()
+    ]
+  }
+style.css: |
+  body {
+    color: red;
+  }

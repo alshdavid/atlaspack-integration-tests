@@ -1,0 +1,15 @@
+options:
+  name: include_builtins-browser
+package.json:
+  type: module
+  targets:
+    default:
+      context: browser
+      includeNodeModules: true
+main.js: |
+  import path from "path";
+  import fs from "fs";
+
+  module.exports = function () {
+    return [fs, path.join("app", "index.js")];
+  };

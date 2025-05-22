@@ -1,0 +1,19 @@
+options:
+  name: js-runtime-dedup
+package.json:
+  type: module
+async1.js: |
+  import shared from "./shared.js";
+
+  export default shared;
+async2.js: |
+  import shared from "./shared.js";
+
+  export default shared;
+index.js: >
+  module.exports = output = Promise.all([import("./async1"),
+  import("./async2")]).then(
+  	([{ default: a }, { default: b }]) => a === b
+  );
+shared.js: |
+  export default { a: 123 };

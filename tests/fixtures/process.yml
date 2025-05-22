@@ -1,0 +1,13 @@
+options:
+  name: process
+package.json:
+  type: module
+index.js: |
+  process.browser = false
+  module.exports = function () {
+    return process.browser && test(process.browser);
+  };
+
+  function test(val) {
+    return val;
+  }

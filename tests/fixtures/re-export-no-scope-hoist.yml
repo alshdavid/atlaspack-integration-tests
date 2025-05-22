@@ -1,0 +1,35 @@
+options:
+  name: re-export-no-scope-hoist
+package.json:
+  type: module
+  source: test.js
+  scope-hoist: dist/scope-hoist.js
+  no-scope-hoist: dist/no-scope-hoist.js
+  targets:
+    scope-hoist:
+      scopeHoist: true
+      optimize: false
+    no-scope-hoist:
+      scopeHoist: false
+      optimize: false
+node_modules/icon/Icon.js: |-
+  export function Icon() {
+    return 'Icon';
+  }
+node_modules/icon/index.js: |
+  export {Icon} from './Icon';
+  export {UIIcon} from './UIIcon';
+node_modules/icon/package.json: |-
+  {
+    "name": "icon",
+    "version": "1.0.0",
+    "sideEffects": false
+  }
+node_modules/icon/UIIcon.js: |-
+  export function UIIcon() {
+    return 'UIIcon';
+  }
+test.js: |
+  import {UIIcon, Icon} from 'icon';
+
+  output(UIIcon(), Icon());

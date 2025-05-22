@@ -1,0 +1,84 @@
+options:
+  name: react-refresh-automatic
+package.json:
+  type: module
+  dependencies:
+    react: ^17.0.0
+    react-dom: ^17.0.0
+App.js: |
+  import { useState } from "react";
+  import ReactDOM from "react-dom";
+  import Foo from "./Foo";
+  import { act } from "react-dom/test-utils";
+
+  export const App = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        {x} <Foo />
+      </div>
+    );
+  };
+Foo.1.js: |
+  // Don't import "react" to actually test automatic runtime check
+  import { useState } from "./hooks.js";
+
+  let Foo = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        OtherFunctional:
+        <span>{x}</span>
+      </div>
+    );
+  };
+
+  export default Foo;
+Foo.js: |
+  // Don't import "react" to actually test automatic runtime check
+  import { useState } from "./hooks.js";
+
+  let Foo = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        Functional:{x}
+      </div>
+    );
+  };
+
+  export default Foo;
+hooks.js: |
+  import * as React from "react";
+  export function useState(init){
+    return React.useState(init);
+  }
+index.html: |
+  <div id="root"></div>
+  <script type="module" src="index.js"></script>
+index.js: >
+  import { useState } from "react";
+
+  import ReactDOM from "react-dom";
+
+  import { App } from "./App";
+
+  import { act } from "react-dom/test-utils";
+
+
+  let Main = () => {
+    const [x] = useState(Math.random());
+
+    return (
+      <div>
+        <span>{x}</span> <App />
+      </div>
+    );
+  };
+
+
+  export default () =>
+    act(async () => {ReactDOM.render(<Main />, document.getElementById("root"));});

@@ -1,0 +1,53 @@
+options:
+  name: react-refresh-circular
+package.json:
+  type: module
+  dependencies:
+    react: ^17.0.0
+    react-dom: ^17.0.0
+App.js: |
+  import React from 'react';
+  import {Provider} from './Provider';
+
+  export function App() {
+    return <Provider />
+  }
+Consumer.js: |
+  import {useContext} from 'react';
+  import {Context} from './Provider';
+
+  // This prevents the module from being self accepting
+  // (not all exports are react components).
+  export function tmp() {}
+
+  export function Consumer() {
+    return <>{String(useContext(Context))}</>;
+  }
+index.html: |
+  <div id="root"></div>
+  <script type="module" src="index.js"></script>
+index.js: >
+  import ReactDOM from "react-dom";
+
+  import { App } from "./App";
+
+  import { act } from "react-dom/test-utils";
+
+
+  export default () =>
+    act(async () => {ReactDOM.render(<App />, document.getElementById("root"));});
+Provider.js: |
+  import React from 'react';
+  import {Consumer} from './Consumer';
+
+  // This prevents the module from being self accepting
+  // since it is not a react component.
+  export let Context = React.createContext(null);
+
+  export function Provider() {
+    return (
+      <Context.Provider value={2}>
+        <Consumer />
+      </Context.Provider>
+    );
+  }

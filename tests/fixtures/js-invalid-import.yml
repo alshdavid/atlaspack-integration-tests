@@ -1,0 +1,7 @@
+options:
+  name: js-invalid-import
+package.json:
+  type: module
+  private: true
+index.js: |
+  import './doesnotexisstt';

@@ -1,0 +1,7 @@
+options:
+  name: env-computed
+package.json:
+  type: module
+index.js: |
+  let name = "ABC";
+  module.exports = process.env[name];

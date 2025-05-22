@@ -1,0 +1,13 @@
+options:
+  name: dynamic-static-preload
+package.json:
+  type: module
+async.js: |
+  function neverCalled() {
+    import('./preloaded', {preload: true});
+  }
+index.js: |
+  export default import('./async').then(() => document.head.children);
+preloaded.css: ""
+preloaded.js: |
+  import './preloaded.css';

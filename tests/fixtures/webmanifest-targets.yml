@@ -1,0 +1,25 @@
+options:
+  name: webmanifest-targets
+package.json:
+  type: module
+  name: webmanifest-targets
+  web: ./dist/index.html
+  targets:
+    web:
+      context: browser
+      publicUrl: ./
+yarn.lock: ""
+index.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+  </body>
+  </html>
+manifest.json: |
+  {
+    "name": "pwa-webmanifest-example",
+    "icons": []
+  }

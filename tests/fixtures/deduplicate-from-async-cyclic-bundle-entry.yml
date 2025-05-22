@@ -1,0 +1,18 @@
+options:
+  name: deduplicate-from-async-cyclic-bundle-entry
+package.json:
+  type: module
+async.js: |
+  export default import('./foo').then(mod => mod.default);
+bar.js: |
+  import foo from './foo';
+
+  export default 5;
+foo.js: |
+  import bar from './bar';
+
+  export default 4;
+index.js: |
+  import bar from './bar';
+
+  export default [bar, import('./async').then(mod => mod.default)];

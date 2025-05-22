@@ -1,0 +1,25 @@
+options:
+  name: shared-sibling-duplicate
+package.json:
+  type: module
+a.html: |
+  <!doctype html>
+  <script type="module" src="a.js"></script>
+a.js: |
+  import 'react';
+  import 'react-dom';
+  import 'lodash';
+b.html: |
+  <!doctype html>
+  <script type="module" src="b.js"></script>
+b.js: |
+  import 'react';
+  import 'react-dom';
+  import 'acorn';
+c.html: |
+  <!doctype html>
+  <script type="module" src="c.js"></script>
+c.js: |
+  import 'react';
+  import 'lodash';
+  import 'acorn';

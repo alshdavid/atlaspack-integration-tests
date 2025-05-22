@@ -1,0 +1,18 @@
+options:
+  name: resolve-tilde-monorepo
+package.json:
+  type: module
+  private: true
+client/other.js: |
+  export default 1234;
+client/package.json: |
+  {
+    "name": "client",
+    "private": true
+  }
+client/src/index.js: |
+  import x from "~/other.js";
+
+  export default x;
+pnpm-lock.yaml: |
+  # To create a fake projectRoot

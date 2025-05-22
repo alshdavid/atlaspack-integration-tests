@@ -1,0 +1,40 @@
+options:
+  name: shared-sibling
+package.json:
+  type: module
+a.js: |
+  import { a } from "./a.module.css";
+
+  export default `<span class="${a}">A</span>`;
+a.module.css: |
+  .a {
+  	color: red;
+  }
+
+  body {
+  	background: orange;
+  }
+b.js: |
+  import a from "./a";
+
+  export default function () {
+  	return a;
+  }
+form.html: |
+  <script type="module" src="form.js"></script>
+form.js: |
+  import a from "./a";
+
+  console.log(a);
+searchfield.html: |
+  <script type="module" src="searchfield.js"></script>
+searchfield.js: |
+  import b from "./b";
+
+  console.log(b());
+searchfield2.html: |
+  <script type="module" src="searchfield2.js"></script>
+searchfield2.js: |
+  import b from "./b";
+
+  console.log(b());

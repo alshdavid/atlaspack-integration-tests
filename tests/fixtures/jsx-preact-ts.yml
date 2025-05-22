@@ -1,0 +1,11 @@
+options:
+  name: jsx-preact-ts
+package.json:
+  type: module
+  private: true
+  dependencies:
+    preact: "*"
+index.tsx: |
+  import {h} from "preact";
+
+  module.exports = <div></div>;

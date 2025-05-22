@@ -1,0 +1,9 @@
+options:
+  name: dont-autoinstall-resolve-alias-fails
+package.json:
+  type: module
+  name: alias-install
+  private: true
+  alias:
+    aliasVue: vue
+index.js: const vue = require('aliasVue/thisDoesNotExist');

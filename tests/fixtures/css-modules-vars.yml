@@ -1,0 +1,31 @@
+options:
+  name: css-modules-vars
+package.json:
+  type: module
+  "@atlaspack/transformer-css":
+    cssModules:
+      dashedIdents: true
+yarn.lock: ""
+index.js: |
+  var foo = require('./index.module.css');
+  var vars = require('./vars.module.css');
+
+  output = [foo.foo, vars['--from-js']];
+index.module.css: |-
+  .foo {
+    color: var(--color from "./vars.module.css");
+    width: var(--theme-sizes-1\/12 from "./vars.module.css");
+    height: var(--height from global);
+  }
+vars.module.css: |-
+  :root {
+    --color: red;
+    --font: Helvetica;
+    --theme-sizes-1\/12: 2;
+    --from-js: purple;
+    --unused: green;
+  }
+
+  body {
+    font: var(--font);
+  }

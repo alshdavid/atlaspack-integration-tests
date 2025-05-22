@@ -1,0 +1,55 @@
+options:
+  name: graphql-named-import
+package.json:
+  type: module
+fragments.graphql: |
+  #import './moreFragments.graphql'
+
+  fragment UserFragment on User {
+      firstName
+      lastName
+      ...AnotherUserFragment
+  }
+
+  fragment Address on Address {
+      line1
+      county
+      postalCode
+  }
+
+  fragment Unused on User {
+      email
+  }
+index.js: |
+  var MyQuery = require('./MyQuery.graphql');
+
+  module.exports = function () {
+    return MyQuery;
+  };
+moreFragments.graphql: |
+  fragment AnotherUserFragment on User {
+      address
+      email
+  }
+MyQuery.graphql: |
+  # import UserFragment, Address from './fragments.graphql'
+  # import * from "./otherFragments.graphql"
+
+  query MyQuery {
+      user(id: 6) {
+          ...UserFragment
+          address {
+              ...Address
+          }
+      }
+  }
+otherFragments.graphql: |
+  fragment otherUserFragment on User {
+      friends {
+          edges {
+              nodes {
+                  name
+              }
+          }
+      }
+  }

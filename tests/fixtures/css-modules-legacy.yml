@@ -1,0 +1,20 @@
+options:
+  name: css-modules-legacy
+package.json:
+  type: module
+b.js: |
+  const style = require('./b.module.css');
+  module.exports = style;
+b.module.css: |
+  :export {
+    color: red;
+  }
+index.js: |
+  const style = require('./index.module.css');
+  console.log(style.foo);
+index.module.css: |
+  @value test: red;
+
+  .foo {
+    color: test;
+  }

@@ -1,0 +1,15 @@
+options:
+  name: babel-jsx
+package.json:
+  type: module
+yarn.lock: ""
+babel.config.json: |
+  {
+    "presets": ["@babel/preset-react"]
+  }
+index.jsx: |
+  import React from 'react';
+
+  export function Test() {
+    return <div>{text}</div>;
+  }

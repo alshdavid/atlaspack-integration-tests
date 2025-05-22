@@ -1,0 +1,12 @@
+options:
+  name: import-raw
+package.json:
+  type: module
+index.js: |
+  const url = require('url:./test.txt');
+
+  module.exports = function () {
+    return url;
+  };
+test.txt: |
+  hi there

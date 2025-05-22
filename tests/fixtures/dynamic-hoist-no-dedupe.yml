@@ -1,0 +1,11 @@
+options:
+  name: dynamic-hoist-no-dedupe
+package.json:
+  type: module
+a.js: |
+  import './common';
+  import('./c');
+b.js: import('./c');
+c.js: import './common';
+common.js: |
+  export default {};

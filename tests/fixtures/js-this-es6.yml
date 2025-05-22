@@ -1,0 +1,10 @@
+options:
+  name: js-this-es6
+package.json:
+  type: module
+a.js: |
+  result([this, x]);
+
+  import x from "./b.js";
+b.js: |
+  export default 1234;

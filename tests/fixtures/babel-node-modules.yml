@@ -1,0 +1,22 @@
+options:
+  name: babel-node-modules
+package.json:
+  type: module
+  name: atlaspack-test-browser-browserslist
+  private: true
+  browserslist:
+    - last 2 Chrome versions
+    - IE >= 11
+yarn.lock: ""
+index.js: |
+  import Foo from 'foo';
+
+  export {Foo};
+  export class Bar {}
+  export const t = typeof Foo;
+node_modules/foo/index.js: |
+  export default class Foo {}
+node_modules/foo/package.json: |
+  {
+    "name": "foo"
+  }

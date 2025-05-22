@@ -1,0 +1,6 @@
+options:
+  name: jsx
+package.json:
+  type: module
+index.jsx: |
+  module.exports = <div />;

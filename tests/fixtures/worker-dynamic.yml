@@ -1,0 +1,34 @@
+options:
+  name: worker-dynamic
+package.json:
+  type: module
+async.js: |
+  export default 42;
+index-async.js: >
+  import('./async');
+
+
+  let worker = new Worker(new URL('worker.js', import.meta.url), {type:
+  'module'});
+
+  worker.addEventListener('message', output);
+index-nested.js: >
+  let worker = new Worker(new URL('worker-nested.js', import.meta.url), {type:
+  'module'});
+
+  worker.addEventListener('message', output);
+index.js: >
+  let worker = new Worker(new URL('worker.js', import.meta.url), {type:
+  'module'});
+
+  worker.addEventListener('message', output);
+worker-nested.js: >
+  import('./async');
+
+
+  let worker = new Worker(new URL('worker.js', import.meta.url), {type:
+  'module'});
+
+  worker.addEventListener('message', postMessage);
+worker.js: |
+  import('./async').then(res => postMessage(res));

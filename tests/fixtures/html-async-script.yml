@@ -1,0 +1,20 @@
+options:
+  name: html-async-script
+package.json:
+  type: module
+a.js: |
+  import './c';
+  output('a');
+b.js: |
+  import './c';
+  output('b');
+c.js: |
+  output('c');
+index.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <script async type="module" src="a.js"></script>
+      <script defer type="module" src="b.js"></script>
+    </head>
+  </html>

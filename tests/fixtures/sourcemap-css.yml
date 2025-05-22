@@ -1,0 +1,13 @@
+options:
+  name: sourcemap-css
+package.json:
+  type: module
+  name: atlaspack-sourcemap-integration-test
+  version: 1.0.0
+  private: true
+yarn.lock: ""
+style.css: |
+  
+  body {
+  	background-color: red;
+  }

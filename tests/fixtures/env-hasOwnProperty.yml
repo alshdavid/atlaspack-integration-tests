@@ -1,0 +1,6 @@
+options:
+  name: env-hasOwnProperty
+package.json:
+  type: module
+index.js: |
+  module.exports = process.env.hasOwnProperty("abc");

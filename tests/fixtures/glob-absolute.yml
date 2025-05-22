@@ -1,0 +1,15 @@
+options:
+  name: glob-absolute
+package.json:
+  type: module
+yarn.lock: ""
+dir/a.js: |
+  module.exports = 1;
+dir/b.js: |
+  module.exports = 2;
+packages/child/index.js: |
+  const rootVars = require('/dir/*.js');
+
+  module.exports = rootVars.a + rootVars.b;
+packages/child/package.json: |
+  {}

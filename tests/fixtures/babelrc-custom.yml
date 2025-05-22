@@ -1,0 +1,44 @@
+options:
+  name: babelrc-custom
+package.json:
+  type: module
+  name: some-project-with-custom-babel-config
+  version: 1.0.0
+yarn.lock: |
+  # Adding this lockfile here so Atlaspack finds a project root
+babel-plugin-different.js: |
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'REPLACE_ME') {
+            path.node.value = 'something different';
+          }
+        }
+      }
+    };
+  };
+babel-plugin-dummy.js: |
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'REPLACE_ME') {
+            path.node.value = 'hello there';
+          }
+        }
+      }
+    };
+  };
+differentConfig: |
+  {
+    "plugins": ["./babel-plugin-different"]
+  }
+index.js: |
+  module.exports = function() {
+    return "REPLACE_ME";
+  }

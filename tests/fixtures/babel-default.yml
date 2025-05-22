@@ -1,0 +1,15 @@
+options:
+  name: babel-default
+package.json:
+  type: module
+  name: atlaspack-test-browser-browserslist
+  private: true
+foo.js: |
+  export default class Foo {}
+index.js: |
+  import Foo from './foo';
+
+  class Bar {}
+
+  // Make sure that scope hoisting retains these variables
+  output = {Foo, Bar};

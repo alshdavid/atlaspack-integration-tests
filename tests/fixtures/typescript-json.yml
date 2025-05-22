@@ -1,0 +1,15 @@
+options:
+  name: typescript-json
+package.json:
+  type: module
+index.ts: |-
+  const local = require('./local.json');
+
+  export function count() {
+    return local.a + local.b;
+  }
+local.json: |-
+  {
+    "a": 1,
+    "b": 2
+  }

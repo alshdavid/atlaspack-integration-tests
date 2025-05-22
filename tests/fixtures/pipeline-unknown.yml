@@ -1,0 +1,10 @@
+options:
+  name: pipeline-unknown
+package.json:
+  type: module
+yarn.lock: ""
+a.js: |
+  import { x } from "strange-pipeline:./b.js";
+
+  export default x;
+b.js: ""

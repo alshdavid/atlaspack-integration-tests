@@ -1,0 +1,32 @@
+options:
+  name: diagnostic-sourcemap
+package.json:
+  type: module
+  devDependencies:
+    flow-bin: "*"
+yarn.lock: ""
+babel.config.json: |
+  {
+    "presets": ["@babel/preset-flow"]
+  }
+index.js: |
+  // @flow
+
+  type Test = {|
+    foo: string
+  |};
+
+  let test: Test = {
+  	foo: 'hi'
+  };
+
+  import foo from 'foo';
+
+  console.log(test);
+index.scss: |
+  $foo: red;
+
+  .foo {
+    color: $foo;
+    background: url(x.png);
+  }

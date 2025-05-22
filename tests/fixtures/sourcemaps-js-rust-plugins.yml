@@ -1,0 +1,37 @@
+options:
+  name: sourcemaps-js-rust-plugins
+package.json:
+  type: module
+yarn.lock: ""
+babel.config.json: |
+  {
+    "presets": ["@babel/preset-typescript"]
+  }
+index.ts: |
+  interface TestInterface {
+    test: string;
+  }
+
+  class Test {
+    #privateProperty: string;
+
+    classProperty = 2;
+
+    constructor(text) {
+      this.#privateProperty = text;
+    }
+
+    getProperty() {
+      return this.#privateProperty;
+    }
+  }
+
+  import('./main');
+main.ts: |
+  enum Foo {
+    world
+  }
+
+  export default () => {
+    console.log(`hello ${Foo.world}`);
+  };

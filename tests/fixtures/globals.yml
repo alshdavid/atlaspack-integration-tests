@@ -1,0 +1,22 @@
+options:
+  name: globals
+package.json:
+  type: module
+index.js: |
+  module.exports = function () {
+    return {
+      dir: __dirname,
+      file: __filename,
+      buf: Buffer.from(process.title).toString('base64'),
+      global: !!global.document
+    };
+  };
+multiple.js: |
+  const getGlobals = require('./index.js');
+
+  output = {
+    file: __filename,
+    other: getGlobals().file
+  };
+scope-hoisting.js: |
+  output = require('./');

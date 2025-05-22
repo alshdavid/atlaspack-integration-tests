@@ -1,0 +1,20 @@
+options:
+  name: dynamic-hoist-dup
+package.json:
+  type: module
+a.js: |
+  var c = require('./common');
+
+  exports.a = 1;
+  exports.b = c;
+common.js: |
+  module.exports = 2;
+index.js: |
+  var common = require('./common');
+  var a = import('./a');
+
+  module.exports = function () {
+    return a.then(function (a) {
+      return common + a.a + a.b;
+    });
+  };

@@ -1,0 +1,13 @@
+options:
+  name: rust
+package.json:
+  type: module
+add.rs: |
+  #[no_mangle]
+  pub fn add(a: i32, b: i32) -> i32 {
+      return a + b
+  }
+index.js: |
+  module.exports = import('./add.rs').then(function ({add}) {
+    return add(2, 3);
+  });

@@ -1,0 +1,61 @@
+options:
+  name: lazy-compile
+package.json:
+  type: module
+  private: true
+index-sync-async.js: |-
+  export default () => {
+      return Promise.all([
+  import('./uses-static-component').then(c => {
+      return c.default()();
+  }),
+  import('./uses-static-component-async').then(c => {
+      return c.default();
+  }).then(s => {
+      return s();
+  })]);
+  }
+index.html: |-
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+  </head>
+  <body>
+      <script src="./index.js" type="module"></script>
+  </body>
+  </html>
+index.js: |-
+  async function main() {
+      const m = await import('./lazy-1');
+      await import('./parallel-lazy-1');
+      return m.default();
+  }
+
+  main();
+lazy-1.js: |-
+  export default async () => {
+      const { world } = await import('./lazy-2');
+      return `Hello ${world}`;
+  }
+lazy-2.js: export const world = 'world';
+parallel-lazy-1.js: |-
+  export default async () => {
+      const m = await import('./parallel-lazy-2');
+      return m.default;
+  };
+parallel-lazy-2.js: export default 'parallel lazy 2';
+static-component.js: export default () => "static component";
+uses-static-component-async.js: |-
+  export default async () => {
+      const m = await import('./static-component');
+      return m.default;
+  }
+uses-static-component.js: |-
+  import staticComponent  from "./static-component"
+  export default () => {
+      return staticComponent;
+  }

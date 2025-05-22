@@ -1,0 +1,15 @@
+options:
+  name: sourcemap-typescript-nested
+package.json:
+  type: module
+  name: atlaspack-sourcemap-integration-test
+  version: 1.0.0
+  private: true
+yarn.lock: ""
+index.ts: |-
+  import { local } from './local';
+
+  export function env() {
+    return local;
+  }
+local.ts: exports.local = process.env.NODE_ENV;

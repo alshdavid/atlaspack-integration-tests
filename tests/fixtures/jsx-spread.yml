@@ -1,0 +1,10 @@
+options:
+  name: jsx-spread
+package.json:
+  type: module
+  browserslist: Chrome 70
+yarn.lock: ""
+index.jsx: |
+  const a = { a: 2 };
+
+  module.exports = <div v="1" {...a}></div>;

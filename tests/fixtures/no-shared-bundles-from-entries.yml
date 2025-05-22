@@ -1,0 +1,15 @@
+options:
+  name: no-shared-bundles-from-entries
+package.json:
+  type: module
+  private: true
+  dependencies:
+    lodash: "*"
+a.js: |
+  import _ from 'lodash'
+
+  export default _.map([2, 3, 4], x => x + 1);
+b.js: |
+  import _ from 'lodash'
+
+  export default _.map([1, 2, 3], x => x + 1);

@@ -1,0 +1,52 @@
+{
+  "name": "@atlaspack/integration-tests-nova",
+  "version": "2.14.1",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atlassian-labs/atlaspack.git"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --experimental-vm-modules --disable-warning=ExperimentalWarning ./main.ts",
+    "test:only": "env ONLY=true yarn run test",
+    "test:native": "env ATLASPACK_NATIVE=true yarn run test",
+    "test:native:only": "env ATLASPACK_NATIVE=true yarn run test:only",
+    "fmt": "npx prettier ./utils/**/*.ts ./tests/**/*.ts --write"
+  },
+  "dependencies": {
+    "@parcel/config-default": "^2.15.1",
+    "@parcel/core": "^2.15.1",
+    "@parcel/workers": "^2.15.1",
+    "@types/node": "^22",
+    "happy-dom": "^17.4.7",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "assert": "link:./shims/assert",
+    "browserify-zlib": "link:./shims/browserify-zlib",
+    "buffer": "link:./shims/buffer",
+    "console-browserify": "link:./shims/console-browserify",
+    "constants-browserify": "link:./shims/constants-browserify",
+    "crypto-browserify": "link:./shims/crypto-browserify",
+    "domain-browser": "link:./shims/domain-browser",
+    "events": "link:./shims/events",
+    "https-browserify": "link:./shims/https-browserify",
+    "os-browserify": "link:./shims/os-browserify",
+    "path-browserify": "link:./shims/path-browserify",
+    "process": "link:./shims/process",
+    "punycode": "link:./shims/punycode",
+    "querystring-es3": "link:./shims/querystring-es3",
+    "stream-browserify": "link:./shims/stream-browserify",
+    "stream-http": "link:./shims/stream-http",
+    "string_decoder": "link:./shims/string_decoder",
+    "timers-browserify": "link:./shims/timers-browserify",
+    "tty-browserify": "link:./shims/tty-browserify",
+    "url": "link:./shims/url",
+    "util": "link:./shims/util",
+    "vm-browserify": "link:./shims/vm-browserify"
+  }
+}

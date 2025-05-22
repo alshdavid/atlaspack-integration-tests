@@ -1,0 +1,50 @@
+options:
+  name: packager-loadBundleConfig
+package.json:
+  type: module
+yarn.lock: ""
+a.txt: |
+  Hello from a
+b.txt: |
+  Hello from b
+index.2.html: |
+  <a href="a.txt">a</a>
+  <a href="b.txt">a</a>
+index.html: |
+  <a href="a.txt">a</a>
+node_modules/atlaspack-packager-config/index.js: |
+  // @flow strict-local
+
+  const invariant = require('assert');
+  const {Packager} = require('@atlaspack/plugin');
+
+  module.exports = (new Packager({
+    loadBundleConfig({bundle, bundleGraph, config}) {
+      config.invalidateOnBuild();
+      let x = bundleGraph
+        .getBundles()
+        .filter(b => b.type === 'txt' && b.needsStableName)
+        .map(b => b.name);
+      console.log(bundle.name, x);
+      return x;
+    },
+    async package({bundle, bundleConfig}) {
+      let contents = await bundle.getMainEntry()?.getCode();
+      invariant(contents != null);
+
+      return {
+        contents: `Bundles: ${bundleConfig.join(',')}. Contents: ${contents}`,
+      };
+    },
+  }) /*: Packager */);
+node_modules/atlaspack-packager-config/package.json: |
+  {
+    "name": "atlaspack-packager-config",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js",
+    "dependencies": {
+      "@atlaspack/plugin": "^2.0.0-beta.1",
+      "@atlaspack/utils": "^2.0.0-beta.1"
+    }
+  }

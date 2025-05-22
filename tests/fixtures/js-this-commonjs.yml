@@ -1,0 +1,12 @@
+options:
+  name: js-this-commonjs
+package.json:
+  type: module
+a.js: |
+  const x = require("./b.js");
+
+  module.exports.foo = 2;
+
+  result([this, x]);
+b.js: |
+  module.exports = 1234;

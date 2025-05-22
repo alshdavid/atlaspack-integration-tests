@@ -1,0 +1,28 @@
+options:
+  name: glob-package
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |-
+  const scoped = require('@scope/pkg/foo/*.js');
+  const unscoped = require('pkg/bar/*.js');
+
+  module.exports = function () {
+      return scoped.a + scoped.b + unscoped.x + unscoped.y;
+  }
+node_modules/@scope/pkg/deep/entry/point.js: ""
+node_modules/@scope/pkg/foo/a.js: module.exports = 1;
+node_modules/@scope/pkg/foo/b.js: module.exports = 2;
+node_modules/@scope/pkg/package.json: |-
+  {
+      "name": "@scope/pkg",
+      "module": "deep/entry/point.js"
+  }
+node_modules/pkg/bar/x.js: module.exports = 3;
+node_modules/pkg/bar/y.js: module.exports = 4;
+node_modules/pkg/index.js: ""
+node_modules/pkg/package.json: |-
+  {
+      "name": "pkg",
+      "module": "index.js"
+  }

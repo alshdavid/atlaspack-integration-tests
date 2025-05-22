@@ -1,0 +1,6 @@
+options:
+  name: typescript-jsx
+package.json:
+  type: module
+index.tsx: |
+  module.exports = <div />;

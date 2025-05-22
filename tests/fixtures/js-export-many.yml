@@ -1,0 +1,24 @@
+options:
+  name: js-export-many
+package.json:
+  type: module
+bar.js: |
+  export const bar = 'bar';
+baz.js: |
+  export default 'baz';
+boo.js: |
+  export const boo = 'boo';
+foo.js: |
+  export default 'foo';
+foobar.js: |
+  export default 'foobar';
+index.js: |
+  export { default as foo } from './foo';
+  export { bar } from './bar';
+  export { default } from './baz';
+  export { boo } from './boo';
+  export { default as foobar } from './foobar';
+  export * from './types';
+types.js: |
+  export const type1 = 'type1';
+  export const type2 = 'type2';

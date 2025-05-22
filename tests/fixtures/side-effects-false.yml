@@ -1,0 +1,31 @@
+options:
+  name: side-effects-false
+package.json:
+  type: module
+import-require.js: |
+  import {foo} from 'bar';
+  const { bar } = require("bar");
+
+  export default foo(2) + bar();
+import.js: |
+  import {foo} from 'bar';
+
+  export default foo(2);
+node_modules/bar/bar.js: |
+  sideEffect();
+
+  export default function bar() {
+    return "returned from bar";
+  }
+node_modules/bar/foo.js: |
+  export default function foo(a) {
+    return a * a;
+  }
+node_modules/bar/index.js: |
+  export {default as foo} from './foo';
+  export {default as bar} from './bar';
+node_modules/bar/package.json: |
+  {
+    "name": "bar",
+    "sideEffects": false
+  }

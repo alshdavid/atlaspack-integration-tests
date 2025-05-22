@@ -1,0 +1,20 @@
+options:
+  name: graphql
+package.json:
+  type: module
+index.js: |
+  var local = require('./local.graphql');
+
+  module.exports = function () {
+    return local;
+  };
+local.graphql: |
+  {
+    user(id: 5) {
+      ...UserFragment
+    }
+  }
+  fragment UserFragment on User {
+    firstName
+    lastName
+  }

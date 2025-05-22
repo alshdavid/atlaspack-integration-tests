@@ -1,0 +1,7 @@
+options:
+  name: dynamic-imports-high-prio
+package.json:
+  type: module
+async.js: export default {};
+index.js: |
+  export default import('./async').then(() => document.head.children);

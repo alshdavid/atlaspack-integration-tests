@@ -1,0 +1,79 @@
+options:
+  name: babel-config-monorepo
+package.json:
+  type: module
+  name: monorepo-babel-config
+  private: true
+  workspaces:
+    - pkg-a
+    - pkg-b
+yarn.lock: ""
+babel-plugin-dummy-1.js: |
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'REPLACE_ME') {
+            path.node.value = 'string from a plugin in babel.config.json';
+          }
+        }
+      }
+    };
+  };
+babel.config.json: |
+  {
+      "plugins": ["./babel-plugin-dummy-1"],
+      "babelrcRoots": [".", "packages/*"]
+  }
+packages/pkg-a/babel-plugin-dummy-2.js: |
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'ANOTHER_THING_TO_REPLACE') {
+            path.node.value = 'string from a plugin in .babelrc';
+          }
+        }
+      }
+    };
+  };
+packages/pkg-a/package.json: |
+  {
+    "name": "pkg-a"
+  }
+packages/pkg-a/src/index.js: |
+  module.exports = function() {
+    const thing1 = "REPLACE_ME";
+    const thing2 = "ANOTHER_THING_TO_REPLACE"
+    const thing3 = "SOMETHING ELSE"
+    return thing1 + thing2 + thing3;
+  }
+packages/pkg-b/babel-plugin-dummy-3.js: >
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'ANOTHER_THING_TO_REPLACE') {
+            path.node.value = 'string from a plugin from a different sub-package';
+          }
+        }
+      }
+    };
+  };
+packages/pkg-b/package.json: |
+  {
+    "name": "pkg-b"
+  }
+packages/pkg-b/src/index.js: |
+  module.exports = function() {
+    const thing1 = "REPLACE_ME";
+    const thing2 = "ANOTHER_THING_TO_REPLACE"
+    const thing3 = "SOMETHING ELSE"
+    return thing1 + thing2 + thing3;
+  }

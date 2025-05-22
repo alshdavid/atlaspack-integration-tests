@@ -1,0 +1,15 @@
+options:
+  name: dynamic
+package.json:
+  type: module
+index.js: |
+  var local = import('./local');
+
+  module.exports = function () {
+    return local.then(function (l) {
+      return l.a + l.b;
+    });
+  };
+local.js: |
+  exports.a = 1;
+  exports.b = 2;

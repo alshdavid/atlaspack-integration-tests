@@ -1,0 +1,26 @@
+options:
+  name: rust-cargo
+package.json:
+  type: module
+Cargo.toml: |
+  [package]
+  name = "cargo-test"
+  version = "0.1.0"
+  authors = ["josealbizures <albizures3601@gmail.com>"]
+
+  [lints]
+  workspace = true
+
+  [dependencies]
+
+  [lib]
+  crate-type = ["cdylib"]
+src/index.js: |
+  module.exports = import('./lib.rs').then(function ({add}) {
+    return add(2, 3);
+  });
+src/lib.rs: |
+  #[no_mangle]
+  pub fn add(a: i32, b: i32) -> i32 {
+      return a + b
+  }

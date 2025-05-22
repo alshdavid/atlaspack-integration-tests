@@ -1,0 +1,51 @@
+options:
+  name: webmanifest-schema
+package.json:
+  type: module
+icon.png: file://<root>/assets/icon.png
+index.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <link rel="manifest" href="manifest.webmanifest" />
+  </head>
+  <body>
+  </body>
+  </html>
+manifest.webmanifest: |
+  {
+    "name": "pwa-webmanifest-example",
+    "icons": [
+      {
+        "src": "icon.png",
+        "sizes": "100x100",
+        "type": "image/png"
+      },
+      {
+        "sizes": "100x100",
+        "type": "image/png"
+      },
+      {}
+    ],
+    "screenshots": {},
+    "shortcuts": [
+      {
+        "icons": {}
+      },
+      {
+        "icons": [
+          {
+            "src": "icon.png",
+            "sizes": "100x100",
+            "type": "image/png"
+          },
+          {
+            "sizes": "100x100",
+            "type": "image/png"
+          },
+          {}
+        ]
+      }
+    ],
+    "file_handlers": {}
+  }

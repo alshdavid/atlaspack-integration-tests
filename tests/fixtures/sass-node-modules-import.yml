@@ -1,0 +1,13 @@
+options:
+  name: sass-node-modules-import
+package.json:
+  type: module
+  private: true
+index.sass: '@import "library/style.sass"'
+node_modules/library/package.json: |-
+  {
+      "private": true
+  }
+node_modules/library/style.sass: |-
+  .external
+      color: red

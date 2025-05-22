@@ -1,0 +1,25 @@
+options:
+  name: node_hashbang
+package.json:
+  type: module
+  name: node_require
+  main: dist/node/main.js
+  browser: dist/browser/main.js
+  engines:
+    node: "8"
+  targets:
+    main:
+      engines:
+        node: "8"
+    browser:
+      engines:
+        browsers: last 1 version
+yarn.lock: ""
+local.js: |
+  exports.b = 2;
+main.js: |
+  #!/usr/bin/env node
+
+  var {b} = require('./local');
+
+  console.log(b);

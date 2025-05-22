@@ -1,0 +1,15 @@
+options:
+  name: svg-multiple
+package.json:
+  type: module
+circle.svg: |
+  <svg viewBox="0 0 30 10" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="5" cy="5" r="4"/>
+  </svg>
+index.js: |
+  import "./circle.svg";
+  import "./square.svg";
+square.svg: |
+  <svg viewBox="0 0 30 10" xmlns="http://www.w3.org/2000/svg">
+    <rect id="square" height="10" width="10"/>
+  </svg>

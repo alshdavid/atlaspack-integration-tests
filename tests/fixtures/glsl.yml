@@ -1,0 +1,61 @@
+options:
+  name: glsl
+package.json:
+  type: module
+compiled.glsl: |
+  #version 300 es
+
+  void someUniqFunction() {
+  }
+
+  precision mediump float;
+  #define GLSLIFY 1
+
+  void main() {
+    someUniqFunction();
+  }
+index.js: |
+  const shaders = [
+    require('./local.glsl'),
+    require('./local.vert'),
+    require('./local.frag'),
+  ];
+
+  module.exports = function () {
+    return shaders;
+  };
+lib.glsl: |
+  void someUniqFunction() {
+  }
+
+  #pragma glslify: export(someUniqFunction)
+local.frag: |
+  #version 300 es
+
+  #pragma glslify: test = require('./lib.glsl')
+
+  precision mediump float;
+
+  void main() {
+    test();
+  }
+local.glsl: |
+  #version 300 es
+
+  #pragma glslify: test = require('./lib.glsl')
+
+  precision mediump float;
+
+  void main() {
+    test();
+  }
+local.vert: |
+  #version 300 es
+
+  #pragma glslify: test = require('./lib.glsl')
+
+  precision mediump float;
+
+  void main() {
+    test();
+  }

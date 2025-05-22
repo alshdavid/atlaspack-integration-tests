@@ -1,0 +1,12 @@
+options:
+  name: env-binary-in-expression
+package.json:
+  type: module
+index.js: |
+  const existVar = 'ABC' in process.env ? 'correct' : 'incorrect';
+  const notExistVar = 'DEF' in process.env ? 'incorrect' : 'correct';
+
+  module.exports = {
+    existVar,
+    notExistVar,
+  };

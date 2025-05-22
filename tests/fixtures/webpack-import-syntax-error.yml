@@ -1,0 +1,11 @@
+options:
+  name: webpack-import-syntax-error
+package.json:
+  type: module
+  private: true
+index.js: |
+  import test from 'node-loader!./index.js';
+
+  export default function() {
+    return 'test';
+  }

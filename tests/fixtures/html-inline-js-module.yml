@@ -1,0 +1,16 @@
+options:
+  name: html-inline-js-module
+package.json:
+  type: module
+index.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Inline JavaScript Module</title>
+  </head>
+  <body>
+    <script type="module">
+      document.write("Hello world");
+    </script>
+  </body>
+  </html>

@@ -1,0 +1,16 @@
+options:
+  name: jsx-automatic-16
+package.json:
+  type: module
+  private: true
+  dependencies:
+    react: 16.14.0
+yarn.lock: ""
+index.js: |
+  module.exports = <div />;
+node_modules/react/jsx-dev-runtime.js: ""
+node_modules/react/jsx-runtime.js: ""
+node_modules/react/package.json: |
+  {
+    "name": "react"
+  }

@@ -1,0 +1,23 @@
+options:
+  name: sourcemap-reference
+package.json:
+  type: module
+data.js: |
+  module.exports = {
+    some: "data",
+    more: {
+      data: "value"
+    }
+  };
+index.html: |-
+  <html>
+    <head>
+      <script src="./index.js"></script>
+    </head>
+    <body>
+      Hello!
+    </body>
+  </html>
+index.js: |
+  import data from './data';
+  export default data;

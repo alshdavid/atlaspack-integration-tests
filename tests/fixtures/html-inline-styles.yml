@@ -1,0 +1,27 @@
+options:
+  name: html-inline-styles
+package.json:
+  type: module
+bg.jpg: file://<root>/assets/bg.jpg
+img.jpg: file://<root>/assets/img.jpg
+index.html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Inline Styles</title>
+  </head>
+  <body>
+    <style>
+      .someClass {
+        background: blue;
+        color: white;
+      }
+    </style>
+
+    <div class="someClass">
+      <h1 style="color: green;"></h1>
+      <p style="background: url(./img.jpg);"></p>
+      <p style="background-image: url(./bg.jpg);"></p>
+    </div>
+  </body>
+  </html>

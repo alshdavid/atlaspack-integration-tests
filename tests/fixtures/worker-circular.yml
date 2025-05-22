@@ -1,0 +1,10 @@
+options:
+  name: worker-circular
+package.json:
+  type: module
+index.js: |
+  new Worker(new URL('worker.js', import.meta.url), {type: 'module'});
+worker-dep.js: |
+  require('./worker');
+worker.js: |
+  require('./worker-dep');

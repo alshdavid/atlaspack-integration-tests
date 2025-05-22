@@ -1,0 +1,33 @@
+options:
+  name: multi-css-multi-entry-bug
+package.json:
+  type: module
+src/entry.js: >
+  // This repro was taken from
+  https://github.com/parcel-bundler/parcel/issues/8813
+
+
+  import './main.css';
+
+
+  import './Foo/foo.css';
+
+
+  import('./Foo');
+
+  import('./index-sib');
+src/Foo/foo.css: |
+  .foo {
+    outline: 1px solid red;
+  }
+src/Foo/index.js: |
+  import './foo.css';
+
+  export default function () { return 'foo' };
+src/index-sib.js: |
+  
+  import './main.css';
+src/main.css: |
+  .main {
+    outline: 1px solid blue;
+  }

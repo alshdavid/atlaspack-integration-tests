@@ -1,0 +1,28 @@
+options:
+  name: css-modules-bug
+package.json:
+  type: module
+yarn.lock: ""
+src/button.module.css: |
+  .buttonPrimary {
+    align-self: center;
+  }
+src/index.html: |
+  <!DOCTYPE html>
+
+  <html lang="en">
+    <script src="main.js" type="module"></script>
+  </html>
+src/main.js: |
+  import * as main from "./main.module.css";
+  import * as other from "./other.module.css";
+
+  console.log([main.main, other.other]);
+src/main.module.css: |
+  .main {
+    composes: buttonPrimary from "./button.module.css";
+  }
+src/other.module.css: |
+  .other {
+    composes: buttonPrimary from "./button.module.css";
+  }

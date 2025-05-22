@@ -1,0 +1,4 @@
+options:
+  name: custom-configs
+package.json:
+  type: module

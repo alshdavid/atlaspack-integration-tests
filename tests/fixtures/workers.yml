@@ -1,0 +1,58 @@
+options:
+  name: workers
+package.json:
+  type: module
+common.js: |
+  // required by worker and index, must be bundled separately
+  exports.commonFunction = function (source) {
+    return 'commonText' + source;
+  };
+feature.js: |
+  const workerClient = require('./worker-client');
+
+  workerClient.startWorker();
+index-alternative.js: |+
+  exports.startWorker = require('./worker-client').startWorker;
+  exports.startSharedWorker = require('./worker-client').startSharedWorker;
+  exports.commonFunction = require('./common').commonFunction;
+  exports.feature = require('./feature');
+
+index.js: |+
+  exports.commonFunction = require('./common').commonFunction;
+  exports.startWorker = require('./worker-client').startWorker;
+  exports.startSharedWorker = require('./worker-client').startSharedWorker;
+  exports.feature = require('./feature');
+
+service-worker.js: |
+  self.addEventListener('message', () => {});
+shared-worker.js: |-
+  onconnect = (e) => {
+    let port = e.ports[0];
+    port.addEventListener('message', ()=> {});
+    port.start();
+  }
+worker-client.js: >+
+  const commonText = require('./common').commonFunction('Index');
+
+
+  navigator.serviceWorker.register(new URL('service-worker.js',
+  import.meta.url), { scope: './' });
+
+
+  exports.startWorker = function() {
+    const worker = new Worker(new URL('worker.js', import.meta.url), {type: 'module', name: 'myName'});
+    worker.postMessage(commonText);
+  };
+
+
+  exports.startSharedWorker = function() {
+    const worker = new SharedWorker(new URL('shared-worker.js', import.meta.url), {type: 'module'});
+  };
+
+
+worker.js: |
+  const commonText = require('./common').commonFunction('Worker');
+
+  self.addEventListener('message', () => {
+    self.postMessage(commonText);
+  });

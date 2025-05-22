@@ -1,0 +1,16 @@
+options:
+  name: pug-mixins
+package.json:
+  type: module
+index.pug: |
+  include ./mixins.pug
+
+  doctype html
+  html
+    head
+      title Pug variables
+    body
+      +greetings('Atlaspack')
+mixins.pug: |
+  mixin greetings(name)
+    h1 Greetings, #{name}

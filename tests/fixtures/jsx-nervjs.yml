@@ -1,0 +1,9 @@
+options:
+  name: jsx-nervjs
+package.json:
+  type: module
+  private: true
+  dependencies:
+    nervjs: "*"
+index.js: |
+  module.exports = <div />;

@@ -1,0 +1,13 @@
+options:
+  name: css-url-relative
+package.json:
+  type: module
+src/a/style1.css: |
+  body {
+      background-image: url('../foo.png');
+  }
+src/b/style2.css: |
+  body {
+      color: red;
+  }
+src/foo.png: file://<root>/assets/src/foo.png

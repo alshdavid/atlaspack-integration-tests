@@ -1,0 +1,6 @@
+options:
+  name: fs-file-non-evaluable
+package.json:
+  type: module
+index.js: |
+  module.exports = require('fs').readFileSync(Date.now())

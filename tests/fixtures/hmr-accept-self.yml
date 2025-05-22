@@ -1,0 +1,16 @@
+options:
+  name: hmr-accept-self
+package.json:
+  type: module
+index.js: |
+  import {value} from "./local.js";
+
+  output(["index", value]);
+local.js: |
+  export {value} from "./other.js";
+  import {value} from "./other.js";
+  output(["local", value]);
+  module.hot.accept();
+other.js: |
+  export const value = 1;
+  output(["other", value]);

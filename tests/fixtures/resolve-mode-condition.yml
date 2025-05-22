@@ -1,0 +1,22 @@
+options:
+  name: resolve-mode-condition
+package.json:
+  type: module
+  module: dist/module.js
+  imports:
+    "#is-development":
+      development: ./dev.js
+      production: ./prod.js
+      default: ./default.js
+  "@atlaspack/resolver-default":
+    packageExports: true
+yarn.lock: ""
+default.js: |
+  throw new Error('Should never resolve');
+dev.js: |
+  export const isDevelopment = true;
+index.js: |
+  import {isDevelopment} from '#is-development';
+  export default isDevelopment ? 'development' : 'production';
+prod.js: |
+  export const isDevelopment = false;

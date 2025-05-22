@@ -1,0 +1,37 @@
+options:
+  name: shared-bundle-internalization
+package.json:
+  type: module
+  "@atlaspack/bundler-default":
+    minBundleSize: 40
+yarn.lock: ""
+a.mjs: |
+  import large from "./large.mjs";
+
+  export default large;
+async.mjs: |
+  export default 42;
+b.mjs: |
+  import large from "./large.mjs";
+
+  export default large;
+imports-async.mjs: |
+  export default import("./async.mjs").then((m) => (m.default));
+index.mjs: |
+  export default Promise.all([
+    import("./a.mjs").then(m => m.default),
+    import("./b.mjs").then(m => m.default),
+  ]);
+large.mjs: >
+  import "./async.mjs";
+
+  import mod from "./imports-async.mjs";
+
+
+  sideEffectNoop("lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem
+  ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum
+  dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor
+  lorem ipsum dolor lorem ipsum dolor");
+
+
+  export default mod;

@@ -1,0 +1,26 @@
+options:
+  name: inline-constants-shared-bundles
+package.json:
+  type: module
+  "@atlaspack/transformer-js":
+    unstable_inlineConstants: true
+  "@atlaspack/bundler-default":
+    minBundleSize: 0
+yarn.lock: ""
+a.html: <script type="module" src="./a.js"></script>
+a.js: |
+  import { BLOGGER, PREMIUM } from './constants';
+
+  sideEffectNoop( BLOGGER, PREMIUM );
+b.html: <script type="module" src="./b.js"></script>
+b.js: |
+  import { MONTHS_IN_YEAR } from './constants';
+
+  sideEffectNoop(MONTHS_IN_YEAR)
+constants.js: |
+  export const BLOGGER = 'bloggerPlan'; // strings
+  export const PREMIUM = 'premiumPlan';
+  export const MONTHS_IN_YEAR = 12; // numbers
+  export const MONTLY_BILLING = false; // boolean
+  export const NO_PLAN = null; // null
+  export const FOO = 'FOO'; // null

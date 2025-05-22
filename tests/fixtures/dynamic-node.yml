@@ -1,0 +1,20 @@
+options:
+  name: dynamic-node
+package.json:
+  type: module
+  name: dynamic-node
+  private: true
+  engines:
+    node: "8"
+yarn.lock: ""
+index.js: |
+  var local = import('./local');
+
+  module.exports = function () {
+    return local.then(function (l) {
+      return l.a + l.b;
+    });
+  };
+local.js: |
+  exports.a = 1;
+  exports.b = 2;

@@ -1,0 +1,64 @@
+options:
+  name: child-bundle-different-types
+package.json:
+  type: module
+index.html: |
+  <!-- First page -->
+  <!doctype html>
+  <html>
+  <head>
+  <meta charset="utf-8">
+  </head>
+  <body>
+    <div id="main">
+      Hello World Main2
+    </div>
+    <div id="main1">
+      Hello World Main1
+    </div>
+    <script type="module" src="./main.js"></script>
+    <a href="./other.html">GOOO</a>
+  </body>
+  </html>
+index.js: |
+  var util = require('./util');
+
+  document.getElementById("main").innerHTML= util.hello();
+
+  document.getElementById("main1").innerHTML= util.b();
+main.js: |
+  var util = require('./util');
+
+  document.getElementById("main").innerHTML= util.hi();
+
+  document.getElementById("main1").innerHTML= util.b();
+other.html: |
+  <!-- First page -->
+  <!doctype html>
+  <html>
+  <head>
+  <meta charset="utf-8">
+
+  </head>
+  <body>
+    <div id="main">
+      Heelo
+    </div>
+    <div id="main1">
+      Heelo
+    </div>
+    <script type="module" src="./index.js"></script>
+  </body>
+  </html>
+other.js: |
+  module.exports = {
+    hello: () => "HELLO",
+  }
+util.js: |
+  var test = require('./other');
+
+  module.exports = {
+    hi: () => "Hi",
+    hello: () => "HELLO",
+    b: () => test.hello()
+  }

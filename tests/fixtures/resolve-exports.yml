@@ -1,0 +1,19 @@
+options:
+  name: resolve-exports
+package.json:
+  type: module
+  private: true
+  "@atlaspack/resolver-default":
+    packageExports: true
+yarn.lock: ""
+index.js: |
+  import foo from 'foo';
+
+  export default 'hello ' + foo;
+node_modules/foo/bar.js: |
+  export default 'bar';
+node_modules/foo/package.json: |
+  {
+    "name": "foo",
+    "exports": "./bar.js"
+  }

@@ -1,0 +1,9 @@
+options:
+  name: babel-7-autoinstall
+package.json:
+  type: module
+  name: babel-7-autoinstall
+index.js: |
+  export default function () {
+    return 3;
+  }

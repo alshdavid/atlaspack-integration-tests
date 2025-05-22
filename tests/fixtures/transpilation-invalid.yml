@@ -1,0 +1,20 @@
+options:
+  name: transpilation-invalid
+package.json:
+  type: module
+  dependencies:
+    react: ^18.1.0
+  browserslist: ie 11
+yarn.lock: ""
+index.js: |
+  /* @jsx h */
+
+  const Boom = () => {
+    const littleBoom = ['hello', 'world']
+    return <div>{...littleBoom.map(el => el)}</div>
+  }
+  class X {
+    #x(){}
+    #x(){}
+  }
+  console.log(Boom, X);

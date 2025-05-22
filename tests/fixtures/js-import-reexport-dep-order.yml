@@ -1,0 +1,19 @@
+options:
+  name: js-import-reexport-dep-order
+package.json:
+  type: module
+a.js: |
+  sideEffect("a");
+  export const a = "a";
+b.js: |
+  sideEffect("b");
+  export const b = "b";
+c.js: |
+  sideEffect("c");
+  export const c = "c";
+index.js: |
+  export * from './a'
+
+  export {b} from './b'
+
+  import './c'

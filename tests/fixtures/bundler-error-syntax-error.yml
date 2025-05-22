@@ -1,0 +1,19 @@
+options:
+  name: bundler-error-syntax-error
+package.json:
+  type: module
+index.html: |
+  <!doctype html>
+  <html>
+
+  <head>
+  </head>
+
+  <body>
+      <h1>Hello world</h1>
+      <script src="./index.js"></script>
+  </body>
+
+  </html>
+index.js: |
+  .invalid_js

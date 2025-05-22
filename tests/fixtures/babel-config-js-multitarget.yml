@@ -1,0 +1,30 @@
+options:
+  name: babel-config-js-multitarget
+package.json:
+  type: module
+  name: some-project-with-babel
+  version: 1.0.0
+  modern: dist/modern/index.js
+  legacy: dist/legacy/index.js
+  targets:
+    modern:
+      engines:
+        browsers: Chrome 60
+    legacy:
+      engines:
+        browsers: ie 11
+yarn.lock: ""
+babel.config.js: |
+  module.exports = {
+    "presets": ["@atlaspack/babel-preset-env"]
+  }
+src/index.js: |
+  export default class Foo {
+    constructor(x) {
+      this.x;
+    }
+
+    getSquare() {
+      return this.x ** 2;
+    }
+  }

@@ -1,0 +1,7 @@
+options:
+  name: reporters-load-failure
+package.json:
+  type: module
+yarn.lock: ""
+index.js: |
+  export function main() {}

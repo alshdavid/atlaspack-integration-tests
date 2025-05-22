@@ -1,0 +1,26 @@
+options:
+  name: dynamic-common-small
+package.json:
+  type: module
+a.js: |
+  var c = require('./common');
+
+  exports.a = 1;
+  exports.b = c;
+b.js: |-
+  var c = require('./common');
+
+  module.exports = c + 2;
+common-dep.js: |
+  module.exports = 2;
+common.js: |
+  module.exports = require('./common-dep');
+index.js: |
+  var a = import('./a');
+  var b = import('./b');
+
+  module.exports = function () {
+    return Promise.all([a, b]).then(function ([a, b]) {
+      return a.a + a.b + b;
+    });
+  };

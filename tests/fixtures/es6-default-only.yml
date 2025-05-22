@@ -1,0 +1,10 @@
+options:
+  name: es6-default-only
+package.json:
+  type: module
+index.js: |-
+  const a = 1;
+  const b = 2;
+
+  export default () => a + b;
+local.js: ""

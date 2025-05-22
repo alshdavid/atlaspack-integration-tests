@@ -1,0 +1,12 @@
+options:
+  name: sourcemap-typescript
+package.json:
+  type: module
+  name: atlaspack-sourcemap-integration-test
+  version: 1.0.0
+  private: true
+yarn.lock: ""
+index.ts: |-
+  export function env() {
+    return process.env.NODE_ENV;
+  }

@@ -1,0 +1,23 @@
+options:
+  name: js-import-shadow-for-var
+package.json:
+  type: module
+index.js: |
+  import { f, g, h } from "./other.js";
+
+  export function baz() {
+    {
+      class g {}
+      var h = {};
+    }
+
+  	for (var f = [], i = 0; i < 4; i++) {
+  		f[i] = i;
+  	}
+
+  	return typeof g === 'number' && typeof h === 'object' && f;
+  }
+other.js: |
+  export const f = 10;
+  export const g = 20;
+  export const h = 30;

@@ -1,0 +1,15 @@
+options:
+  name: pnp-builtin
+package.json:
+  type: module
+index.js: |
+  const {a} = require('module/');
+  const {b} = require('./local.js');
+
+  module.exports = function() {
+    return a + b;
+  };
+local.js: |
+  exports.b = 2;
+pnp/module/index.js: |
+  exports.a = 1;

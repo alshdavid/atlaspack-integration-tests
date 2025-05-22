@@ -1,0 +1,26 @@
+options:
+  name: html-virtualpath
+package.json:
+  type: module
+index.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <title>Virtual path test</title>
+  </head>
+  <body>
+    <a href="/somewhere">Virtual path</a>
+    <a href="/some/other/route">Another virtual path</a>
+    <a href="./other.html">A real path</a>
+  </body>
+  </html>
+other.html: |
+  <!doctype html>
+  <html>
+  <head>
+    <title>Virtual path test</title>
+  </head>
+  <body>
+    <h1>Other page</h1>
+  </body>
+  </html>

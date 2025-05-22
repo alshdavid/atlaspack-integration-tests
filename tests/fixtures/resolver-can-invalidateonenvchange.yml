@@ -1,0 +1,42 @@
+options:
+  name: resolver-can-invalidateonenvchange
+package.json:
+  type: module
+  name: test-resolver-invalidateonenevchange
+  private: true
+yarn.lock: ""
+index.js: const willBeReplaced = true;
+node_modules/atlaspack-resolver-can-invalidateonenvchange/index.js: |
+  const {Resolver} = require('@atlaspack/plugin');
+  const path = require('path');
+  const {default: NodeResolver} = require('@atlaspack/node-resolver-core');
+
+  module.exports = new Resolver({
+    async resolve({dependency, options, specifier,logger}) {
+      let mainFields = ['source', 'browser', 'module', 'main'];
+      const replacedCode = options.env.replacedCode;
+      const resolver = new NodeResolver({
+        fs: options.inputFS,
+        projectRoot: options.projectRoot,
+        extensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'css', 'styl', 'vue'],
+        mainFields,
+      });
+      let result = await resolver.resolve({
+        filename: specifier,
+        specifierType: dependency.specifierType,
+        parent: dependency.sourcePath,
+        env: dependency.env,
+      });
+      result.code = replacedCode;
+      result.invalidateOnEnvChange = ['replacedCode'];
+      return result;
+    },
+  });
+node_modules/atlaspack-resolver-can-invalidateonenvchange/package.json: |+
+  {
+      "name": "atlaspack-resolver-can-invalidateonenvchange",
+      "version": "1.0.0",
+      "private": true,
+      "main": "index.js"
+    }
+    

@@ -1,0 +1,5 @@
+options:
+  name: html-empty
+package.json:
+  type: module
+index.html: ""

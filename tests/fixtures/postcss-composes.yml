@@ -1,0 +1,89 @@
+options:
+  name: postcss-composes
+package.json:
+  type: module
+  name: composes-test
+  private: true
+yarn.lock: ""
+composes-1.module.css: |
+  .composes1 {
+    composes: test from './mixins.module.css';
+    border: 3px solid orange;
+  }
+composes-2.module.css: |
+  .composes2 {
+    composes: test from './mixins.module.css';
+    border: 3px solid red;
+  }
+composes-3.module.css: |
+  .composes3 {
+    composes: test from './mixins.module.scss';
+    border: 3px solid brown;
+  }
+composes-4.module.css: |
+  .composes4 {
+    composes: test from '~mixins.module.css';
+    border: 3px solid black;
+  }
+composes-5.module.css: |
+  .composes5 {
+    composes: intermediate from './mixins-intermediate.module.css';
+    border: 3px solid yellow;
+  }
+composes-6.module.css: |
+  .composes6 {
+    composes: test test-2 from './mixins.module.css';
+    border: 3px solid orangered;
+  }
+index.js: |
+  var map1 = require('./composes-1.module.css');
+  var map2 = require('./composes-2.module.css');
+
+  module.exports = function () {
+    return Object.assign({}, map1, map2);
+  };
+index2.js: |
+  var map3 = require('./composes-3.module.css');
+
+  module.exports = function () {
+    return map3;
+  };
+index3.js: |
+  var map4 = require('./composes-4.module.css');
+
+  module.exports = function () {
+    return map4;
+  };
+index4.js: |
+  var map5 = require('./composes-5.module.css');
+
+  module.exports = function () {
+    return map5;
+  };
+index5.js: |
+  var map6 = require('./composes-6.module.css');
+
+  module.exports = function () {
+    return map6;
+  };
+mixins-intermediate.module.css: |
+  .intermediate {
+    composes: test from './mixins.module.css';
+    height: 300px;
+  }
+mixins.module.css: |
+  .test {
+    height: 100px;
+    width: 100px;
+  }
+
+  .test-2 {
+    background: red;
+  }
+mixins.module.scss: |
+  $test: 200px;
+
+  .test {
+    height: $test;
+    width: $test;
+  }

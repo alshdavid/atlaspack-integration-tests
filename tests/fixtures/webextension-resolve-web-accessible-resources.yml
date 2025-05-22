@@ -1,0 +1,31 @@
+options:
+  name: webextension-resolve-web-accessible-resources
+package.json:
+  type: module
+yarn.lock: ""
+injected/index-jsx.jsx: |-
+  import React from 'react';
+
+  const z = <div>Hello</div>;
+
+  export default z;
+injected/index.ts: |-
+  const x: number = 12;
+
+  export default x;
+injected/nested/other.ts: |-
+  const y: string = 'example';
+  export default y;
+injected/nested/unexpected.jsx: export default 'should not be bundled';
+injected/single.js: export default 'single export';
+manifest.json: |
+  {
+    "manifest_version": 2,
+    "name": "Atlaspack WebExt",
+    "version": "1.2.0",
+    "web_accessible_resources": [
+      "/injected/**/*.ts",
+      "/injected/*.jsx",
+      "/injected/single.js"
+    ]
+  }

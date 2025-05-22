@@ -1,0 +1,20 @@
+options:
+  name: sourcemap
+package.json:
+  type: module
+  name: atlaspack-sourcemap-integration-test
+  version: 1.0.0
+  private: true
+  browser: dist/index.js
+  targets:
+    browser:
+      engines:
+        browsers:
+          - "> 0.25%"
+yarn.lock: ""
+index.js: |-
+  function helloWorld() {
+    return "hello world";
+  }
+
+  module.exports = helloWorld;

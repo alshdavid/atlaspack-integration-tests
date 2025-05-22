@@ -1,0 +1,15 @@
+options:
+  name: html-sync-async-asset
+package.json:
+  type: module
+index.html: |
+  <script type="module" src="./index.js"></script>
+index.js: |
+  import t from "./test.js";
+
+  import("./other.js")
+  	.then((v) => v.default)
+other.js: |
+  export default import("./test.js");
+test.js: |
+  export default "test";

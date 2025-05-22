@@ -1,0 +1,13 @@
+options:
+  name: bundler-middleware
+package.json:
+  type: module
+index.js: |
+  var local = require('./local');
+
+  module.exports = function () {
+    return local.a + local.b;
+  };
+local.js: |
+  exports.a = 1;
+  exports.b = 2;

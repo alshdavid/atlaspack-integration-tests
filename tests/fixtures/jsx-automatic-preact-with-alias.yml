@@ -1,0 +1,22 @@
+options:
+  name: jsx-automatic-preact-with-alias
+package.json:
+  type: module
+  private: true
+  dependencies:
+    preact: ^10.5
+  alias:
+    react: preact/compat
+    react-dom/test-utils: preact/test-utils
+    react-dom: preact/compat
+    react/jsx-runtime: preact/jsx-runtime
+    react/jsx-dev-runtime: preact/jsx-dev-runtime
+yarn.lock: ""
+index.js: |
+  module.exports = <div />;
+node_modules/preact/jsx-dev-runtime.js: ""
+node_modules/preact/jsx-runtime.js: ""
+node_modules/preact/package.json: |
+  {
+    "name": "preact"
+  }

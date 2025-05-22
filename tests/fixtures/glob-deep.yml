@@ -1,0 +1,18 @@
+options:
+  name: glob-deep
+package.json:
+  type: module
+yarn.lock: ""
+dir/a.js: |
+  module.exports = 1;
+dir/b.js: |
+  module.exports = 2;
+dir/x/c.js: module.exports = 3;
+dir/x/y/z.js: |
+  module.exports = 7;
+index.js: |
+  var vars = require('./dir/**/*.js');
+
+  module.exports = function () {
+    return vars.a + vars.b + vars.x.c + vars.x.y.z;
+  };

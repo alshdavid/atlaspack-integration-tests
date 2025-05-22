@@ -1,0 +1,8 @@
+options:
+  name: html-inline-styles-element
+package.json:
+  type: module
+index.html: |
+  <img src="http://example.com/img.png" style="margin-top: 5px;" />
+  <img src="http://example.com/img.png" style="width: 120px;" />
+  <span style="font-size: 25px;">REPL</span>

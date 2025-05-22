@@ -1,0 +1,10 @@
+options:
+  name: name-invalidation
+package.json:
+  type: module
+a.js: |
+  export default import('./b').then(b => b.default);
+b.js: |
+  export default 42;
+index.js: |
+  export default import('./a').then(a => a.default);

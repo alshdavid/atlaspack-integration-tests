@@ -1,0 +1,35 @@
+options:
+  name: babel-config-json-custom
+package.json:
+  type: module
+  name: some-project-with-custom-babel-config
+  version: 1.0.0
+yarn.lock: |
+  # Adding this lockfile here so Atlaspack finds a project root
+babel.config.json: |
+  {
+    "plugins": ["babel-plugin-dummy"]
+  }
+index.js: |
+  module.exports = function() {
+    return "REPLACE_ME";
+  }
+node_modules/babel-plugin-dummy/index.js: |
+  module.exports = () => {
+    return {
+      visitor: {
+        StringLiteral(path, state) {
+          const opts = state.opts;
+
+          if (path.node.value === 'REPLACE_ME') {
+            path.node.value = 'hello there';
+          }
+        }
+      }
+    };
+  };
+node_modules/babel-plugin-dummy/package.json: |
+  {
+    "name": "babel-plugin-dummy",
+    "version": "1.0.0"
+  }

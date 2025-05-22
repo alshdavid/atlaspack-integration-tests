@@ -1,0 +1,19 @@
+options:
+  name: babel-tsx
+package.json:
+  type: module
+yarn.lock: ""
+babel.config.json: |
+  {
+    "presets": ["@babel/preset-react", "@babel/preset-typescript"]
+  }
+index.tsx: |
+  import React from 'react';
+
+  interface TestProps {
+    text: string;
+  }
+
+  export function Test({ text }: TestProps) {
+    return <div>{text}</div>;
+  }
