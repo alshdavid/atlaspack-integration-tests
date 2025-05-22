@@ -20,6 +20,7 @@
     "@parcel/workers": "^2.15.1",
     "@types/node": "^22",
     "happy-dom": "^17.4.7",
+    "https-browserify": "^1.0.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "yaml": "^2.8.0"

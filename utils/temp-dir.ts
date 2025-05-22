@@ -21,8 +21,8 @@ export class TempDir {
 
   static async create(prefix: string): Promise<TempDir> {
     const tempDir = new TempDir()
-    // tempDir.#prefix = slugify(prefix)
-    tempDir.#prefix = `${slugify(prefix)}-${(Math.random() * 10000000).toFixed(0)}`
+    tempDir.#prefix = slugify(prefix)
+    // tempDir.#prefix = `${slugify(prefix)}-${(Math.random() * 10000000).toFixed(0)}`
     tempDir.#path = path.join(__tmp, tempDir.#prefix)
     await fs.promises.mkdir(tempDir.path, { recursive: true })
     return tempDir
@@ -30,13 +30,5 @@ export class TempDir {
 
   async destroy() {
     await fs.promises.rm(this.#path, { recursive: true, force: true })
-  }
-
-  async [Symbol.asyncDispose]() {
-    await this.destroy()
-  }
-
-  async [Symbol.dispose]() {
-    await this.destroy()
   }
 }

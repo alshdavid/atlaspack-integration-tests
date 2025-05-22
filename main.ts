@@ -28,9 +28,9 @@ void (async function () {
 
   testStream.pipe(process.stdout)
   await new Promise((res) => finished(testStream, res))
-  console.log('Cleanup')
-  if (fs.existsSync(path.join(__dirname, '.tmp'))) {
-    await fs.promises.rm(path.join(__dirname, '.tmp'), { recursive: true })
-  }
+  // console.log('Cleanup')
+  // if (fs.existsSync(path.join(__dirname, '.tmp'))) {
+  //   await fs.promises.rm(path.join(__dirname, '.tmp'), { recursive: true })
+  // }
   process.exit(exitCode)
 })()

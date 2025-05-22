@@ -4,31 +4,27 @@ import {
   SourceTextModule,
   SyntheticModule,
 } from "node:vm";
-import fs from "node:fs";
+import * as fs from "node:fs";
 import { createRequire } from "node:module";
-import path from "node:path";
+import * as path from "node:path";
 
-export function evalEsm(modulePath: string | undefined): Promise<Map<string, any>> {
+export function evalEsm<T = any>(modulePath: string | undefined): Promise<T> {
   if (!modulePath) {
     throw Error("Unable to find entry")
   }
-  return new Promise((res, rej) => {
-    const interval = setTimeout(rej, 5000)
+  return new Promise<T>((done, error) => {
+    const interval = setTimeout(() => error("Timeout"), 5000)
     setTimeout(async () => {
-      const store = new Map();
 
       const require = createRequire(modulePath)
 
       const context = createContext({
         ...globalThis,
         require,
-        test: {
-          store,
-          done: () => {
-            globalThis.clearInterval(interval)
-            res(store)
-          },
-        },
+        // test: {
+          done,
+          error
+        // },
       });
 
       const importsCache = new Map();
@@ -52,20 +48,8 @@ export function evalEsm(modulePath: string | undefined): Promise<Map<string, any
         await mod2.link(importsLinker);
         await mod2.evaluate();
 
-        const exportNames = Object.keys(mod2.namespace);
-
-        const imported = new SyntheticModule(
-          exportNames,
-          function () {
-            exportNames.forEach((key: any) =>
-              imported.setExport(key, (mod2.namespace as any)[key])
-            );
-          },
-          { identifier: specifier, context: referencingModule.context }
-        );
-
-        importsCache.set(specifier, imported);
-        return imported;
+        importsCache.set(specifier, mod2);
+        return mod2;
       }
 
       async function importsDynLinker(

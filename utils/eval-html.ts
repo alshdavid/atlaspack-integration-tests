@@ -13,10 +13,9 @@ export async function evalHtml(
   if (!filePath) {
     throw Error("Unable to find entry");
   }
-  return new Promise((res, rej) => {
-    const interval = setTimeout(rej, 5000);
+  return new Promise((done, error) => {
+    const interval = setTimeout(() => error("Timeout"), 5000);
     setTimeout(async () => {
-      const store = new Map();
       const base = basePath || path.dirname(filePath);
 
       const browser = new Browser({
@@ -43,13 +42,9 @@ export async function evalHtml(
       page.virtualConsolePrinter.addEventListener("print", (_) =>
         console.log(page.virtualConsolePrinter.readAsString().trim())
       );
-      (page.mainFrame.window as any).test = {
-        store,
-        done: () => {
-          globalThis.clearInterval(interval);
-          res(store);
-        },
-      };
+
+      (page.mainFrame.window as any).done = done;
+      (page.mainFrame.window as any).error = error;
 
       page.url = `https://example.com`;
       page.content = await fs.promises.readFile(filePath, "utf8");

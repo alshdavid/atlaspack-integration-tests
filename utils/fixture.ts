@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import yaml from "yaml";
 import { TempDir } from "./temp-dir.ts";
 import { slugify } from "./slugify.ts";
-import { BuildSuccessEvent, InitialParcelOptions } from "@parcel/types";
+import { BuildSuccessEvent, BundleGraph, InitialParcelOptions, PackagedBundle } from "@parcel/types";
 import { bundle } from "./bundle.ts";
 
 export class Fixture {
@@ -15,8 +15,8 @@ export class Fixture {
 
   static async yaml(input: TemplateStringsArray) {}
 
-  static async create(input: string): Promise<Fixture> {
-    const name = (Math.random() * 10000000).toFixed(0);
+  static async create(name: string, input: string): Promise<Fixture> {
+    // const name = (Math.random() * 10000000).toFixed(0);
     const files = yaml.parse(input);
 
     if (!(".parcelrc" in files)) {
@@ -31,16 +31,19 @@ export class Fixture {
 
     let inProgress = [];
     for (const [file, contents] of Object.entries(files)) {
-      inProgress.push((async () => {
-        if (!fs.existsSync(path.dirname(path.join(tmp.path, file)))) {
-          await fs.promises.mkdir(path.dirname(path.join(tmp.path, file)), { recursive: true })
-        }
-        await fs.promises.writeFile(
-          path.join(tmp.path, file),
-          contents as string,
-          "utf8"
-        )
-      })()
+      inProgress.push(
+        (async () => {
+          if (!fs.existsSync(path.dirname(path.join(tmp.path, file)))) {
+            await fs.promises.mkdir(path.dirname(path.join(tmp.path, file)), {
+              recursive: true,
+            });
+          }
+          await fs.promises.writeFile(
+            path.join(tmp.path, file),
+            contents as string,
+            "utf8"
+          );
+        })()
       );
     }
     await Promise.all(inProgress);
@@ -57,13 +60,10 @@ export class Fixture {
     return path.join(this.#tmp?.path, ...segments);
   }
 
-  async bundle(
+  async bundleWithOptions(
     entries: string[],
     options: InitialParcelOptions = {}
-  ): Promise<[
-    Map<string, string>,
-    BuildSuccessEvent
-  ]> {
+  ): Promise<[Map<string, string>, BuildSuccessEvent, BundleGraph<PackagedBundle>]> {
     const built = new Map<string, string>();
     const event = await bundle({
       entries: entries.map((seg) => this.path(seg)),
@@ -83,15 +83,18 @@ export class Fixture {
     block: for (const entry of entries) {
       for (const bundle of event.bundleGraph.getEntryBundles()) {
         if (bundle.getMainEntry()?.filePath.endsWith(entry)) {
-          built.set(entry, bundle.filePath)
-          continue block
+          built.set(entry, bundle.filePath);
+          continue block;
         }
-        throw new Error("Cannot find entry asset for " + entry)
+        throw new Error("Cannot find entry asset for " + entry);
       }
     }
-    return [
-      built,
-      event,
-    ];
+    return [built, event, event.bundleGraph];
+  }
+
+  async bundle(
+    ...entries: string[]
+  ): Promise<[Map<string, string>, BuildSuccessEvent, BundleGraph<PackagedBundle>]> {
+    return this.bundleWithOptions(entries)
   }
 }
